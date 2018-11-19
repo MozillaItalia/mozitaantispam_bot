@@ -147,8 +147,8 @@ def risposte(msg):
     if any(ext in text.lower() for ext in parole_vietate):
         controllo_parole_vietate=True
 
-    if text=="J":
-        type_msg="J"
+    #if text=="J":
+    #    type_msg="J"
 
     try:
         if type_msg!="BIC":
