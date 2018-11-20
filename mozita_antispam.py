@@ -12,9 +12,9 @@ versione="0.1.0 preview"
 ultimoAggiornamento="20-11-2018"
 
 AdminList=[240188083]
-WhiteList=[240188083,295348075,75870906]#damiano:295348075,saverio:240188083,simone:75870906
-BlackList={}
-BlackList_name={}
+WhiteList=[240188083,295348075]#damiano:295348075,saverio:240188083,simone:75870906
+BlackList={2381:75870906}
+BlackList_name={75870906:"mone27"}
 TempList={}
 TempList_name={}
 SpamList=[]
@@ -148,7 +148,7 @@ def risposte(msg):
         controllo_parole_vietate=True
 
     #if text=="J":
-    #    type_msg="J"
+        #type_msg="J"
 
     try:
         if type_msg!="BIC":
@@ -172,8 +172,9 @@ def risposte(msg):
                 #print ("Utente spam")
                 messaggio["message_id"]=message_id
                 bot.deleteMessage(telepot.message_identifier(messaggio))
-                SpamList.append(int(user_id))
-                bot.kickChatMember(chat_id, user_id, until_date=None)
+                if not(user_id in AdminList):
+                    SpamList.append(int(user_id))
+                    bot.kickChatMember(chat_id, user_id, until_date=None)
                 bot.sendMessage(chat_id, "@"+str(user_name)+" è stato cacciato poiché risulta utente spam.")
                 status_user="S" #SpamList
             else:
@@ -183,14 +184,14 @@ def risposte(msg):
                     BlackList_name[int(user_id)]=str(user_name)
                     status_user="B"
                     #utente da inserire nella lista momentanea -> nuovo utente
-                else:
-                    if (type_msg!="J" and type_msg!="L") or type_msg=="NI":
-                        #print ("Utente non verificato o Messaggio di tipo non identificato!")
-                        messaggio["message_id"]=message_id
-                        bot.deleteMessage(telepot.message_identifier(messaggio))
-                        status_user="S"
-                        SpamList.append(int(user_id))
-                        del BlackList_name[int(BlackList[int(message_id)-1])]
+                ##else:
+                    ##if (type_msg!="J" and type_msg!="L") or type_msg=="NI":
+                        ###print ("Utente non verificato o Messaggio di tipo non identificato!")
+                        ##messaggio["message_id"]=message_id
+                        ##bot.deleteMessage(telepot.message_identifier(messaggio))
+                        ##status_user="S"
+                        ##SpamList.append(int(user_id))
+                        #del BlackList_name[int(BlackList[int(message_id)-1])]
                         #'''if user_id in WhiteList:
                         #    del WhiteList[int(user_id)]'''
                         #'''elif user_id in BlackList:
@@ -207,8 +208,10 @@ def risposte(msg):
                     
             elif text == "/confutente" and type_msg=="BIC":
                 if user_id in WhiteList or user_id in AdminList:
-                    if int(user_id) in TempList.values() and int(user_id) in TempList_name:
-                        message_id_temp=next((x for x in TempList if TempList[x] == int(user_id)), None)+1
+                    user_name_temp=str(msg['text'].split(",")[0]).lstrip("@")
+                    if str(user_name_temp) in TempList_name.values():
+                        user_id_temp=int(next((x for x in TempList_name if TempList_name[x] == str(user_name_temp)), None))
+                        message_id_temp=next((x for x in TempList if TempList[x] == int(user_id_temp)), None)+1
                         #print("Utente da verificare: "+str(TempList[int(message_id_temp)-1]) + "Message id: "+str(message_id_temp))
                         bot.sendMessage(chat_id, "@"+str(user_name)+" ha confermato @"+str(TempList_name[int(TempList[int(message_id_temp)-1])])+"!")
                         WhiteList.append(int(TempList[int(message_id_temp)-1]))
@@ -219,13 +222,13 @@ def risposte(msg):
         print("Excep:01 -> "+str(e))
 
     try:
-        ##print("AdminList: "+str(AdminList))
-        ##print("WhiteList: "+str(WhiteList))
-        ##print("BlackList: "+str(BlackList))
-        ##print("BlackList_name: "+str(BlackList_name))
-        ##print("TempList: "+str(TempList))
-        ##print("TempList_name: "+str(TempList_name))
-        ##print("SpamList: "+str(SpamList))
+        #print("AdminList: "+str(AdminList))
+        #print("WhiteList: "+str(WhiteList))
+        #print("BlackList: "+str(BlackList))
+        #print("BlackList_name: "+str(BlackList_name))
+        #print("TempList: "+str(TempList))
+        #print("TempList_name: "+str(TempList_name))
+        #print("SpamList: "+str(SpamList))
         stampa="Id Msg: "+str(message_id)+"  --  "+str(localtime)+"  --  Utente: "+str(user_name)+" ("+str(user_id)+")["+str(status_user)+"]  --  Gruppo: "+str(nome_gruppo)+"\n >> >> Tipo messaggio: "+str(type_msg)+"\n >> >> Contenuto messaggio: "+str(text)+"\n--------------------\n"
         print(stampa)
     except Exception as e:
@@ -243,4 +246,4 @@ bot=telepot.Bot(TOKEN)
 MessageLoop(bot, {'chat': risposte, 'callback_query': risposte}).run_as_thread()
 
 while 1:
-    time.sleep(10)
+    time.sleep(0.00000001)
