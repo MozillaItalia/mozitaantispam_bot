@@ -3,22 +3,24 @@ import time
 from telepot.loop import MessageLoop
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 from datetime import datetime
+import json
 
 TOKEN="---NASCOSTO---"
 
 #COPIARE E INCOLLARE DA QUI - IL TOKEN E' GIA' INSERITO
 
-versione="0.1.1 preview"
-ultimoAggiornamento="22-11-2018"
+versione="0.2.0 preview"
+ultimoAggiornamento="24-11-2018"
 
-AdminList=[240188083]
-WhiteList=[240188083,295348075,75870906,69903837]#damiano:295348075,saverio:240188083,simone:75870906,daniele:69903837
+AdminList=[]
+WhiteList=[]#damiano:295348075,saverio:240188083,simone:75870906,daniele:69903837
 BlackList={}#2381:75870906
 BlackList_name={}#75870906:"mone27"
 TempList={}
 TempList_name={}
 SpamList=[]
-chat_name={"-1001225861773": "Super-Gruppo di prova","ID CHAT (GRUPPO)": "Nome da assegnare al gruppo","ID CHAT (Gruppo) (2)": "Nome da assegnare al gruppo (2)"}
+chat_name=json.loads(open('chat_name.json').read())
+parole_vietate = json.loads(open('parole_vietate.json').read())
 
 def risposte(msg):
     localtime=datetime.now()
@@ -28,7 +30,14 @@ def risposte(msg):
 
     modificato=False
     risposta=False
-    #try:
+
+    AdminList = json.loads(open('adminlist.json').read())
+    WhiteList = json.loads(open('whitelist.json').read())
+    BlackList = json.loads(open('blacklist.json').read())
+    BlackList_name = json.loads(open('blacklist_name.json').read())
+    TempList = json.loads(open('templist.json').read())
+    TempList_name = json.loads(open('templist_name.json').read())
+    SpamList = json.loads(open('spamlist.json').read())
 
     if "text" in msg:
         #EVENTO MESSAGGIO (SOTTO-EVENTI MESSAGGIO)
@@ -148,8 +157,6 @@ def risposte(msg):
 
         status_user="-"
 
-        parole_vietate=["vaffanculo","fuck off","fuck you","fanculo","puttana","stronza","troia","cazzo","cretino","bartardo","coglione","imbecille"]
-
         controllo_parole_vietate=False
         if any(ext in text.lower() for ext in parole_vietate):
             controllo_parole_vietate=True
@@ -187,9 +194,10 @@ def risposte(msg):
                 else:
                     if type_msg=="J":
                         bot.sendMessage(chat_id, "@"+str(user_name)+", benvenuto nel gruppo '"+str(nome_gruppo)+"'! Per prima cosa leggi il 'Regolamento' (è molto breve ma fondamentale!). Al momento sei temporaneamente disabilitato.", reply_markup=new)
-                        BlackList[int(message_id)]=int(user_id)
-                        BlackList_name[int(user_id)]=str(user_name)
+                        BlackList[str(message_id)]=int(user_id)
+                        BlackList_name[str(user_id)]=str(user_name)
                         status_user="B"
+
                         #utente da inserire nella lista momentanea -> nuovo utente
                     ##else:
                         ##if (type_msg!="J" and type_msg!="L") or type_msg=="NI":
@@ -205,11 +213,13 @@ def risposte(msg):
                             #    del BlackList''' #DA COMPLETARE -> elimina l'id dalla lista nella quale è presente (contrallare)
             else:
                 if text=="/leggiregolamento" and type_msg=="BIC":
-                    if user_id == int(BlackList[int(message_id)-1]):
-                        TempList[int(message_id)-1]=BlackList[int(message_id)-1]
-                        TempList_name[int(TempList[int(message_id)-1])]=BlackList_name[int(BlackList[int(message_id)-1])]
-                        del BlackList_name[int(BlackList[int(message_id)-1])]
-                        del BlackList[int(message_id)-1]
+                    if user_id == int(BlackList[str(int(message_id)-1)]):
+
+                        TempList[str(int(message_id)-1)]=BlackList[str(int(message_id)-1)]
+                        print(TempList[str(int(message_id)-1)])
+                        TempList_name[str(TempList[str(int(message_id)-1)])]=BlackList_name[str(BlackList[str(int(message_id)-1)])]
+                        del BlackList_name[str(BlackList[str(int(message_id)-1)])]
+                        del BlackList[str(int(message_id)-1)]
                         status_user="T"
                         bot.sendMessage(chat_id, "@"+str(user_name)+", ecco qui alcune delle regole principali da seguire.\nTi preghiamo di leggere TUTTO il regolamento: è breve e molto semplice, ma essenziale!\n\nRegole principali:\n1. Avere rispetto di tutti.\n2. Non utilizzare un linguaggio scurrile\n\nOra puoi scrivere dei messaggi di solo testo (NO LINK) finché un altro utente già verificato non conferma la tua identità di UTENTE REALE e non spam.", reply_markup=regolamentoletto)
                     
@@ -218,13 +228,31 @@ def risposte(msg):
                         user_name_temp=str(msg['text'].split(",")[0]).lstrip("@")
                         if str(user_name_temp) in TempList_name.values():
                             user_id_temp=int(next((x for x in TempList_name if TempList_name[x] == str(user_name_temp)), None))
-                            message_id_temp=next((x for x in TempList if TempList[x] == int(user_id_temp)), None)+1
+                            message_id_temp=int(next((x for x in TempList if TempList[x] == int(user_id_temp)), None))+1
                             #print("Utente da verificare: "+str(TempList[int(message_id_temp)-1]) + "Message id: "+str(message_id_temp))
-                            bot.sendMessage(chat_id, "@"+str(user_name)+" ha confermato @"+str(TempList_name[int(TempList[int(message_id_temp)-1])])+"!")
-                            WhiteList.append(int(TempList[int(message_id_temp)-1]))
-                            del TempList_name[int(TempList[int(message_id_temp)-1])]
-                            del TempList[int(message_id_temp)-1]
+                            bot.sendMessage(chat_id, "@"+str(user_name)+" ha confermato @"+str(TempList_name[str(TempList[str(int(message_id_temp)-1)])])+"!")
+                            WhiteList.append(int(TempList[str(int(message_id_temp)-1)]))
+                            del TempList_name[str(TempList[str(int(message_id_temp)-1)])]
+                            del TempList[str(int(message_id_temp)-1)]
                             status_user="W"
+
+            try:
+                with open("adminlist.json", "wb") as f:
+                    f.write(json.dumps(AdminList).encode("utf-8"))
+                with open("whitelist.json", "wb") as f:
+                    f.write(json.dumps(WhiteList).encode("utf-8"))
+                with open("blacklist.json", "wb") as f:
+                    f.write(json.dumps(BlackList).encode("utf-8"))
+                with open("blacklist_name.json", "wb") as f:
+                    f.write(json.dumps(BlackList_name).encode("utf-8"))
+                with open("templist.json", "wb") as f:
+                    f.write(json.dumps(TempList).encode("utf-8"))
+                with open("templist_name.json", "wb") as f:
+                    f.write(json.dumps(TempList_name).encode("utf-8"))
+                with open("spamlist.json", "wb") as f:
+                    f.write(json.dumps(SpamList).encode("utf-8"))
+            except Exception as e:
+                print("Excep:03 -> "+str(e))
         except Exception as e:
             print("Excep:01 -> "+str(e))
 
@@ -236,6 +264,8 @@ def risposte(msg):
             #print("TempList: "+str(TempList))
             #print("TempList_name: "+str(TempList_name))
             #print("SpamList: "+str(SpamList))
+            #print("chat_name: "+str(chat_name))
+            #print("parole_vietate: "+str(parole_vietate))
             dettagli=""
             if modificato:
                 dettagli+="(modificato) "
@@ -264,50 +294,27 @@ def risposte(msg):
 
         if user_id in AdminList:
             err1=False
-            if type_msg=="NM":
-                if ("conferma" or "ban" or "sblocca") in text:
-                    azione=list(text.split(" "))
-                    if azione[0]=="conferma" and len(azione)==2:
-                        #CONFERMA MANUALE
-                        if azione[1].isdigit():
-                            #CONFERMA MANUALE PER USER_ID
-                            print("")
-                        else:
-                            #CONFERMA MANUALE PER USERNAME
-                            print("")
-                    elif azione[0]=="ban" and len(azione)==2:
-                        #BAN MANUALE
-                        if azione[1].isdigit():
-                            #BAN MANUALE PER USER_ID
-                            print("")
-                        else:
-                            err1=True
-                    elif azione[0]=="sblocca" and len(azione)==2:
-                        #SBLOCCO MANUALE
-                        if azione[1].isdigit():
-                            #SBLOCCO MANUALE PER USER_ID
-                            print("")
-                        else:
-                            err1=True
-                    else:
-                        err1=True
-                else:
-                    err1=True
-            elif type_msg=="LK":
-                if text=="/start":
-                    bot.sendMessage(chat_id, "Benvenuto nella chat privata del bot.\nPuoi interagire con il bot, in chat privata, perché sei un amministratore.\nDigita /help per ottenere la lista di tutte le azioni che puoi fare nel bot IN PRIVATO (i comandi NON funzionano nei gruppi abilitati).")
-                elif text=="/help":
-                    bot.sendMessage(chat_id, "Ecco la lista delle azioni disponibili:\n 1 - 'conferma USER_ID': per confermare un utente attraverso il suo user_id (intero) -> sostituire USER_ID con l'id dell'utente\n 2 - 'conferma USERNAME': per confermare un utente attraverso il suo username (@username) -> sostituire USERNAME con l'username dell'utente, non inserire la '@' nel comando\n 3 - 'ban USER_ID': inserire un utente, partendo dal suo user id intero, nella SpamList -> nota che l'utente verrà cacciato dai gruppi solo quando scriverà qualcosa in essi\n 4 - 'sblocca USER_ID': per sbloccare un utente precedentemente bloccato -> viene rimosso dalla SpamList MA NON VIENE SBLOCCATO dai gruppi: procedere manualmente\n")
-                else:
-                    err1=True
-            else:
-                err1=True
+            #if type_msg=="NM":
+                
+            #elif type_msg=="LK":
+                #if text=="/start":
+                #    bot.sendMessage(chat_id, "Benvenuto nella chat privata del bot.\nPuoi interagire con il bot, in chat privata, perché sei un amministratore.\nDigita /help per ottenere la lista di tutte le azioni che puoi fare nel bot IN PRIVATO (i comandi NON funzionano nei gruppi abilitati).")
+                #elif text=="/help":
+                #    bot.sendMessage(chat_id, "Elenco azioni disponibili:\n - /utente: per gestire un utente, quindi per conferma un'identità, per bloccare o sbloccare un utente da tutti i gruppi Mozilla Italia.\n - /gruppo: per gestire i gruppi abilitati, quindi per aggiungerne di nuovi o rimuovere quelli già esistenti.\n - /parola: per gestire le parole vietate, quindi aggiungerne o elimanarne alcune.\n\nMozIta Antispam Bot è stato sviluppato da Saverio Morelli (@Sav2299) con il grandissimo supporto e aiuto di Simone Massaro (@mone27) e Damiano G (@dag7dev).")
+                #else:
+                #    err1=True
+            #elif type_msg=="BIC":
+
+            #else:
+                #err1=True
 
             if err1:
                 bot.sendMessage(chat_id, "Messaggio non riconosciuto. Digita /help per ottenere la lista di ciò che puoi fare.")
         else:
             bot.sendMessage(chat_id, "Non sei un amministratore, perciò non puoi interagire con il bot in privato.")
-            
+
+        print("chat_name: "+str(chat_name))
+        print("parole_vietate: "+str(parole_vietate))
 
 bot=telepot.Bot(TOKEN)
 MessageLoop(bot, {'chat': risposte, 'callback_query': risposte}).run_as_thread()
