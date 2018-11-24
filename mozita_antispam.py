@@ -4,23 +4,31 @@ from telepot.loop import MessageLoop
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 from datetime import datetime
 import json
+from pathlib import Path
 
 TOKEN="---NASCOSTO---"
 
 #COPIARE E INCOLLARE DA QUI - IL TOKEN E' GIA' INSERITO
 
-versione="0.2.0 preview"
+versione="0.2.1 alpha"
 ultimoAggiornamento="24-11-2018"
 
 AdminList=[]
-WhiteList=[]#damiano:295348075,saverio:240188083,simone:75870906,daniele:69903837
-BlackList={}#2381:75870906
-BlackList_name={}#75870906:"mone27"
+WhiteList=[]
+BlackList={}
+BlackList_name={}
 TempList={}
 TempList_name={}
 SpamList=[]
 chat_name=json.loads(open('chat_name.json').read())
 parole_vietate = json.loads(open('parole_vietate.json').read())
+adminlist_path=Path("adminlist.json")
+whitelist_path=Path("whitelist.json")
+blacklist_path=Path("blacklist.json")
+blacklist_name_path=Path("blacklist_name.json")
+templist_path=Path("templist.json")
+templist_name_path=Path("templist_name.json")
+spamlist_path=Path("spamlist.json")
 
 def risposte(msg):
     localtime=datetime.now()
@@ -30,14 +38,20 @@ def risposte(msg):
 
     modificato=False
     risposta=False
-
-    AdminList = json.loads(open('adminlist.json').read())
-    WhiteList = json.loads(open('whitelist.json').read())
-    BlackList = json.loads(open('blacklist.json').read())
-    BlackList_name = json.loads(open('blacklist_name.json').read())
-    TempList = json.loads(open('templist.json').read())
-    TempList_name = json.loads(open('templist_name.json').read())
-    SpamList = json.loads(open('spamlist.json').read())
+    if adminlist_path.exists():
+        AdminList = json.loads(open('adminlist.json').read())
+    if whitelist_path.exists():
+        WhiteList = json.loads(open('whitelist.json').read())
+    if blacklist_path.exists():
+        BlackList = json.loads(open('blacklist.json').read())
+    if blacklist_name_path.exists():
+        BlackList_name = json.loads(open('blacklist_name.json').read())
+    if templist_path.exists():
+        TempList = json.loads(open('templist.json').read())
+    if templist_name_path.exists():
+        TempList_name = json.loads(open('templist_name.json').read())
+    if spamlist_path.exists():
+        SpamList = json.loads(open('spamlist.json').read())
 
     if "text" in msg:
         #EVENTO MESSAGGIO (SOTTO-EVENTI MESSAGGIO)
@@ -166,51 +180,53 @@ def risposte(msg):
 
         try:
             if type_msg!="BIC":
-                if (user_id in WhiteList or user_id in AdminList) and type_msg!="NI" and not controllo_parole_vietate:
+                if int(user_id) in SpamList and type_msg!="NI" or controllo_parole_vietate:
+                    #print ("Utente spam")
+                    #L'utente può essere presente anche in altre liste -> ma se è presente qui viene bloccato e cacciato ugualmente
+                    messaggio["message_id"]=message_id
+                    bot.deleteMessage(telepot.message_identifier(messaggio))
+                    if not(user_id in AdminList):
+                        SpamList.append(int(user_id))
+                        bot.kickChatMember(chat_id, user_id, until_date=None)
+
+                    bot.sendMessage(chat_id, "@"+str(user_name)+" è stato cacciato perché identificato come utente spam.")
+                    status_user="S" #SpamList
+                elif (int(user_id) in WhiteList or int(user_id) in AdminList) and type_msg!="NI" and not controllo_parole_vietate:
                     #print ("Utente verificato!")
                     #bot.sendMessage(chat_id, "@"+str(user_name)+" è un utente verificato !")
                     status_user="W" #WhiteList
                 elif int(user_id) in BlackList.values() and type_msg!="NI" and not controllo_parole_vietate:
                     #print ("Utente non verificato!")
                     messaggio["message_id"]=message_id
-                    bot.deleteMessage(telepot.message_identifier(messaggio))
+                    if type_msg!="J" and type_msg!="L":
+                        bot.deleteMessage(telepot.message_identifier(messaggio))
                     status_user="B" #BlackList
                     #bot.sendMessage(chat_id, "@"+str(user_name)+" non è stato verificato: Messaggio eliminato.")
                 elif int(user_id) in TempList.values() and type_msg!="NI" and not controllo_parole_vietate:
                     #print ("Utente non verificato!")
                     messaggio["message_id"]=message_id
                     if type_msg!="NM":
-                        bot.deleteMessage(telepot.message_identifier(messaggio))
+                        if type_msg!="J" and type_msg!="L":
+                            bot.deleteMessage(telepot.message_identifier(messaggio))
                     status_user="T" #TempList
-                elif (user_id in SpamList and type_msg!="NI") or controllo_parole_vietate:
-                    #print ("Utente spam")
-                    messaggio["message_id"]=message_id
-                    bot.deleteMessage(telepot.message_identifier(messaggio))
-                    if not(user_id in AdminList):
-                        SpamList.append(int(user_id))
-                        bot.kickChatMember(chat_id, user_id, until_date=None)
-                    bot.sendMessage(chat_id, "@"+str(user_name)+" è stato cacciato poiché risulta utente spam.")
-                    status_user="S" #SpamList
                 else:
                     if type_msg=="J":
+                        #Nuovo utente
                         bot.sendMessage(chat_id, "@"+str(user_name)+", benvenuto nel gruppo '"+str(nome_gruppo)+"'! Per prima cosa leggi il 'Regolamento' (è molto breve ma fondamentale!). Al momento sei temporaneamente disabilitato.", reply_markup=new)
                         BlackList[str(message_id)]=int(user_id)
                         BlackList_name[str(user_id)]=str(user_name)
                         status_user="B"
-
-                        #utente da inserire nella lista momentanea -> nuovo utente
-                    ##else:
-                        ##if (type_msg!="J" and type_msg!="L") or type_msg=="NI":
-                            ###print ("Utente non verificato o Messaggio di tipo non identificato!")
-                            ##messaggio["message_id"]=message_id
-                            ##bot.deleteMessage(telepot.message_identifier(messaggio))
-                            ##status_user="S"
-                            ##SpamList.append(int(user_id))
-                            #del BlackList_name[int(BlackList[int(message_id)-1])]
-                            #'''if user_id in WhiteList:
-                            #    del WhiteList[int(user_id)]'''
-                            #'''elif user_id in BlackList:
-                            #    del BlackList''' #DA COMPLETARE -> elimina l'id dalla lista nella quale è presente (contrallare)
+                    elif type_msg!="J" and type_msg!="L":
+                        #Utente già presente nel gruppo ma non presente in alcuna lista
+                        bot.sendMessage(chat_id, "@"+str(user_name)+", benvenuto nel gruppo '"+str(nome_gruppo)+"'! Per prima cosa leggi il 'Regolamento' (è molto breve ma fondamentale!). Al momento sei temporaneamente disabilitato.", reply_markup=new)
+                        BlackList[str(message_id)]=int(user_id)
+                        BlackList_name[str(user_id)]=str(user_name)
+                        bot.deleteMessage(telepot.message_identifier(messaggio))
+                        status_user="B"
+                    else:
+                        bot.sendMessage(chat_id, "Il messaggio non è stato riconosciuto e, pertanto, è stato rimosso.")
+                        bot.deleteMessage(telepot.message_identifier(messaggio))
+                        status_user="-"
             else:
                 if text=="/leggiregolamento" and type_msg=="BIC":
                     if user_id == int(BlackList[str(int(message_id)-1)]):
@@ -252,7 +268,7 @@ def risposte(msg):
                 with open("spamlist.json", "wb") as f:
                     f.write(json.dumps(SpamList).encode("utf-8"))
             except Exception as e:
-                print("Excep:03 -> "+str(e))
+                print("Excep:04 -> "+str(e))
         except Exception as e:
             print("Excep:01 -> "+str(e))
 
@@ -277,12 +293,12 @@ def risposte(msg):
             stampa="Excep:02 -> "+str(e)
             print(stampa)
 
-        #try:
-            #file=open("history.txt","a",-1,"UTF-8") #apre il file in scrittura "append" per inserire orario e data -> log di utilizzo del bot (ANONIMO)
-            #file.write(stampa) #ricordare che l'orario è in fuso orario UTC pari a 0 (Greenwich, Londra) - mentre l'Italia è a +1 (CET) o +2 (CEST - estate)
-            #file.close()
-        #except Exception as e:
-            #print("Excep:03 -> "+str(e))
+        try:
+            file=open("history.txt","a",-1,"UTF-8") #apre il file in scrittura "append" per inserire orario e data -> log di utilizzo del bot (ANONIMO)
+            file.write(stampa) #ricordare che l'orario è in fuso orario UTC pari a 0 (Greenwich, Londra) - mentre l'Italia è a +1 (CET) o +2 (CEST - estate)
+            file.close()
+        except Exception as e:
+            print("Excep:03 -> "+str(e))
     else:
         #BOT IN CHAT PRIVATA
         print("BOT IN CHAT PRIVATA")
@@ -301,10 +317,18 @@ def risposte(msg):
                 #    bot.sendMessage(chat_id, "Benvenuto nella chat privata del bot.\nPuoi interagire con il bot, in chat privata, perché sei un amministratore.\nDigita /help per ottenere la lista di tutte le azioni che puoi fare nel bot IN PRIVATO (i comandi NON funzionano nei gruppi abilitati).")
                 #elif text=="/help":
                 #    bot.sendMessage(chat_id, "Elenco azioni disponibili:\n - /utente: per gestire un utente, quindi per conferma un'identità, per bloccare o sbloccare un utente da tutti i gruppi Mozilla Italia.\n - /gruppo: per gestire i gruppi abilitati, quindi per aggiungerne di nuovi o rimuovere quelli già esistenti.\n - /parola: per gestire le parole vietate, quindi aggiungerne o elimanarne alcune.\n\nMozIta Antispam Bot è stato sviluppato da Saverio Morelli (@Sav2299) con il grandissimo supporto e aiuto di Simone Massaro (@mone27) e Damiano G (@dag7dev).")
+                #elif text=="/utente":
+                #    bot.sendMessage(chat_id, "", reply_markup=)
+                #elif text=="/parola":
+                #    bot.sendMessage(chat_id, "", reply_markup=)
+                #elif text=="/gruppo":
+                #    bot.sendMessage(chat_id, "", reply_markup=)
                 #else:
                 #    err1=True
             #elif type_msg=="BIC":
-
+                #if text=="/si":
+                #
+                #
             #else:
                 #err1=True
 

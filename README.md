@@ -20,6 +20,22 @@ Il bot si compone di 5 liste:
  
 > Le liste valgono per tutti i gruppi Mozilla Italia (da qui MozIta) e sono unificate, quindi un utente presente nella lista *spam* e già cacciato e bannato in un gruppo MozIta, appena invia qualcosa in un altro gruppo MozIta viene *automaticamente* bannato e cacciato anche da quel gruppo. Così come se un utente è già *verificato* in un gruppo lo è anche in tutti gli altri.
 
+Il bot funziona in maniera differente in base a se si trova in un *gruppo abilitato* o in una *chat privata*.
+Infatti solo chi è nella AdminList può interagire, in chat privata, con il bot.
+Ecco ciò che si può fare in chat (**solo in chat: i comandi non funzionano nei gruppi**).
+ - Gestire utenti:
+    - Inserire (manualmente) un utente nella WhiteList
+    - Inserire un utente nella SpamList
+    - Rimuovere un utente dalla SpamList -> bisognerà procedere, poi, manualmente a "sbloccarli" nei singoli gruppi (da "Gestione gruppo")
+- Gestire parole vietate:
+    - Mostrare tutte le parole vietate
+    - Aggiungere nuove parole
+    - Rimuovere delle parole
+- Gestire gruppi abilitati:
+    - Mostrare tutti i gruppi abilitati
+    - Aggiungere un gruppo
+    - Rimuove un gruppo
+
 ### Primi passi
 Non appena si entra in un gruppo MozIta il bot ti inserirà nella lista **BlackList**, quindi non potrai inviare nulla (se lo farai verrà automaticamente eliminata dal bot). Dovrai leggere il Regolamento, dopo fatto ciò passerai automaticamente alla **TempList** in attesa che un qualunque altro utente già verificato confermi la tua identità. Nell'attesa, finché rimarrai nella TempList, potrai inviare messaggi di solo testo (pena il passaggio nella **SpamList**, quindi ban ed eliminazione dai gruppi MozIta).
 Non appena, comunque, un utente confermerà la tua identità sarai libero di inviare messaggi di qualsiasi genere nel rispetto del Regolamento.
@@ -38,3 +54,11 @@ Si noti che prima di confermare l'identità è necessario accertarsi che l'utent
  - Vedere il nome utente: è un nome utente "normale"? O sono solo alcune lettere messe insieme?
 
 > **Se non si è sicuri dell'identità dell'utente *non* bisogna confermare ma, piuttosto, scrivere un messaggio taggando un amministratore e spiegando la situazione. Egli procederà alle verifiche più accurate**.
+
+# Librerie utilizzate
+Elenco delle librerie utilizzate nel codice (Python):
+ - Telepot
+ - Time
+ - Datetime
+ - Json
+ - Pathlib
