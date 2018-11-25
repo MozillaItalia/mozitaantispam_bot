@@ -11,11 +11,11 @@ Per segnalare errori aprire un nuovo ticket (si prega di aprire un ticket per og
 Grazie a tutti.
 
 ### Installazione ed esecuzione bot
-Per poter eseguire il codice, quindi far girare il bot, è necessatio seguire i seguenti passaggi (in ordine):
- - Clonare questa repository (Quindi premere su *Fork* in alto a destra
+Per poter eseguire il codice, quindi far girare il bot, è necessario seguire i seguenti passaggi (in ordine):
+ - Clonare questa repository, quindi premere su *Fork* in alto a destra
  - Installare Python 3 (o verificare di averlo già installato) **sviluppato e testato con Python 3.6.6**, ma dovrebbe funzionare anche con altre versioni
  - Installare la libreria **telepot**, tramite *pip* (o verificare di averla già installata)
-> pip3 install telepot
+   > pip3 install telepot
 
 
 # Funzionamento del bot
@@ -73,27 +73,27 @@ Si noti che prima di confermare l'identità è necessario accertarsi che l'utent
 Ecco ciò che si può fare in chat (**solo in chat: i comandi non funzionano nei gruppi**).
  - Gestire utenti:
     - Inserire (manualmente) un utente nella WhiteList: `utente aggiungi *USERID*`
-    > utente aggiungi *123456789*
+      > utente aggiungi *123456789*
     - Inserire un utente nella SpamList: `utente blocca *USERID*`
-    > utente blocca *123456789*
+      > utente blocca *123456789*
     - Rimuovere un utente dalla SpamList -> bisognerà procedere, poi, manualmente a "sbloccarli" nei singoli gruppi (da "Gestione gruppo"): `utente sblocca *USERID*`
-    > utente sblocca *12345678*
+      > utente sblocca *12345678*
 - Gestire parole vietate:
     - Mostrare tutte le parole vietate: `parola mostra`
-    > parola mostra
+      > parola mostra
     - Aggiungere nuove parole (**tutto in minuscolo**): `parola aggiungi *PAROLA/FRASE*`
-    > parola aggiungi *parola/frase di esempio*
+      > parola aggiungi *parola/frase di esempio*
     - Rimuovere delle parole (**tutto in minuscolo**): `parola elimina *PAROLA/FRASE*`
-    > parola elimina *parola/frase di esempio*
+      > parola elimina *parola/frase di esempio*
 - Gestire gruppi abilitati:
     - Mostrare tutti i gruppi abilitati: `gruppo mostra`
-    > gruppo mostra
+      > gruppo mostra
     - Aggiungere un gruppo: `gruppo aggiungi *USERID GRUPPO* *NOME GRUPPO*`
-    > gruppo aggiungi *123456789* *Nome Gruppo di esempio*
+      > gruppo aggiungi *123456789* *Nome Gruppo di esempio*
     - Rimuove un gruppo `gruppo elimina *USERID*`
     > gruppo elimina *123456789*
 - Inviare un messaggio in tutti i gruppo abilitati: `invia messaggio *TESTO MESSAGGIO*`
-> invia messaggio *Testo messaggio di esempio*
+  > invia messaggio *Testo messaggio di esempio*
 
 # Librerie utilizzate
 Elenco delle librerie utilizzate nel codice (Python):
