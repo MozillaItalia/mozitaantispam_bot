@@ -10,7 +10,7 @@ TOKEN="---NASCOSTO---"
 
 #COPIARE E INCOLLARE DA QUI - IL TOKEN E' GIA' INSERITO
 
-versione="0.3.0 alpha"
+versione="0.3.1 alpha"
 ultimoAggiornamento="25-11-2018"
 
 adminlist_path="adminlist.json"
@@ -29,8 +29,14 @@ BlackList_name={}
 TempList={}
 TempList_name={}
 SpamList=[]
-chat_name=json.loads(open(chat_name_path).read())
-parole_vietate = json.loads(open(parole_vietate_path).read())
+if Path(chat_name_path).exists():
+    chat_name=json.loads(open(chat_name_path).read())
+else:
+    chat_name=[]
+if Path(parole_vietate_path).exists():
+    parole_vietate=json.loads(open(parole_vietate_path).read())
+else:
+    parole_vietate=[]
 
 def risposte(msg):
     localtime=datetime.now()
@@ -44,6 +50,8 @@ def risposte(msg):
     if Path(adminlist_path).exists():
         global AdminList
         AdminList = json.loads(open(adminlist_path).read())
+    else:
+        AdminList=[240188083] #nel caso in cui non dovesse esistere alcun file "adminlist.json" imposta staticamente l'userid di Sav22999 -> così da poter confermare anche altri utenti
     if Path(whitelist_path).exists():
         global WhiteList
         WhiteList = json.loads(open(whitelist_path).read())
@@ -155,12 +163,12 @@ def risposte(msg):
 
     user_id=msg['from']['id']
     #print(user_id)
-    nousername=True
+    nousername=False
     if "username" in msg['from']:
         user_name=msg['from']['username']
     else:
         user_name="NessunUsername"
-        nousername=False
+        nousername=True
     #print(user_name)
     if not "chat" in msg:
         msg=msg["message"]
@@ -190,9 +198,6 @@ def risposte(msg):
         if any(ext in text.lower() for ext in parole_vietate):
             controllo_parole_vietate=True
 
-        #if text=="J":
-            #type_msg="J"
-
         try:
             if type_msg!="BIC":
                 if int(user_id) in SpamList and type_msg!="NI" or controllo_parole_vietate or nousername:
@@ -205,6 +210,15 @@ def risposte(msg):
                         bot.kickChatMember(chat_id, user_id, until_date=None)
                         bot.sendMessage(chat_id, "@"+str(user_name)+" è stato cacciato perché identificato come utente spam.")
                     status_user="S" #SpamList
+                    try:
+                        with open(spamlist_path, "wb") as f:
+                            f.write(json.dumps(SpamList).encode("utf-8"))
+                    except Exception as e:
+                        print("Excep:04 -> "+str(e))
+                elif (int(user_id) in AdminList and int(user_id) in WhiteList) and type_msg!="NI" and not controllo_parole_vietate:
+                    #print ("Utente admin!")
+                    #bot.sendMessage(chat_id, "@"+str(user_name)+" è un utente admin !")
+                    status_user="A" #AdminList
                 elif (int(user_id) in WhiteList or int(user_id) in AdminList) and type_msg!="NI" and not controllo_parole_vietate:
                     #print ("Utente verificato!")
                     #bot.sendMessage(chat_id, "@"+str(user_name)+" è un utente verificato !")
@@ -230,6 +244,13 @@ def risposte(msg):
                         BlackList[str(message_id)]=int(user_id)
                         BlackList_name[str(user_id)]=str(user_name)
                         status_user="B"
+                        try:
+                            with open(blacklist_path, "wb") as f:
+                                f.write(json.dumps(BlackList).encode("utf-8"))
+                            with open(blacklist_name_path, "wb") as f:
+                                f.write(json.dumps(BlackList_name).encode("utf-8"))
+                        except Exception as e:
+                            print("Excep:13 -> "+str(e))
                     elif type_msg!="J" and type_msg!="L":
                         #Utente già presente nel gruppo ma non presente in alcuna lista
                         bot.sendMessage(chat_id, "@"+str(user_name)+", benvenuto nel gruppo '"+str(nome_gruppo)+"'! Per prima cosa leggi il 'Regolamento' (è molto breve ma fondamentale!). Al momento sei temporaneamente disabilitato.", reply_markup=new)
@@ -237,6 +258,13 @@ def risposte(msg):
                         BlackList_name[str(user_id)]=str(user_name)
                         bot.deleteMessage(telepot.message_identifier(messaggio))
                         status_user="B"
+                        try:
+                            with open(blacklist_path, "wb") as f:
+                                f.write(json.dumps(BlackList).encode("utf-8"))
+                            with open(blacklist_name_path, "wb") as f:
+                                f.write(json.dumps(BlackList_name).encode("utf-8"))
+                        except Exception as e:
+                            print("Excep:14 -> "+str(e))
                     else:
                         bot.sendMessage(chat_id, "Il messaggio non è stato riconosciuto e, pertanto, è stato rimosso.")
                         bot.deleteMessage(telepot.message_identifier(messaggio))
@@ -252,6 +280,18 @@ def risposte(msg):
                         del BlackList[str(int(message_id)-1)]
                         status_user="T"
                         bot.sendMessage(chat_id, "@"+str(user_name)+", ecco qui alcune delle regole principali da seguire.\nTi preghiamo di leggere TUTTO il regolamento: è breve e molto semplice, ma essenziale!\n\nRegole principali:\n1. Avere rispetto di tutti.\n2. Non utilizzare un linguaggio scurrile\n\nOra puoi scrivere dei messaggi di solo testo (NO LINK) finché un altro utente già verificato non conferma la tua identità di UTENTE REALE e non spam.", reply_markup=regolamentoletto)
+
+                        try:
+                            with open(blacklist_path, "wb") as f:
+                                f.write(json.dumps(BlackList).encode("utf-8"))
+                            with open(blacklist_name_path, "wb") as f:
+                                f.write(json.dumps(BlackList_name).encode("utf-8"))
+                            with open(templist_path, "wb") as f:
+                                f.write(json.dumps(TempList).encode("utf-8"))
+                            with open(templist_name_path, "wb") as f:
+                                f.write(json.dumps(TempList_name).encode("utf-8"))
+                        except Exception as e:
+                            print("Excep:15 -> "+str(e))
                     
                 elif text == "/confutente" and type_msg=="BIC":
                     if user_id in WhiteList or user_id in AdminList:
@@ -266,23 +306,15 @@ def risposte(msg):
                             del TempList[str(int(message_id_temp)-1)]
                             status_user="W"
 
-            try:
-                with open(adminlist_path, "wb") as f:
-                    f.write(json.dumps(AdminList).encode("utf-8"))
-                with open(whitelist_path, "wb") as f:
-                    f.write(json.dumps(WhiteList).encode("utf-8"))
-                with open(blacklist_path, "wb") as f:
-                    f.write(json.dumps(BlackList).encode("utf-8"))
-                with open(blacklist_name_path, "wb") as f:
-                    f.write(json.dumps(BlackList_name).encode("utf-8"))
-                with open(templist_path, "wb") as f:
-                    f.write(json.dumps(TempList).encode("utf-8"))
-                with open(templist_name_path, "wb") as f:
-                    f.write(json.dumps(TempList_name).encode("utf-8"))
-                with open(spamlist_path, "wb") as f:
-                    f.write(json.dumps(SpamList).encode("utf-8"))
-            except Exception as e:
-                print("Excep:04 -> "+str(e))
+                            try:
+                                with open(whitelist_path, "wb") as f:
+                                    f.write(json.dumps(WhiteList).encode("utf-8"))
+                                with open(templist_path, "wb") as f:
+                                    f.write(json.dumps(TempList).encode("utf-8"))
+                                with open(templist_name_path, "wb") as f:
+                                    f.write(json.dumps(TempList_name).encode("utf-8"))
+                            except Exception as e:
+                                print("Excep:16 -> "+str(e))
         except Exception as e:
             print("Excep:01 -> "+str(e))
 
@@ -301,10 +333,10 @@ def risposte(msg):
                 dettagli+="(modificato) "
             if risposta:
                 dettagli+="(risposta) "
-            stampa="Id Msg: "+str(message_id)+"  --  "+str(localtime)+"  --  Utente: "+str(user_name)+" ("+str(user_id)+")["+str(status_user)+"]  --  Gruppo: "+str(nome_gruppo)+"\n >> >> Tipo messaggio: "+str(type_msg)+"\n >> >> Contenuto messaggio: "+str(dettagli)+str(text)+"\n--------------------\n"
+            stampa="Id Msg: "+str(message_id)+"  --  "+str(localtime)+"  --  Utente: "+str(user_name)+" ("+str(user_id)+")["+str(status_user)+"]  --  Gruppo: "+str(nome_gruppo)+"("+str(chat_id)+")\n >> >> Tipo messaggio: "+str(type_msg)+"\n >> >> Contenuto messaggio: "+str(dettagli)+str(text)+"\n--------------------\n"
             print(stampa)
         except Exception as e:
-            stampa="Excep:02 -> "+str(e)
+            stampa="Excep:02 -> "+str(e)+"\n--------------------\n"
             print(stampa)
 
         try:
@@ -317,16 +349,22 @@ def risposte(msg):
         #BOT IN CHAT PRIVATA
 
         if user_id in AdminList:
+            status_user="A"
             err1=False
             err2=False
+            esito="NO"
             if type_msg=="NM" or type_msg=="LK":
-
+                lk=False
                 if text=="/start" and type_msg=="LK":
                     bot.sendMessage(chat_id, "Benvenuto nella chat privata del bot.\nPuoi interagire con il bot, in chat privata, perché sei un amministratore.\nDigita /help per ottenere la lista di tutte le azioni che puoi fare nel bot IN PRIVATO (i comandi NON funzionano nei gruppi abilitati).")
+                    lk=True
+                    esito="OK"
                 elif text=="/help" and type_msg=="LK":
                     bot.sendMessage(chat_id, "Elenco azioni disponibili:\n - utente aggiungi |USERID|\n - utente blocca |USERID|\n - utente sblocca |USERID|\n - parola mostra\n - parola aggiungi |PAROLA/FRASE|\n - parola elimina |PAROLA/FRASE|\n - gruppo mostra\n - gruppo aggiungi |USERID| |NOME GRUPPO|\n - gruppo elimina |USERID|\n - invia messaggio |TESTO MESSAGGIO|\n\nMozIta Antispam Bot è stato sviluppato da Saverio Morelli @Sav2299 con il grandissimo supporto e aiuto di Damiano Gualandri @dag7dev e Simone Massaro @mone27.")
+                    lk=True
+                    esito="OK"
 
-                if "utente" in text or "parola" in text or "gruppo" in text or "invia messaggio" in text:
+                if "utente" in text or "parola" in text or "gruppo" in text or "invia messaggio" in text and not lk:
                     azione=list(text.split(" "))
                     if azione[0]=="utente" and len(azione)==3 and type_msg!="LK":
                         if azione[1]=="aggiungi":
@@ -337,6 +375,7 @@ def risposte(msg):
                                 try:
                                     with open(whitelist_path, "wb") as f:
                                         f.write(json.dumps(WhiteList).encode("utf-8"))
+                                    esito="OK"
                                 except Exception as e:
                                     print("Excep:06 -> "+str(e))
                             else:
@@ -347,6 +386,7 @@ def risposte(msg):
                                 if not int(azione[2]) in SpamList:
                                     SpamList.append(int(azione[2]))
                                     bot.sendMessage(chat_id, "Userid inserito correttamente nella SpamList")
+                                    esito="OK"
                                 else:
                                     bot.sendMessage(chat_id, "Errore: l'userid digitato è già presente nella SpamList")
                                 try:
@@ -365,6 +405,7 @@ def risposte(msg):
                                     try:
                                         with open(spamlist_path, "wb") as f:
                                             f.write(json.dumps(SpamList).encode("utf-8"))
+                                        esito="OK"
                                     except Exception as e:
                                         print("Excep:08 -> "+str(e))
                                 else:
@@ -377,42 +418,46 @@ def risposte(msg):
                         if azione[1]=="mostra" and len(azione)==2:
                             print("Parole mostrate")
                             bot.sendMessage(chat_id, "Elenco parole vietate (in array):\n"+str(parole_vietate))
+                            esito="OK"
                         elif azione[1]=="aggiungi" and len(azione)>2:
                             print("Parola aggiunta")
                             del azione[0]
                             del azione[0]
-                            parola=' '.join(azione)
+                            parola=(' '.join(azione)).lower()
                             if not parola in parole_vietate:
                                 parole_vietate.append(parola)
                                 bot.sendMessage(chat_id, "Parola \""+str(parola)+"\" aggiunta correttamente alle parole vietate")
+                                try:
+                                    with open(parole_vietate_path, "wb") as f:
+                                        f.write(json.dumps(parole_vietate).encode("utf-8"))
+                                    esito="OK"
+                                except Exception as e:
+                                    print("Excep:09 -> "+str(e))
                             else:
                                 bot.sendMessage(chat_id, "Parola già presente nelle parole vietate")
-                            try:
-                                with open(parole_vietate_path, "wb") as f:
-                                    f.write(json.dumps(parole_vietate).encode("utf-8"))
-                            except Exception as e:
-                                print("Excep:09 -> "+str(e))
                         elif azione[1]=="elimina" and len(azione)>2:
                             print("Parola rimossa")
                             del azione[0]
                             del azione[0]
-                            parola=' '.join(azione)
+                            parola=(' '.join(azione)).lower()
                             if parola in parole_vietate:
-                                parole_vietate.append(parola)
+                                parole_vietate.remove(parola)
                                 bot.sendMessage(chat_id, "Parola \""+str(parola)+"\" rimossa correttamente dalle parole vietate")
+                                try:
+                                    with open(parole_vietate_path, "wb") as f:
+                                        f.write(json.dumps(parole_vietate).encode("utf-8"))
+                                    esito="OK"
+                                except Exception as e:
+                                    print("Excep:10 -> "+str(e))
                             else:
                                 bot.sendMessage(chat_id, "Parola non presente nelle parole vietate")
-                            try:
-                                with open(parole_vietate_path, "wb") as f:
-                                    f.write(json.dumps(parole_vietate).encode("utf-8"))
-                            except Exception as e:
-                                print("Excep:10 -> "+str(e))
                         else:
                             err1=True
                     elif azione[0]=="gruppo" and len(azione)>=2 and type_msg!="LK":
                         if azione[1]=="mostra" and len(azione)==2:
                             print("Gruppi mostrati")
                             bot.sendMessage(chat_id, "Elenco gruppi abilitati (in array):\n"+str(chat_name))
+                            esito="OK"
                         elif azione[1]=="aggiungi" and len(azione)>=4:
                             print("Gruppo aggiunto")
                             id_gruppo=azione[2]
@@ -423,25 +468,27 @@ def risposte(msg):
                             if not id_gruppo in chat_name:
                                 chat_name[str(id_gruppo)]=str(gruppo)
                                 bot.sendMessage(chat_id, "Gruppo \""+str(gruppo)+"\" aggiunto correttamente ai gruppi abilitati")
+                                try:
+                                    with open(chat_name_path, "wb") as f:
+                                        f.write(json.dumps(chat_name).encode("utf-8"))
+                                    esito="OK"
+                                except Exception as e:
+                                    print("Excep:11 -> "+str(e))
                             else:
                                 bot.sendMessage(chat_id, "Gruppo già presente nei gruppi abilitati")
-                            try:
-                                with open(chat_name_path, "wb") as f:
-                                    f.write(json.dumps(chat_name).encode("utf-8"))
-                            except Exception as e:
-                                print("Excep:11 -> "+str(e))
                         elif azione[1]=="elimina" and len(azione)==3:
                             print("Gruppo rimosso")
                             if azione[2] in chat_name:
                                 del chat_name[azione[2]]
                                 bot.sendMessage(chat_id, "Gruppo rimosso correttamente dai gruppi abilitati")
+                                try:
+                                    with open(chat_name_path, "wb") as f:
+                                        f.write(json.dumps(chat_name).encode("utf-8"))
+                                    esito="OK"
+                                except Exception as e:
+                                    print("Excep:12 -> "+str(e))
                             else:
                                 bot.sendMessage(chat_id, "Gruppo non presente nei gruppi abilitati")
-                            try:
-                                with open(chat_name_path, "wb") as f:
-                                    f.write(json.dumps(chat_name).encode("utf-8"))
-                            except Exception as e:
-                                print("Excep:12 -> "+str(e))
                         else:
                             err1=True
                     elif azione[0]=="invia" and azione[1]=="messaggio" and len(azione)>=3:
@@ -453,12 +500,14 @@ def risposte(msg):
                                 bot.sendMessage(gruppo_x, messaggio)
                                 bot.sendMessage(chat_id, "Messaggio inviato in \""+chat_name[gruppo_x]+"\"")
                             bot.sendMessage(chat_id, "Messaggio inviato in tutti i gruppi abilitati")
+                            esito="OK"
                         else:
                             bot.sendMessage(chat_id, "Non c'è alcun gruppo abilitato")
                     else:
                         err1=True
                 else:
-                    err1=True
+                    if not lk:
+                        err1=True
             else:
                 err1=True
 
@@ -466,6 +515,19 @@ def risposte(msg):
                 bot.sendMessage(chat_id, "Azione non riconosciuta. Digita /help per ottenere l'elenco di tutte le operazione che puoi fare.")
             if err2:
                 bot.sendMessage(chat_id, "Errore: l'userid deve essere un valore numerico.")
+
+            try:
+                stampa="Utente: "+str(user_name)+" ("+str(user_id)+")["+str(status_user)+"]  --  Gruppo: ChatPrivataBot ("+str(chat_id)+")\n >> >> Esito: "+str(esito)+"\n >> >> Contenuto messaggio: "+str(text)+"\n--------------------\n"
+                print(stampa)
+            except Exception as e:
+                stampa="Excep:17 -> "+str(e)+"\n--------------------\n"
+                print(stampa)
+            try:
+                file=open("history.txt","a",-1,"UTF-8") #apre il file in scrittura "append" per inserire orario e data -> log di utilizzo del bot (ANONIMO)
+                file.write(stampa) #ricordare che l'orario è in fuso orario UTC pari a 0 (Greenwich, Londra) - mentre l'Italia è a +1 (CET) o +2 (CEST - estate)
+                file.close()
+            except Exception as e:
+                print("Excep:03 -> "+str(e))
         else:
             bot.sendMessage(chat_id, "Non sei un amministratore, perciò non puoi interagire con il bot in privato.")
 
