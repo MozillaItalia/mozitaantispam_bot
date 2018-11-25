@@ -22,19 +22,6 @@ Il bot si compone di 5 liste:
 
 Il bot funziona in maniera differente in base a se si trova in un *gruppo abilitato* o in una *chat privata*.
 Infatti solo chi è nella AdminList può interagire, in chat privata, con il bot.
-Ecco ciò che si può fare in chat (**solo in chat: i comandi non funzionano nei gruppi**).
- - Gestire utenti:
-    - Inserire (manualmente) un utente nella WhiteList
-    - Inserire un utente nella SpamList
-    - Rimuovere un utente dalla SpamList -> bisognerà procedere, poi, manualmente a "sbloccarli" nei singoli gruppi (da "Gestione gruppo")
-- Gestire parole vietate:
-    - Mostrare tutte le parole vietate
-    - Aggiungere nuove parole
-    - Rimuovere delle parole
-- Gestire gruppi abilitati:
-    - Mostrare tutti i gruppi abilitati
-    - Aggiungere un gruppo
-    - Rimuove un gruppo
 
 ### Primi passi
 Non appena si entra in un gruppo MozIta il bot ti inserirà nella lista **BlackList**, quindi non potrai inviare nulla (se lo farai verrà automaticamente eliminata dal bot). Dovrai leggere il Regolamento, dopo fatto ciò passerai automaticamente alla **TempList** in attesa che un qualunque altro utente già verificato confermi la tua identità. Nell'attesa, finché rimarrai nella TempList, potrai inviare messaggi di solo testo (pena il passaggio nella **SpamList**, quindi ban ed eliminazione dai gruppi MozIta).
@@ -48,12 +35,50 @@ Quando si preme su "Leggi Regolamento" in automatico viene inviato un messaggio 
 Il bot, in automatico, inserisce il nominativo (user_id) nella **TempList** in attesa che un utente verificato confermi la tua identità. Puoi, comunque, scrivere messaggi di testo per farci capire che, effettivamente, se una persona in carne e ossa :).
 
 ### Conferma identità
-Tutti gli utenti presenti nella **WhiteList** possono confermare l'indentità degli utenti.
+Tutti gli utenti presenti nella **WhiteList** possono confermare l'identità degli utenti.
 Si noti che prima di confermare l'identità è necessario accertarsi che l'utente non sia uno spam:
  - Vedere l'immagine del profilo: è una foto "normale"? O contiene contenuti non accettati?
  - Vedere il nome utente: è un nome utente "normale"? O sono solo alcune lettere messe insieme?
 
 > **Se non si è sicuri dell'identità dell'utente *non* bisogna confermare ma, piuttosto, scrivere un messaggio taggando un amministratore e spiegando la situazione. Egli procederà alle verifiche più accurate**.
+
+### Privilegi amministratori (AdminList)
+Ecco ciò che si può fare in chat (**solo in chat: i comandi non funzionano nei gruppi**).
+ - Gestire utenti:
+    - Inserire (manualmente) un utente nella WhiteList: `utente aggiungi *USERID*`    
+    - Inserire un utente nella SpamList: `utente blocca *USERID*`
+    - Rimuovere un utente dalla SpamList -> bisognerà procedere, poi, manualmente a "sbloccarli" nei singoli gruppi (da "Gestione gruppo"): `utente sblocca *USERID*`
+- Gestire parole vietate:
+    - Mostrare tutte le parole vietate: `parola mostra`
+    - Aggiungere nuove parole (**tutto in minuscolo**): `parola aggiungi *PAROLA/FRASE*`
+    - Rimuovere delle parole (**tutto in minuscolo**): `parola elimina *PAROLA/FRASE*`
+- Gestire gruppi abilitati:
+    - Mostrare tutti i gruppi abilitati: `gruppo mostra`
+    - Aggiungere un gruppo: `gruppo aggiungi *USERID GRUPPO* *NOME GRUPPO*`
+    - Rimuove un gruppo `gruppo elimina *USERID*`
+- Inviare un messaggio in tutti i gruppo abilitati: `invia messaggio *TESTO MESSAGGIO*`
+
+Esempi:
+
+> utente aggiungi *123456789*
+
+> utente blocca *123456789*
+
+> utente sblocca *12345678*
+
+> parola mostra
+
+> parola aggiungi *parola/frase di esempio*
+
+> parola elimina *parola/frase di esempio*
+
+> gruppo mostra
+
+> gruppo aggiungi *123456789* *Nome Gruppo di esempio*
+
+> gruppo elimina *123456789*
+
+> invia messaggio *Testo messaggio di esempio*
 
 # Librerie utilizzate
 Elenco delle librerie utilizzate nel codice (Python):
