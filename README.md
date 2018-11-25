@@ -11,6 +11,7 @@ Per segnalare errori aprire un nuovo ticket (si prega di aprire un ticket per og
 Grazie a tutti.
 
 # Funzionamento del bot
+**Per poter entrare nel gruppo è necessario impostare un username (altrimenti si viene automaticamente bannati)**
 Il bot si compone di 5 liste:
  - **AdminList** -> gli utenti "amministratori" del bot: hanno gli stessi privilegi degli utenti presenti nella WhiteList ma, inoltre, possono segnalare **manualmente** (o sbloccare, eventualmente) utenti attraverso la chat con il bot in maniera privata.
  - **WhiteList** -> tutti gli utenti *verificati*: essi possono inviare qualunque cosa (testo, file, ecc.) nei gruppi Mozilla Italia (**NEL RISPETTO DEL REGOLAMENTO**)
@@ -45,39 +46,27 @@ Si noti che prima di confermare l'identità è necessario accertarsi che l'utent
 ### Privilegi amministratori (AdminList)
 Ecco ciò che si può fare in chat (**solo in chat: i comandi non funzionano nei gruppi**).
  - Gestire utenti:
-    - Inserire (manualmente) un utente nella WhiteList: `utente aggiungi *USERID*`    
+    - Inserire (manualmente) un utente nella WhiteList: `utente aggiungi *USERID*`
+    > utente aggiungi *123456789*
     - Inserire un utente nella SpamList: `utente blocca *USERID*`
+    > utente blocca *123456789*
     - Rimuovere un utente dalla SpamList -> bisognerà procedere, poi, manualmente a "sbloccarli" nei singoli gruppi (da "Gestione gruppo"): `utente sblocca *USERID*`
+    > utente sblocca *12345678*
 - Gestire parole vietate:
     - Mostrare tutte le parole vietate: `parola mostra`
+    > parola mostra
     - Aggiungere nuove parole (**tutto in minuscolo**): `parola aggiungi *PAROLA/FRASE*`
+    > parola aggiungi *parola/frase di esempio*
     - Rimuovere delle parole (**tutto in minuscolo**): `parola elimina *PAROLA/FRASE*`
+    > parola elimina *parola/frase di esempio*
 - Gestire gruppi abilitati:
     - Mostrare tutti i gruppi abilitati: `gruppo mostra`
+    > gruppo mostra
     - Aggiungere un gruppo: `gruppo aggiungi *USERID GRUPPO* *NOME GRUPPO*`
+    > gruppo aggiungi *123456789* *Nome Gruppo di esempio*
     - Rimuove un gruppo `gruppo elimina *USERID*`
+    > gruppo elimina *123456789*
 - Inviare un messaggio in tutti i gruppo abilitati: `invia messaggio *TESTO MESSAGGIO*`
-
-Esempi:
-
-> utente aggiungi *123456789*
-
-> utente blocca *123456789*
-
-> utente sblocca *12345678*
-
-> parola mostra
-
-> parola aggiungi *parola/frase di esempio*
-
-> parola elimina *parola/frase di esempio*
-
-> gruppo mostra
-
-> gruppo aggiungi *123456789* *Nome Gruppo di esempio*
-
-> gruppo elimina *123456789*
-
 > invia messaggio *Testo messaggio di esempio*
 
 # Librerie utilizzate
