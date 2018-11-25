@@ -10,6 +10,14 @@ Per segnalare errori aprire un nuovo ticket (si prega di aprire un ticket per og
 
 Grazie a tutti.
 
+### Installazione ed esecuzione bot
+Per poter eseguire il codice, quindi far girare il bot, è necessatio seguire i seguenti passaggi (in ordine):
+ - Clonare questa repository (Quindi premere su *Fork* in alto a destra
+ - Installare Python 3 (o verificare di averlo già installato) **sviluppato e testato con Python 3.6.6**, ma dovrebbe funzionare anche con altre versioni
+ - Installare la libreria **telepot**, tramite *pip* (o verificare di averla già installata)
+> pip3 install telepot
+
+
 # Funzionamento del bot
 **Per poter entrare nel gruppo è necessario impostare un username (altrimenti si viene automaticamente bannati)**
 Il bot si compone di 5 liste:
@@ -86,10 +94,6 @@ Ecco ciò che si può fare in chat (**solo in chat: i comandi non funzionano nei
     > gruppo elimina *123456789*
 - Inviare un messaggio in tutti i gruppo abilitati: `invia messaggio *TESTO MESSAGGIO*`
 > invia messaggio *Testo messaggio di esempio*
-
-#Installazione bot
-per installare il bot è necessatio clonare questa repository,avere python 3 installato(testato con >3.6, ma dovrebbe funzionare anche con altre versioni) e installare tramite pip la libreria telepot
-`pip3 install telepot`
 
 # Librerie utilizzate
 Elenco delle librerie utilizzate nel codice (Python):
