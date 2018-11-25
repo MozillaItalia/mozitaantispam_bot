@@ -87,6 +87,10 @@ Ecco ciò che si può fare in chat (**solo in chat: i comandi non funzionano nei
 - Inviare un messaggio in tutti i gruppo abilitati: `invia messaggio *TESTO MESSAGGIO*`
 > invia messaggio *Testo messaggio di esempio*
 
+#Installazione bot
+per installare il bot è necessatio clonare questa repository,avere python 3 installato(testato con >3.6, ma dovrebbe funzionare anche con altre versioni) e installare tramite pip la libreria telepot
+`pip3 install telepot`
+
 # Librerie utilizzate
 Elenco delle librerie utilizzate nel codice (Python):
  - Telepot
