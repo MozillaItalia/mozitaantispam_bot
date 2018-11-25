@@ -19,7 +19,25 @@ Il bot si compone di 5 liste:
  - **TempList** -> tutti gli utenti *non verificati* ma che hanno letto già il Regolamento: possono inviare solamente del testo
  - **SpamList** -> tutti gli utenti *spam* vengono raccolti in questa lista: essi vengono automaticamente cacciati e bannati dai gruppi Mozilla Italia non appena inviano qualcosa
  
+Inoltre sono presenti altre due liste:
+ - **chat_name** -> dove sono racchiusi tutti i gruppi abilitati con il relativo nominativo
+ - **parole_vietate** -> dove sono racchiuse tutte le parole/frasi vietate
+ 
 > Le liste valgono per tutti i gruppi Mozilla Italia (da qui MozIta) e sono unificate, quindi un utente presente nella lista *spam* e già cacciato e bannato in un gruppo MozIta, appena invia qualcosa in un altro gruppo MozIta viene *automaticamente* bannato e cacciato anche da quel gruppo. Così come se un utente è già *verificato* in un gruppo lo è anche in tutti gli altri.
+
+Le liste vengono salvate in file *.json*. I file generati sono i seguenti:
+ - adminlist.json
+ - whitelist.json
+ - blacklist.json
+ - blacklist_name.json
+ - templist.json
+ - templist_name.json
+ - spamlist.json
+ - chat_name.json
+ - parole_vietate.json
+
+Inoltre ogni singolo messaggio viene salvato in un file *.txt* per soli scopi di debug in caso di malfunzionamenti del bot:
+ - history.txt
 
 Il bot funziona in maniera differente in base a se si trova in un *gruppo abilitato* o in una *chat privata*.
 Infatti solo chi è nella AdminList può interagire, in chat privata, con il bot.
