@@ -10,7 +10,7 @@ TOKEN="---NASCOSTO---"
 
 #COPIARE E INCOLLARE DA QUI - IL TOKEN E' GIA' INSERITO
 
-versione="0.3.2 alpha"
+versione="0.3.3 alpha"
 ultimoAggiornamento="02-12-2018"
 
 adminlist_path="adminlist.json"
@@ -205,8 +205,21 @@ def risposte(msg):
                     messaggio["message_id"]=message_id
                     bot.deleteMessage(telepot.message_identifier(messaggio))
                     #Elimina messaggio nel caso in cui risulti proprio uguale a (vedi sopra)
-                    
-                if int(user_id) in SpamList and type_msg!="NI" or controllo_parole_vietate or nousername:
+                
+                if nousername:
+                    messaggio["message_id"]=message_id
+                    bot.deleteMessage(telepot.message_identifier(messaggio))
+                    if not(user_id in AdminList):
+                        SpamList.append(int(user_id))
+                        bot.kickChatMember(chat_id, user_id, until_date=None)
+                        bot.sendMessage(chat_id, "Un utente ("+str(user_id)+") è stato cacciato perché non ha impostato alcun username.")
+                    status_user="S" #SpamList
+                    try:
+                        with open(spamlist_path, "wb") as f:
+                            f.write(json.dumps(SpamList).encode("utf-8"))
+                    except Exception as e:
+                        print("Excep:18 -> "+str(e))
+                elif int(user_id) in SpamList and type_msg!="NI" or controllo_parole_vietate:
                     #print ("Utente spam")
                     #L'utente può essere presente anche in altre liste -> ma se è presente qui viene bloccato e cacciato ugualmente
                     messaggio["message_id"]=message_id
@@ -272,7 +285,7 @@ def risposte(msg):
                         except Exception as e:
                             print("Excep:14 -> "+str(e))
                     else:
-                        bot.sendMessage(chat_id, "Il messaggio non è stato riconosciuto e, pertanto, è stato rimosso.")
+                        #bot.sendMessage(chat_id, "Il messaggio non è stato riconosciuto e, pertanto, è stato rimosso.")
                         bot.deleteMessage(telepot.message_identifier(messaggio))
                         status_user="-"
             else:
