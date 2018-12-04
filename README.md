@@ -8,6 +8,8 @@ Questo progetto è una beta del nuovo bot antispam per i gruppi di Mozilla Itali
 Per segnalare errori aprire un nuovo ticket (si prega di aprire un ticket per ogni errore/idee/bug/ecc, poiché raggrupparli tutti in un unico issue è dispersivo).
 `Il token per accedere al bot diretto è nascosto (per ragioni ovvie).`
 
+> **Per poter funzionare in chat di gruppo, il bot deve essere necessariamente amministratore del gruppo**
+
 Grazie a tutti.
 
 ### Installazione ed esecuzione bot
