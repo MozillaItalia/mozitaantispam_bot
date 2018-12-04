@@ -10,8 +10,8 @@ TOKEN="---NASCOSTO---"
 
 #COPIARE E INCOLLARE DA QUI - IL TOKEN E' GIA' INSERITO
 
-versione="0.3.1 alpha"
-ultimoAggiornamento="25-11-2018"
+versione="0.3.2 alpha"
+ultimoAggiornamento="02-12-2018"
 
 adminlist_path="adminlist.json"
 whitelist_path="whitelist.json"
@@ -189,17 +189,23 @@ def risposte(msg):
                         [InlineKeyboardButton(text='Conferma identità utente', callback_data='/confutente')],
                     ])
 
-        response = bot.getUpdates()
+        #response = bot.getUpdates()
         #print(response)
 
         status_user="-"
-
+        messaggio_benvenuto="@"+str(user_name)+", benvenuto nel gruppo '"+str(nome_gruppo)+"'! Per prima cosa 'Mostra il Regolamento' e leggilo attentamente; è molto breve ma fondamentale!.\nAl momento non puoi inviare messaggi di alcun genere (verranno automaticamente eliminati)."
+        
         controllo_parole_vietate=False
         if any(ext in text.lower() for ext in parole_vietate):
             controllo_parole_vietate=True
 
         try:
             if type_msg!="BIC":
+                if text=="/myuserid@mozita_myuserid_bot" or text=="/start@mozita_antispam_bot":
+                    messaggio["message_id"]=message_id
+                    bot.deleteMessage(telepot.message_identifier(messaggio))
+                    #Elimina messaggio nel caso in cui risulti proprio uguale a (vedi sopra)
+                    
                 if int(user_id) in SpamList and type_msg!="NI" or controllo_parole_vietate or nousername:
                     #print ("Utente spam")
                     #L'utente può essere presente anche in altre liste -> ma se è presente qui viene bloccato e cacciato ugualmente
@@ -240,7 +246,7 @@ def risposte(msg):
                 else:
                     if type_msg=="J":
                         #Nuovo utente
-                        bot.sendMessage(chat_id, "@"+str(user_name)+", benvenuto nel gruppo '"+str(nome_gruppo)+"'! Per prima cosa leggi il 'Regolamento' (è molto breve ma fondamentale!). Al momento sei temporaneamente disabilitato.", reply_markup=new)
+                        bot.sendMessage(chat_id, messaggio_benvenuto, reply_markup=new)
                         BlackList[str(message_id)]=int(user_id)
                         BlackList_name[str(user_id)]=str(user_name)
                         status_user="B"
@@ -253,7 +259,7 @@ def risposte(msg):
                             print("Excep:13 -> "+str(e))
                     elif type_msg!="J" and type_msg!="L":
                         #Utente già presente nel gruppo ma non presente in alcuna lista
-                        bot.sendMessage(chat_id, "@"+str(user_name)+", benvenuto nel gruppo '"+str(nome_gruppo)+"'! Per prima cosa leggi il 'Regolamento' (è molto breve ma fondamentale!). Al momento sei temporaneamente disabilitato.", reply_markup=new)
+                        bot.sendMessage(chat_id, messaggio_benvenuto, reply_markup=new)
                         BlackList[str(message_id)]=int(user_id)
                         BlackList_name[str(user_id)]=str(user_name)
                         bot.deleteMessage(telepot.message_identifier(messaggio))
@@ -279,7 +285,7 @@ def risposte(msg):
                         del BlackList_name[str(BlackList[str(int(message_id)-1)])]
                         del BlackList[str(int(message_id)-1)]
                         status_user="T"
-                        bot.sendMessage(chat_id, "@"+str(user_name)+", ecco qui alcune delle regole principali da seguire.\nTi preghiamo di leggere TUTTO il regolamento: è breve e molto semplice, ma essenziale!\n\nRegole principali:\n1. Avere rispetto di tutti.\n2. Non utilizzare un linguaggio scurrile\n\nOra puoi scrivere dei messaggi di solo testo (NO LINK) finché un altro utente già verificato non conferma la tua identità di UTENTE REALE e non spam.", reply_markup=regolamentoletto)
+                        bot.sendMessage(chat_id, "@"+str(user_name)+", ecco qui alcune delle regole principali da seguire.\nTi preghiamo di leggere TUTTO il regolamento: è breve e molto semplice, ma essenziale!\n\nRegole principali:\n1. Avere rispetto di tutti.\n2. Non utilizzare un linguaggio scurrile\n\nAttualmente puoi scrivere dei messaggi di solo testo (NO LINK) finché un altro utente, già verificato, non conferma la tua identità di UTENTE REALE e non spam.", reply_markup=regolamentoletto)
 
                         try:
                             with open(blacklist_path, "wb") as f:
@@ -300,7 +306,8 @@ def risposte(msg):
                             user_id_temp=int(next((x for x in TempList_name if TempList_name[x] == str(user_name_temp)), None))
                             message_id_temp=int(next((x for x in TempList if TempList[x] == int(user_id_temp)), None))+1
                             #print("Utente da verificare: "+str(TempList[int(message_id_temp)-1]) + "Message id: "+str(message_id_temp))
-                            bot.sendMessage(chat_id, "@"+str(user_name)+" ha confermato @"+str(TempList_name[str(TempList[str(int(message_id_temp)-1)])])+"!")
+                            bot.sendMessage(chat_id, "@"+str(user_name)+" ha confermato @"+str(TempList_name[str(TempList[str(int(message_id_temp)-1)])])+".")
+                            bot.sendMessage(chat_id, "@"+str(TempList_name[str(TempList[str(int(message_id_temp)-1)])])+" ora puoi inviare messaggi di qualsiasi genere, nei limiti del regolamento.\nBenvenuto, ancora una volta, ufficialmente nella comunità Mozilla Italia.")
                             WhiteList.append(int(TempList[str(int(message_id_temp)-1)]))
                             del TempList_name[str(TempList[str(int(message_id_temp)-1)])]
                             del TempList[str(int(message_id_temp)-1)]
