@@ -10,8 +10,8 @@ TOKEN="---NASCOSTO---"
 
 #COPIARE E INCOLLARE DA QUI - IL TOKEN E' GIA' INSERITO
 
-versione="0.3.3 alpha"
-ultimoAggiornamento="02-12-2018"
+versione="0.3.4 alpha"
+ultimoAggiornamento="17-12-2018"
 
 adminlist_path="adminlist.json"
 whitelist_path="whitelist.json"
@@ -177,7 +177,7 @@ def risposte(msg):
     message_id=msg['message_id']
     #print(message_id)
 
-    if str(chat_id) in chat_name:
+    if str(chat_id) in chat_name and msg['chat']['type']!="private":
         #BOT NEI GRUPPI ABILITATI
         nome_gruppo=str(chat_name[str(chat_id)])
 
@@ -365,7 +365,7 @@ def risposte(msg):
             file.close()
         except Exception as e:
             print("Excep:03 -> "+str(e))
-    else:
+    elif msg['chat']['type']=="private":
         #BOT IN CHAT PRIVATA
 
         if user_id in AdminList:
@@ -517,8 +517,12 @@ def risposte(msg):
                         messaggio=' '.join(azione)
                         if len(chat_name)>0:
                             for gruppo_x in chat_name.keys():
-                                bot.sendMessage(gruppo_x, messaggio)
-                                bot.sendMessage(chat_id, "Messaggio inviato in \""+chat_name[gruppo_x]+"\"")
+                                try:
+                                    bot.sendMessage(gruppo_x, messaggio)
+                                    bot.sendMessage(chat_id, "Messaggio inviato in \""+str(chat_name[gruppo_x])+"\"")
+                                except Exception as e:
+                                    print("Excep:05 -> "+str(e))
+                                    bot.sendMessage(chat_id, "Non è stato possibile inviare il messaggio in: "+str(chat_name[gruppo_x]))
                             bot.sendMessage(chat_id, "Messaggio inviato in tutti i gruppi abilitati")
                             esito="OK"
                         else:
@@ -550,6 +554,9 @@ def risposte(msg):
                 print("Excep:03 -> "+str(e))
         else:
             bot.sendMessage(chat_id, "Non sei un amministratore, perciò non puoi interagire con il bot in privato.")
+    else:
+        #BOT IN GRUPPI NON ABILITATI
+        bot.sendMessage(chat_id, "Questo gruppo non è un gruppo abilitato. Se è un gruppo ufficiale di Mozilla Italia contatta un moderatore per ottenere maggiori informazione e per risolvere il problema.")
 
 bot=telepot.Bot(TOKEN)
 MessageLoop(bot, {'chat': risposte, 'callback_query': risposte}).run_as_thread()
