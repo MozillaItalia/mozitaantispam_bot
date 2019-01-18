@@ -1,0 +1,4 @@
+config.ini
+*.zip
+*pycache*
+.vs\*

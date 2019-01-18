@@ -5,13 +5,25 @@ from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 from datetime import datetime
 import json
 from pathlib import Path
+from configparser import ConfigParser
+import os
 
-TOKEN="---NASCOSTO---"
+if not os.path.isfile("config.ini"):
+    print("Il file di configurazione non è presente. Rinomina il file 'config-sample.ini' in 'config.ini' e inserisci il token.")
+    #exit()
 
-#COPIARE E INCOLLARE DA QUI - IL TOKEN E' GIA' INSERITO
+script_path = os.path.dirname(os.path.realpath(__file__))
+config_parser = ConfigParser()
+config_parser.read(os.path.join(script_path,"config.ini"))
 
-versione="0.3.4 alpha"
-ultimoAggiornamento="17-12-2018"
+TOKEN=config_parser.get("access","token")
+
+if TOKEN == "":
+    print("Token non presente.")
+    #exit()
+
+versione="0.3.5 alpha"
+ultimoAggiornamento="18-01-2019"
 
 adminlist_path="adminlist.json"
 whitelist_path="whitelist.json"
@@ -151,7 +163,7 @@ def risposte(msg):
     elif "sticker" in msg:
         #EVENTO STICKER
         type_msg="S" #Stiker
-        text=""
+        text="(sticker) "+msg["sticker"]["emoji"]
     elif "animation" in msg:
         #EVENTO GIF
         type_msg="G" #Gif
@@ -160,6 +172,8 @@ def risposte(msg):
         #EVENTO NON CATTURA/GESTITO -> ELIMINARE AUTOMATICAMENTE IL MESSAGGIO
         text="--Testo non identificato--"
         type_msg="NI" #Not Identified
+
+    ##type_msg="NotAllowed"
 
     user_id=msg['from']['id']
     #print(user_id)
@@ -176,6 +190,9 @@ def risposte(msg):
     #print(chat_id)
     message_id=msg['message_id']
     #print(message_id)
+    
+    #response = bot.getUpdates()
+    #print(response)
 
     if str(chat_id) in chat_name and msg['chat']['type']!="private":
         #BOT NEI GRUPPI ABILITATI
@@ -188,9 +205,6 @@ def risposte(msg):
                         [InlineKeyboardButton(text='Leggi il Regolamento completo', url='https://github.com/Sav22999/Guide/blob/master/Mozilla%20Italia/Telegram/regolamento.md')],
                         [InlineKeyboardButton(text='Conferma identità utente', callback_data='/confutente')],
                     ])
-
-        #response = bot.getUpdates()
-        #print(response)
 
         status_user="-"
         messaggio_benvenuto="@"+str(user_name)+", benvenuto nel gruppo '"+str(nome_gruppo)+"'! Per prima cosa 'Mostra il Regolamento' e leggilo attentamente; è molto breve ma fondamentale!.\nAl momento non puoi inviare messaggi di alcun genere (verranno automaticamente eliminati)."
@@ -557,6 +571,7 @@ def risposte(msg):
     else:
         #BOT IN GRUPPI NON ABILITATI
         bot.sendMessage(chat_id, "Questo gruppo non è un gruppo abilitato. Se è un gruppo ufficiale di Mozilla Italia contatta un moderatore per ottenere maggiori informazione e per risolvere il problema.")
+        print("\n|| -- GRUPPO NON ABILITATO: "+str(chat_id)+" -- ||\n")
 
 bot=telepot.Bot(TOKEN)
 MessageLoop(bot, {'chat': risposte, 'callback_query': risposte}).run_as_thread()
