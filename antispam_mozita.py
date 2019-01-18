@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import telepot
 import time
 from telepot.loop import MessageLoop
