@@ -10,7 +10,7 @@ import os
 
 if not os.path.isfile("config.ini"):
     print("Il file di configurazione non è presente. Rinomina il file 'config-sample.ini' in 'config.ini' e inserisci il token.")
-    #exit()
+    exit()
 
 script_path = os.path.dirname(os.path.realpath(__file__))
 config_parser = ConfigParser()
@@ -20,7 +20,7 @@ TOKEN=config_parser.get("access","token")
 
 if TOKEN == "":
     print("Token non presente.")
-    #exit()
+    exit()
 
 versione="0.3.5 alpha"
 ultimoAggiornamento="18-01-2019"
