@@ -1,4 +1,4 @@
-﻿import telepot
+import telepot
 import time
 from telepot.loop import MessageLoop
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
