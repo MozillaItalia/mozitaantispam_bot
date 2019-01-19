@@ -23,9 +23,10 @@ if TOKEN == "":
     print("Token non presente.")
     exit()
 
-versione="0.3.5 alpha"
-ultimoAggiornamento="18-01-2019"
+versione="0.3.6 alpha"
+ultimoAggiornamento="19-01-2019"
 
+user_id_IRCbot="000000000" #user_id del bot IRC mozilla italia
 adminlist_path="adminlist.json"
 whitelist_path="whitelist.json"
 blacklist_path="blacklist.json"
@@ -170,7 +171,7 @@ def risposte(msg):
         type_msg="G" #Gif
         text=""
     else:
-        #EVENTO NON CATTURA/GESTITO -> ELIMINARE AUTOMATICAMENTE IL MESSAGGIO
+        #EVENTO NON CATTURA/GESTITO -> ELIMINARE AUTOMATICAMENTE IL MESSAGGIO.
         text="--Testo non identificato--"
         type_msg="NI" #Not Identified
 
@@ -216,18 +217,18 @@ def risposte(msg):
 
         try:
             if type_msg!="BIC":
-                if text=="/myuserid@mozita_myuserid_bot" or text=="/start@mozita_antispam_bot":
+                #Se si vuole solamente eliminare un messaggio in base a una specifica condizione
+                if type=="NI":
                     messaggio["message_id"]=message_id
                     bot.deleteMessage(telepot.message_identifier(messaggio))
                     #Elimina messaggio nel caso in cui risulti proprio uguale a (vedi sopra)
                 
-                if nousername:
+                if nousername and not (int(user_id) in WhiteList or int(user_id) in AdminList):
                     messaggio["message_id"]=message_id
                     bot.deleteMessage(telepot.message_identifier(messaggio))
-                    if not(user_id in AdminList):
-                        SpamList.append(int(user_id))
-                        bot.kickChatMember(chat_id, user_id, until_date=None)
-                        bot.sendMessage(chat_id, "Un utente ("+str(user_id)+") è stato cacciato perché non ha impostato alcun username.")
+                    SpamList.append(int(user_id))
+                    bot.kickChatMember(chat_id, user_id, until_date=None)
+                    bot.sendMessage(chat_id, "Un utente ("+str(user_id)+") è stato cacciato perché non ha impostato alcun username.")
                     status_user="S" #SpamList
                     try:
                         with open(spamlist_path, "wb") as f:
@@ -239,10 +240,14 @@ def risposte(msg):
                     #L'utente può essere presente anche in altre liste -> ma se è presente qui viene bloccato e cacciato ugualmente
                     messaggio["message_id"]=message_id
                     bot.deleteMessage(telepot.message_identifier(messaggio))
-                    if not(user_id in AdminList):
+                    if not(user_id in AdminList) and not(user_id == user_id_IRCbot):
                         SpamList.append(int(user_id))
                         bot.kickChatMember(chat_id, user_id, until_date=None)
-                        bot.sendMessage(chat_id, "@"+str(user_name)+" è stato cacciato perché identificato come utente spam.")
+                        if nousername:
+                            username_utente_cacciato=str(user_id)
+                        else:
+                            username_utente_cacciato="@"+str(user_name)
+                        bot.sendMessage(chat_id, username_utente_cacciato+" è stato cacciato perché identificato come utente spam.")
                     status_user="S" #SpamList
                     try:
                         with open(spamlist_path, "wb") as f:
@@ -253,7 +258,7 @@ def risposte(msg):
                     #print ("Utente admin!")
                     #bot.sendMessage(chat_id, "@"+str(user_name)+" è un utente admin !")
                     status_user="A" #AdminList
-                elif (int(user_id) in WhiteList or int(user_id) in AdminList) and type_msg!="NI" and not controllo_parole_vietate:
+                elif int(user_id) in WhiteList and type_msg!="NI" and not controllo_parole_vietate:
                     #print ("Utente verificato!")
                     #bot.sendMessage(chat_id, "@"+str(user_name)+" è un utente verificato !")
                     status_user="W" #WhiteList
