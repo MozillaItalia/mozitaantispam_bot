@@ -2,3 +2,4 @@ config.ini
 *.zip
 *pycache*
 .vs\*
+history.txt
