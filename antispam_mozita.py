@@ -23,10 +23,10 @@ if TOKEN == "":
     print("Token non presente.")
     exit()
 
-versione="0.3.6 alpha"
-ultimoAggiornamento="19-01-2019"
+versione="1.0.1"
+ultimoAggiornamento="27-01-2019"
 
-print(f"Versione: {versione} - Aggiornamento: {ultimoAggiornamento}")
+print("Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento)
 
 user_id_IRCbot="000000000" #user_id del bot IRC mozilla italia
 adminlist_path="adminlist.json"
