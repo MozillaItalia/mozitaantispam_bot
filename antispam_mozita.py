@@ -26,6 +26,8 @@ if TOKEN == "":
 versione="0.3.6 alpha"
 ultimoAggiornamento="19-01-2019"
 
+print(f"Versione: {versione} - Aggiornamento: {ultimoAggiornamento}")
+
 user_id_IRCbot="000000000" #user_id del bot IRC mozilla italia
 adminlist_path="adminlist.json"
 whitelist_path="whitelist.json"
