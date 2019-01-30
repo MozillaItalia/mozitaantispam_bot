@@ -23,8 +23,8 @@ if TOKEN == "":
     print("Token non presente.")
     exit()
 
-versione = "1.0.1"
-ultimoAggiornamento = "27-01-2019"
+versione = "1.0.2"
+ultimoAggiornamento = "31-01-2019"
 
 print("Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento)
 
@@ -217,7 +217,7 @@ def risposte(msg):
 
         status_user = "-"
         messaggio_benvenuto = "@"+str(user_name)+", benvenuto nel gruppo '"+str(nome_gruppo) + \
-            "'! Per prima cosa 'Mostra il Regolamento' e leggilo attentamente; è molto breve ma fondamentale!.\nAl momento non puoi inviare messaggi di alcun genere (verranno automaticamente eliminati)."
+            "'! Per prima cosa 'Mostra il Regolamento' e leggilo attentamente; è molto breve ma fondamentale!\nAl momento non puoi inviare messaggi di alcun genere (verranno automaticamente eliminati)."
 
         controllo_parole_vietate = False
         if any(ext in text.lower() for ext in parole_vietate):
