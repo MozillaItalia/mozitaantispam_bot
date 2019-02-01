@@ -23,8 +23,8 @@ if TOKEN == "":
     print("Token non presente.")
     exit()
 
-versione = "1.0.2"
-ultimoAggiornamento = "31-01-2019"
+versione = "1.0.3"
+ultimoAggiornamento = "01-02-2019"
 
 print("Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento)
 
@@ -205,19 +205,18 @@ def risposte(msg):
         nome_gruppo = str(chat_name[str(chat_id)])
 
         new = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text='Mostra Regolamento',
+            [InlineKeyboardButton(text='Mostra Regolamento ⏬',
                                   callback_data="/leggiregolamento")],
         ])
         regolamentoletto = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text='Leggi il Regolamento completo',
+            [InlineKeyboardButton(text='Leggi il Regolamento completo 📙',
                                   url='https://github.com/Sav22999/Guide/blob/master/Mozilla%20Italia/Telegram/regolamento.md')],
             [InlineKeyboardButton(
-                text='Conferma identità utente', callback_data='/confutente')],
+                text='Conferma identità utente ☑️', callback_data='/confutente')],
         ])
 
         status_user = "-"
-        messaggio_benvenuto = "@"+str(user_name)+", benvenuto nel gruppo '"+str(nome_gruppo) + \
-            "'! Per prima cosa 'Mostra il Regolamento' e leggilo attentamente; è molto breve ma fondamentale!\nAl momento non puoi inviare messaggi di alcun genere (verranno automaticamente eliminati)."
+        messaggio_benvenuto = "@"+str(user_name)+", benvenuto nel gruppo '"+str(nome_gruppo) + "'! Per prima cosa 'Mostra il Regolamento' e leggilo attentamente; è molto breve ma fondamentale!\nAl momento non puoi inviare messaggi di alcun genere (verranno automaticamente eliminati)."
 
         controllo_parole_vietate = False
         if any(ext in text.lower() for ext in parole_vietate):
@@ -256,8 +255,7 @@ def risposte(msg):
                             username_utente_cacciato = str(user_id)
                         else:
                             username_utente_cacciato = "@"+str(user_name)
-                        bot.sendMessage(chat_id, username_utente_cacciato +
-                                        " è stato cacciato perché identificato come utente spam.")
+                        bot.sendMessage(chat_id, "‼️ " + username_utente_cacciato + " è stato cacciato perché identificato come utente spam.")
                     status_user = "S"  # SpamList
                     try:
                         with open(spamlist_path, "wb") as f:
@@ -365,10 +363,9 @@ def risposte(msg):
                             message_id_temp = int(
                                 next((x for x in TempList if TempList[x] == int(user_id_temp)), None))+1
                             #print("Utente da verificare: "+str(TempList[int(message_id_temp)-1]) + "Message id: "+str(message_id_temp))
-                            bot.sendMessage(chat_id, "@"+str(user_name)+" ha confermato @"+str(
+                            bot.sendMessage(chat_id, "✅ @"+str(user_name)+" ha confermato @"+str(
                                 TempList_name[str(TempList[str(int(message_id_temp)-1)])])+".")
-                            bot.sendMessage(chat_id, "@"+str(TempList_name[str(TempList[str(int(message_id_temp)-1)])]) +
-                                            " ora puoi inviare messaggi di qualsiasi genere, nei limiti del regolamento.\nBenvenuto, ancora una volta, ufficialmente nella comunità Mozilla Italia.")
+                            bot.sendMessage(chat_id, "@"+str(TempList_name[str(TempList[str(int(message_id_temp)-1)])]) + " ora puoi inviare messaggi di qualsiasi genere, nei limiti del Regolamento 📙.\nBenvenuto, ancora una volta, ufficialmente nella comunità Mozilla Italia 🇮🇹.")
                             WhiteList.append(
                                 int(TempList[str(int(message_id_temp)-1)]))
                             del TempList_name[str(
@@ -644,7 +641,7 @@ def risposte(msg):
                 chat_id, "Non sei un amministratore, perciò non puoi interagire con il bot in privato.")
     else:
         # BOT IN GRUPPI NON ABILITATI
-        bot.sendMessage(chat_id, "Questo gruppo non è un gruppo abilitato. Se è un gruppo ufficiale di Mozilla Italia contatta un moderatore per ottenere maggiori informazione e per risolvere il problema.")
+        bot.sendMessage(chat_id, "Questo gruppo non è un gruppo abilitato 🚫. Se è un gruppo ufficiale di Mozilla Italia contatta un moderatore per ottenere maggiori informazione e per risolvere il problema.")
         print("\n|| -- GRUPPO NON ABILITATO: "+str(chat_id)+" -- ||\n")
 
 
