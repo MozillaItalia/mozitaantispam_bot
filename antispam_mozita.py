@@ -23,7 +23,7 @@ if TOKEN == "":
     print("Token non presente.")
     exit()
 
-versione = "1.1.1"
+versione = "1.1.2"
 ultimoAggiornamento = "02-02-2019"
 
 print("Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento)
@@ -420,7 +420,8 @@ def risposte(msg):
                     lk = True
                     esito = "OK"
                 elif text == "/help" and type_msg == "LK":
-                    bot.sendMessage(chat_id, "Elenco azioni disponibili:\n - utente aggiungi |USERID|\n - utente blocca |USERID|\n - utente sblocca |USERID|\n - parola mostra\n - parola aggiungi |PAROLA/FRASE|\n - parola elimina |PAROLA/FRASE|\n - gruppo mostra\n - gruppo aggiungi |USERID| |NOME GRUPPO|\n - gruppo elimina |USERID|\n - invia messaggio |TESTO MESSAGGIO|\n\nMozIta Antispam Bot è stato sviluppato da Saverio Morelli @Sav2299 con il grandissimo supporto e aiuto di Damiano Gualandri @dag7dev e Simone Massaro @mone27.")
+                    bot.sendMessage(chat_id, "Elenco azioni disponibili:\n - utente aggiungi |USERID|\n - utente blocca |USERID|\n - utente sblocca |USERID|\n - parola mostra\n - parola aggiungi |PAROLA/FRASE|\n - parola elimina |PAROLA/FRASE|\n - gruppo mostra\n - gruppo aggiungi |USERID| |NOME GRUPPO|\n - gruppo elimina |USERID|\n - invia messaggio |TESTO MESSAGGIO|")
+                    bot.sendMessage(chat_id, "MozIta Antispam Bot è stato sviluppato da Saverio Morelli @Sav2299 con il grandissimo supporto e aiuto di Damiano Gualandri @dag7dev e Simone Massaro @mone27.\n\n"+"Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento)
                     lk = True
                     esito = "OK"
 
@@ -627,8 +628,8 @@ def risposte(msg):
             except Exception as e:
                 print("Excep:03 -> "+str(e))
         else:
-            bot.sendMessage(
-                chat_id, "Non sei un amministratore, perciò non puoi interagire con il bot in privato.")
+            bot.sendMessage(chat_id, "Non sei un amministratore, perciò non puoi interagire con il bot in privato.")
+            bot.sendMessage(chat_id, "MozIta Antispam Bot è stato sviluppato da Saverio Morelli @Sav2299 con il grandissimo supporto e aiuto di Damiano Gualandri @dag7dev e Simone Massaro @mone27.\n\n"+"Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento)
     else:
         # BOT IN GRUPPI NON ABILITATI
         bot.sendMessage(chat_id, "Questo gruppo non è un gruppo abilitato 🚫. Se è un gruppo ufficiale di Mozilla Italia contatta un moderatore per ottenere maggiori informazione e per risolvere il problema.\n\nChat id: "+str(chat_id))
