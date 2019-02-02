@@ -23,7 +23,7 @@ if TOKEN == "":
     print("Token non presente.")
     exit()
 
-versione = "1.1.0"
+versione = "1.1.1"
 ultimoAggiornamento = "02-02-2019"
 
 print("Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento)
@@ -187,7 +187,7 @@ def risposte(msg):
     if "username" in msg['from']:
         user_name = msg['from']['username']
     else:
-        user_name = "[*NessunUsername*]"
+        user_name = "[*NessunUsername*]"+str(user_id)
         nousername = True
     # print(user_name)
     if not "chat" in msg:
@@ -233,7 +233,7 @@ def risposte(msg):
                     messaggio["message_id"] = message_id
                     bot.deleteMessage(telepot.message_identifier(messaggio))
                     # Elimina messaggio nel caso in cui risulti proprio uguale a (vedi sopra)
-                    
+
                 if int(user_id) in SpamList and type_msg != "NI" or controllo_parole_vietate:
                     #print ("Utente spam")
                     # L'utente può essere presente anche in altre liste -> ma se è presente qui viene bloccato e cacciato ugualmente
@@ -286,8 +286,7 @@ def risposte(msg):
                             with open(blacklist_path, "wb") as f:
                                 f.write(json.dumps(BlackList).encode("utf-8"))
                             with open(blacklist_name_path, "wb") as f:
-                                f.write(json.dumps(
-                                    BlackList_name).encode("utf-8"))
+                                f.write(json.dumps(BlackList_name).encode("utf-8"))
                         except Exception as e:
                             print("Excep:13 -> "+str(e))
                     elif type_msg != "J" and type_msg != "L":
