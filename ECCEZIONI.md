@@ -18,3 +18,5 @@ Questo è l'elenco delle eccezioni gestite nel bot, con la relativa descrizione:
  - 16: Errore salvataggio file .json generico
  - 17: Errore assegnazione stringa utilizzata per il salvataggio della "history.txt"
  - 18: Errore salvataggio file "SpamList.json"
+ - 19: ChatId non è un valore corretto (in gruppo aggiungi)
+ - 20: ChatId non è un valore corretto (in gruppo elimina)

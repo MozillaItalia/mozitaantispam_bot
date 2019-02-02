@@ -21,7 +21,7 @@ Per poter eseguire il codice, quindi far girare il bot, è necessario seguire i 
 
 
 # Funzionamento del bot
-**Per poter entrare nel gruppo è necessario impostare un username (altrimenti si viene automaticamente bannati)**
+_Per poter entrare nel gruppo è consigliato impostare un username_
 Il bot si compone di 5 liste:
  - **AdminList** -> gli utenti "amministratori" del bot: hanno gli stessi privilegi degli utenti presenti nella WhiteList ma, inoltre, possono segnalare **manualmente** (o sbloccare, eventualmente) utenti attraverso la chat con il bot in maniera privata.
  - **WhiteList** -> tutti gli utenti *verificati*: essi possono inviare qualunque cosa (testo, file, ecc.) nei gruppi Mozilla Italia (**NEL RISPETTO DEL REGOLAMENTO**)
