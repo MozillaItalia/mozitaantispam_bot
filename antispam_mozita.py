@@ -23,8 +23,8 @@ if TOKEN == "":
     print("Token non presente.")
     exit()
 
-versione = "1.1.2"
-ultimoAggiornamento = "02-02-2019"
+versione = "1.1.3"
+ultimoAggiornamento = "05-02-2019"
 
 print("Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento)
 
@@ -357,7 +357,7 @@ def risposte(msg):
                                 username_utente_nousername_temp = "@"+str(TempList_name[str(TempList[str(int(message_id_temp)-1)])])
                             #print("Utente da verificare: "+str(TempList[int(message_id_temp)-1]) + "Message id: "+str(message_id_temp))
                             bot.sendMessage(chat_id, "✅ "+username_utente_nousername+" ha confermato "+username_utente_nousername_temp+".", parse_mode="Markdown")
-                            bot.sendMessage(chat_id, username_utente_nousername_temp+" ora puoi inviare messaggi di qualsiasi genere, nei limiti del Regolamento 📙.\nBenvenuto, ancora una volta, ufficialmente nella comunità Mozilla Italia 🇮🇹.", parse_mode="Markdown")
+                            bot.sendMessage(chat_id, username_utente_nousername_temp+" ora puoi inviare messaggi di qualsiasi genere, nei limiti del [Regolamento](https://github.com/Sav22999/Guide/blob/master/Mozilla%20Italia/Telegram/regolamento.md) 📙.\nBenvenuto, ancora una volta, ufficialmente nella comunità Mozilla Italia 🇮🇹.", parse_mode="Markdown")
                             WhiteList.append(int(TempList[str(int(message_id_temp)-1)]))
                             del TempList_name[str(TempList[str(int(message_id_temp)-1)])]
                             del TempList[str(int(message_id_temp)-1)]
