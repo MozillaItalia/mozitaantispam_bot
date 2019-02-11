@@ -23,8 +23,8 @@ if TOKEN == "":
     print("Token non presente.")
     exit()
 
-versione = "1.1.3"
-ultimoAggiornamento = "05-02-2019"
+versione = "1.1.4"
+ultimoAggiornamento = "11-02-2019"
 
 print("Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento)
 
@@ -174,21 +174,42 @@ def risposte(msg):
         # EVENTO GIF
         type_msg = "G"  # Gif
         text = ""
+    elif "new_chat_photo" in msg:
+        # EVENTO IMMAGINE CHAT AGGIORNATA
+        type_msg = "NCP" # New Chat Photo
+        text="|| Immagine chat aggiornata ||"
     else:
         # EVENTO NON CATTURA/GESTITO -> ELIMINARE AUTOMATICAMENTE IL MESSAGGIO.
         text = "--Testo non identificato--"
         type_msg = "NI"  # Not Identified
 
-    # type_msg="NotAllowed"
-
-    user_id = msg['from']['id']
-    # print(user_id)
-    nousername = False
-    if "username" in msg['from']:
-        user_name = msg['from']['username']
+    if type_msg=="J" and not (msg['from']['id']==msg['new_chat_participant']['id']):
+        user_id = msg['new_chat_participant']['id']
+        nousername = False
+        if "username" in msg['new_chat_participant']:
+            user_name = msg['new_chat_participant']['username']
+        else:
+            user_name = "[*NessunUsername*]"+str(user_id)
+            nousername = True
+        text="|| Un utente è stato aggiunto ||"
+    elif type_msg=="L" and not (msg['from']['id']==msg['left_chat_participant']['id']):
+        user_id = msg['left_chat_participant']['id']
+        nousername = False
+        if "username" in msg['left_chat_participant']:
+            user_name = msg['left_chat_participant']['username']
+        else:
+            user_name = "[*NessunUsername*]"+str(user_id)
+            nousername = True
+        text="|| Un utente è stato rimosso ||"
     else:
-        user_name = "[*NessunUsername*]"+str(user_id)
-        nousername = True
+        user_id = msg['from']['id']
+        nousername = False
+        if "username" in msg['from']:
+            user_name = msg['from']['username']
+        else:
+            user_name = "[*NessunUsername*]"+str(user_id)
+            nousername = True
+    # print(user_id)
     # print(user_name)
     if not "chat" in msg:
         msg = msg["message"]
@@ -198,7 +219,7 @@ def risposte(msg):
     # print(message_id)
 
     #response = bot.getUpdates()
-    # print(response)
+    #print(response)
 
     if str(chat_id) in chat_name and msg['chat']['type'] != "private":
         # BOT NEI GRUPPI ABILITATI
@@ -220,6 +241,7 @@ def risposte(msg):
             username_utente_nousername = "["+str(user_id)+"](tg://user?id="+str(user_id)+")"
         else:
             username_utente_nousername = "@"+str(user_name)
+        
         messaggio_benvenuto = username_utente_nousername+", benvenuto nel gruppo '"+str(nome_gruppo) + "'! Per prima cosa 'Mostra il Regolamento' e leggilo attentamente; è molto breve ma fondamentale!\nAl momento non puoi inviare messaggi di alcun genere (verranno automaticamente eliminati)."
 
         controllo_parole_vietate = False
@@ -247,12 +269,14 @@ def risposte(msg):
                         else:
                             username_utente_nousername = "@"+str(user_name)
                         bot.sendMessage(chat_id, "‼️ " + username_utente_nousername + " è stato cacciato perché identificato come utente spam.")
-                    status_user = "S"  # SpamList
-                    try:
-                        with open(spamlist_path, "wb") as f:
-                            f.write(json.dumps(SpamList).encode("utf-8"))
-                    except Exception as e:
-                        print("Excep:04 -> "+str(e))
+                        status_user = "S"  # SpamList
+                        try:
+                            with open(spamlist_path, "wb") as f:
+                                f.write(json.dumps(SpamList).encode("utf-8"))
+                        except Exception as e:
+                            print("Excep:04 -> "+str(e))
+                    if(user_id in AdminList):
+                        status_user = "A"
                 elif (int(user_id) in AdminList and int(user_id) in WhiteList) and type_msg != "NI" and not controllo_parole_vietate:
                     #print ("Utente admin!")
                     #bot.sendMessage(chat_id, "@"+str(user_name)+" è un utente admin !")
@@ -275,6 +299,8 @@ def risposte(msg):
                         if type_msg != "J" and type_msg != "L":
                             bot.deleteMessage(telepot.message_identifier(messaggio))
                     status_user = "T"  # TempList
+                elif type_msg=="NCP":
+                    status_user = "-"
                 else:
                     if type_msg == "J":
                         # Nuovo utente
@@ -304,9 +330,11 @@ def risposte(msg):
                         except Exception as e:
                             print("Excep:14 -> "+str(e))
                     else:
-                        #bot.sendMessage(chat_id, "Il messaggio non è stato riconosciuto e, pertanto, è stato rimosso.")
-                        bot.deleteMessage(telepot.message_identifier(messaggio))
-                        status_user = "-"
+                        # Messaggio non riconosciuto
+                        # bot.sendMessage(chat_id, "Il messaggio non è stato riconosciuto e, pertanto, è stato rimosso.")
+                        if type_msg != "J" and type_msg != "L":
+                            bot.deleteMessage(telepot.message_identifier(messaggio))
+                            status_user = "-"
             else:
                 if text == "/leggiregolamento" and type_msg == "BIC":
                     if user_id == int(BlackList[str(int(message_id)-1)]):
