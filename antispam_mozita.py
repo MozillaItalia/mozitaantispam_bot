@@ -23,7 +23,7 @@ if TOKEN == "":
     print("Token non presente.")
     exit()
 
-versione = "1.1.4"
+versione = "1.1.5"
 ultimoAggiornamento = "11-02-2019"
 
 print("Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento)
@@ -251,7 +251,7 @@ def risposte(msg):
         try:
             if type_msg != "BIC":
                 # Se si vuole solamente eliminare un messaggio in base a una specifica condizione
-                if type == "NI":
+                if type_msg == "NI":
                     messaggio["message_id"] = message_id
                     bot.deleteMessage(telepot.message_identifier(messaggio))
                     # Elimina messaggio nel caso in cui risulti proprio uguale a (vedi sopra)
@@ -418,8 +418,7 @@ def risposte(msg):
                 dettagli += "(modificato) "
             if risposta:
                 dettagli += "(risposta) "
-            stampa = "Id Msg: "+str(message_id)+"  --  "+str(localtime)+"  --  Utente: "+str(user_name)+" ("+str(user_id)+")["+str(status_user)+"]  --  Gruppo: "+str(
-                nome_gruppo)+"("+str(chat_id)+")\n >> >> Tipo messaggio: "+str(type_msg)+"\n >> >> Contenuto messaggio: "+str(dettagli)+str(text)+"\n--------------------\n"
+            stampa = "Id Msg: "+str(message_id)+"  --  "+str(localtime)+"  --  Utente: "+str(user_name)+" ("+str(user_id)+")["+str(status_user)+"]  --  Gruppo: "+str(nome_gruppo)+"("+str(chat_id)+")\n >> >> Tipo messaggio: "+str(type_msg)+"\n >> >> Contenuto messaggio: "+str(dettagli)+str(text)+"\n--------------------\n"
             print(stampa)
         except Exception as e:
             stampa = "Excep:02 -> "+str(e)+"\n--------------------\n"
