@@ -23,7 +23,7 @@ if TOKEN == "":
     print("Token non presente.")
     exit()
 
-versione = "1.1.6"
+versione = "1.1.7"
 ultimoAggiornamento = "17-02-2019"
 
 print("Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento)
@@ -56,6 +56,7 @@ else:
 
 def risposte(msg):
     localtime = datetime.now()
+    data_salvataggio = localtime.strftime("%Y_%m_%d")
     localtime = localtime.strftime("%d/%m/%y %H:%M:%S")
     messaggio = msg
     type_msg = "NM"  # Normal Message
@@ -421,8 +422,14 @@ def risposte(msg):
             print(stampa)
 
         try:
+            if(os.path.exists("./history_mozitaantispam")==False):
+                os.mkdir("./history_mozitaantispam")
+        except Exception as e:
+            print("Excep:21 -> "+str(e))
+
+        try:
             # apre il file in scrittura "append" per inserire orario e data -> log di utilizzo del bot (ANONIMO)
-            file = open("history.txt", "a", -1, "UTF-8")
+            file = open("./history_mozitaantispam/log_"+str(data_salvataggio)+".txt", "a", -1, "UTF-8")
             # ricordare che l'orario è in fuso orario UTC pari a 0 (Greenwich, Londra) - mentre l'Italia è a +1 (CET) o +2 (CEST - estate)
             file.write(stampa)
             file.close()
@@ -645,14 +652,21 @@ def risposte(msg):
             except Exception as e:
                 stampa = "Excep:17 -> "+str(e)+"\n--------------------\n"
                 print(stampa)
+
+            try:
+                if(os.path.exists("./history_mozitaantispam")==False):
+                    os.mkdir("./history_mozitaantispam")
+            except Exception as e:
+                print("Excep:22 -> "+str(e))
+
             try:
                 # apre il file in scrittura "append" per inserire orario e data -> log di utilizzo del bot (ANONIMO)
-                file = open("history.txt", "a", -1, "UTF-8")
+                file = open("./history_mozitaantispam/log_"+str(data_salvataggio)+".txt", "a", -1, "UTF-8")
                 # ricordare che l'orario è in fuso orario UTC pari a 0 (Greenwich, Londra) - mentre l'Italia è a +1 (CET) o +2 (CEST - estate)
                 file.write(stampa)
                 file.close()
             except Exception as e:
-                print("Excep:03 -> "+str(e))
+                print("Excep:23 -> "+str(e))
         else:
             bot.sendMessage(chat_id, "Non sei un amministratore, perciò non puoi interagire con il bot in privato.")
             bot.sendMessage(chat_id, messaggio_sviluppatore_versione_aggiornamento)
@@ -663,8 +677,7 @@ def risposte(msg):
 
 
 bot = telepot.Bot(TOKEN)
-MessageLoop(
-    bot, {'chat': risposte, 'callback_query': risposte}).run_as_thread()
+MessageLoop(bot, {'chat': risposte, 'callback_query': risposte}).run_as_thread()
 
 while 1:
     time.sleep(1)

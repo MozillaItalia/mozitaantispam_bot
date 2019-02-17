@@ -2,10 +2,10 @@ config.ini
 *.zip
 *pycache*
 .vs\*
-history.txt
 blacklist.json
 blacklist_name.json
 templist.json
 templist_name.json
 whitelist.json
 chat_name.json
+history_mozitaantispam/*
