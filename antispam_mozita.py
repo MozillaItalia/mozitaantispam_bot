@@ -217,8 +217,8 @@ def risposte(msg):
     message_id = msg['message_id']
     # print(message_id)
 
-    response = bot.getUpdates()
-    print(response)
+    #response = bot.getUpdates()
+    #print(response)
 
     if str(chat_id) in chat_name and msg['chat']['type'] != "private":
         # BOT NEI GRUPPI ABILITATI
