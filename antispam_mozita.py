@@ -23,12 +23,11 @@ if TOKEN == "":
     print("Token non presente.")
     exit()
 
-versione = "1.1.5"
-ultimoAggiornamento = "11-02-2019"
+versione = "1.1.6"
+ultimoAggiornamento = "17-02-2019"
 
 print("Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento)
 
-user_id_IRCbot = "000000000"  # user_id del bot IRC mozilla italia
 adminlist_path = "adminlist.json"
 whitelist_path = "whitelist.json"
 blacklist_path = "blacklist.json"
@@ -218,22 +217,19 @@ def risposte(msg):
     message_id = msg['message_id']
     # print(message_id)
 
-    #response = bot.getUpdates()
-    #print(response)
+    response = bot.getUpdates()
+    print(response)
 
     if str(chat_id) in chat_name and msg['chat']['type'] != "private":
         # BOT NEI GRUPPI ABILITATI
         nome_gruppo = str(chat_name[str(chat_id)])
 
         new = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text='Mostra Regolamento ⏬',
-                                  callback_data="/leggiregolamento")],
+            [InlineKeyboardButton(text='Mostra Regolamento ⏬',callback_data="/leggiregolamento")],
         ])
         regolamentoletto = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text='Leggi il Regolamento completo 📙',
-                                  url='https://github.com/Sav22999/Guide/blob/master/Mozilla%20Italia/Telegram/regolamento.md')],
-            [InlineKeyboardButton(
-                text='Conferma identità utente ☑️', callback_data='/confutente')],
+            [InlineKeyboardButton(text='Leggi il Regolamento completo 📙',url='https://github.com/Sav22999/Guide/blob/master/Mozilla%20Italia/Telegram/regolamento.md')],
+            [InlineKeyboardButton(text='Conferma identità utente ☑️', callback_data='/confutente')],
         ])
 
         status_user = "-"
@@ -261,7 +257,7 @@ def risposte(msg):
                     # L'utente può essere presente anche in altre liste -> ma se è presente qui viene bloccato e cacciato ugualmente
                     messaggio["message_id"] = message_id
                     bot.deleteMessage(telepot.message_identifier(messaggio))
-                    if not(user_id in AdminList) and not(user_id == user_id_IRCbot):
+                    if not(user_id in AdminList):
                         SpamList.append(int(user_id))
                         bot.kickChatMember(chat_id, user_id, until_date=None)
                         if nousername:
@@ -435,6 +431,8 @@ def risposte(msg):
     elif msg['chat']['type'] == "private":
         # BOT IN CHAT PRIVATA
 
+        messaggio_sviluppatore_versione_aggiornamento="MozIta Antispam Bot è stato sviluppato, per la comunità italiana di Mozilla Italia, da Saverio Morelli (@Sav22999) con il supporto e aiuto di Damiano Gualandri (@dag7dev), Simone Massaro (@mone27) e molti altri.\n\n"+"Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento
+
         if user_id in AdminList:
             status_user = "A"
             err1 = False
@@ -448,7 +446,7 @@ def risposte(msg):
                     esito = "OK"
                 elif text == "/help" and type_msg == "LK":
                     bot.sendMessage(chat_id, "Elenco azioni disponibili:\n - utente aggiungi |USERID|\n - utente blocca |USERID|\n - utente sblocca |USERID|\n - parola mostra\n - parola aggiungi |PAROLA/FRASE|\n - parola elimina |PAROLA/FRASE|\n - gruppo mostra\n - gruppo aggiungi |USERID| |NOME GRUPPO|\n - gruppo elimina |USERID|\n - invia messaggio |TESTO MESSAGGIO|")
-                    bot.sendMessage(chat_id, "MozIta Antispam Bot è stato sviluppato da Saverio Morelli @Sav2299 con il grandissimo supporto e aiuto di Damiano Gualandri @dag7dev e Simone Massaro @mone27.\n\n"+"Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento)
+                    bot.sendMessage(chat_id, messaggio_sviluppatore_versione_aggiornamento)
                     lk = True
                     esito = "OK"
 
@@ -589,6 +587,7 @@ def risposte(msg):
                                 print("Excep:19 -> "+str(e))
                         elif azione[1] == "elimina" and len(azione) == 3:
                             print("Gruppo rimosso")
+                            id_gruppo = azione[2]
                             try:
                                 int(id_gruppo)
                                 if azione[2] in chat_name:
@@ -656,7 +655,7 @@ def risposte(msg):
                 print("Excep:03 -> "+str(e))
         else:
             bot.sendMessage(chat_id, "Non sei un amministratore, perciò non puoi interagire con il bot in privato.")
-            bot.sendMessage(chat_id, "MozIta Antispam Bot è stato sviluppato da Saverio Morelli @Sav2299 con il grandissimo supporto e aiuto di Damiano Gualandri @dag7dev e Simone Massaro @mone27.\n\n"+"Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento)
+            bot.sendMessage(chat_id, messaggio_sviluppatore_versione_aggiornamento)
     else:
         # BOT IN GRUPPI NON ABILITATI
         bot.sendMessage(chat_id, "Questo gruppo non è un gruppo abilitato 🚫. Se è un gruppo ufficiale di Mozilla Italia contatta un moderatore per ottenere maggiori informazione e per risolvere il problema.\n\nChat id: "+str(chat_id))
