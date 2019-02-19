@@ -24,6 +24,7 @@ Per poter eseguire il codice, quindi far girare il bot, è necessario seguire i 
 _Per poter entrare nel gruppo è consigliato impostare un username_
 Il bot si compone di 5 liste:
  - **AdminList** -> gli utenti "amministratori" del bot: hanno gli stessi privilegi degli utenti presenti nella WhiteList ma, inoltre, possono segnalare **manualmente** (o sbloccare, eventualmente) utenti attraverso la chat con il bot in maniera privata.
+(Inoltre ricevono avvisi quando gli utenti vengono **bannati** o quando utilizzano **parole vietate**)
  - **WhiteList** -> tutti gli utenti *verificati*: essi possono inviare qualunque cosa (testo, file, ecc.) nei gruppi Mozilla Italia (**NEL RISPETTO DEL REGOLAMENTO**)
  - **BlackList** -> tutti gli utenti *nuovi*, ovvero coloro che non hanno neppure letto il [Regolamento](https://github.com/Sav22999/Guide/blob/master/Mozilla%20Italia/Telegram/regolamento.md): essi NON possono inviare nulla nei gruppi Mozilla Italia (verranno automaticamente eliminati)
  - **TempList** -> tutti gli utenti *non verificati* ma che hanno letto già il Regolamento: possono inviare solamente del testo
@@ -47,7 +48,8 @@ Le liste vengono salvate in file *.json*. I file generati sono i seguenti:
  - parole_vietate.json
 
 Inoltre ogni singolo messaggio viene salvato in un file *.txt* per soli scopi di debug in caso di malfunzionamenti del bot:
- - history.txt
+ - log_YYYY_MM_DD.txt
+Dopo 2 settimana il file viene automaticamente distrutto.
 
 Il bot funziona in maniera differente in base a se si trova in un *gruppo abilitato* o in una *chat privata*.
 Infatti solo chi è nella AdminList può interagire, in chat privata, con il bot.

@@ -23,3 +23,5 @@ Questo è l'elenco delle eccezioni gestite nel bot, con la relativa descrizione:
  - 21: Errore creazione cartella "history_mozitaantispam"
  - 22: Errore creazione cartella "history_mozitaantispam" (chat privata)
  - 23: Errore salvataggio file "log_YYYY_MM_DD.txt" (chat privata)
+ - 24: Non è stato possibile cacciare (e bannare) l'utente
+ - 25: Errore invio messaggio ad Admin (in chat privata)

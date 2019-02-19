@@ -23,8 +23,8 @@ if TOKEN == "":
     print("Token non presente.")
     exit()
 
-versione = "1.1.7"
-ultimoAggiornamento = "17-02-2019"
+versione = "1.1.8"
+ultimoAggiornamento = "19-02-2019"
 
 print("Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento)
 
@@ -47,12 +47,19 @@ SpamList = []
 if Path(chat_name_path).exists():
     chat_name = json.loads(open(chat_name_path).read())
 else:
-    chat_name = []
+    chat_name = {}
 if Path(parole_vietate_path).exists():
     parole_vietate = json.loads(open(parole_vietate_path).read())
 else:
     parole_vietate = []
 
+
+def invia_messaggio_admin(msg):
+    for admin_x in AdminList:
+        try:
+            bot.sendMessage(admin_x, msg, parse_mode="Markdown")
+        except Exception as e:
+            print("Excep:25 -> "+str(e))
 
 def risposte(msg):
     localtime = datetime.now()
@@ -251,22 +258,26 @@ def risposte(msg):
                 if type_msg == "NI":
                     messaggio["message_id"] = message_id
                     bot.deleteMessage(telepot.message_identifier(messaggio))
+                    text="(deleted by bot) "+text
                     # Elimina messaggio nel caso in cui risulti proprio uguale a (vedi sopra)
 
-                if int(user_id) in SpamList and type_msg != "NI" or controllo_parole_vietate:
+                if int(user_id) in SpamList:
                     #print ("Utente spam")
                     # L'utente può essere presente anche in altre liste -> ma se è presente qui viene bloccato e cacciato ugualmente
                     messaggio["message_id"] = message_id
                     bot.deleteMessage(telepot.message_identifier(messaggio))
                     if not(user_id in AdminList):
-                        SpamList.append(int(user_id))
-                        bot.kickChatMember(chat_id, user_id, until_date=None)
-                        if nousername:
-                            username_utente_nousername = "["+str(user_id)+"](tg://user?id="+str(user_id)+")"
-                        else:
-                            username_utente_nousername = "@"+str(user_name)
-                        bot.sendMessage(chat_id, "‼️ " + username_utente_nousername + " è stato cacciato perché identificato come utente spam.")
-                        status_user = "S"  # SpamList
+                        try:
+                            SpamList.append(int(user_id))
+                            bot.kickChatMember(chat_id, user_id, until_date=None)
+                            if nousername:
+                                username_utente_nousername = "["+str(user_id)+"](tg://user?id="+str(user_id)+")"
+                            else:
+                                username_utente_nousername = "@"+str(user_name)
+                            bot.sendMessage(chat_id, "‼️ " + username_utente_nousername + " è stato cacciato perché identificato come utente spam.")
+                            status_user = "S"  # SpamList
+                        except Exception as e:
+                            print("Excep:24 -> "+str(e))
                         try:
                             with open(spamlist_path, "wb") as f:
                                 f.write(json.dumps(SpamList).encode("utf-8"))
@@ -274,6 +285,19 @@ def risposte(msg):
                             print("Excep:04 -> "+str(e))
                     if(user_id in AdminList):
                         status_user = "A"
+                    invia_messaggio_admin("📌  "+username_utente_nousername+": CACCIATO -- Gruppo: *"+str(nome_gruppo)+"*")
+                    text="(eliminato dal bot) "+text
+                elif controllo_parole_vietate:
+                    # Parola vietata inserita
+                    messaggio["message_id"] = message_id
+                    bot.deleteMessage(telepot.message_identifier(messaggio))
+                    if nousername:
+                        username_utente_nousername = "["+str(user_id)+"](tg://user?id="+str(user_id)+")"
+                    else:
+                        username_utente_nousername = "@"+str(user_name)
+                    bot.sendMessage(chat_id, "‼️ " + username_utente_nousername + ", presta attenzione a ciò che scrivi! Il messaggio conteneva una o più parole vietate ed è stato eliminato.")
+                    invia_messaggio_admin("📌  "+username_utente_nousername+": PAROLA VIETATA -- Gruppo: *"+str(nome_gruppo)+"*")
+                    text="(eliminato dal bot) "+text
                 elif (int(user_id) in AdminList and int(user_id) in WhiteList) and type_msg != "NI" and not controllo_parole_vietate:
                     #print ("Utente admin!")
                     #bot.sendMessage(chat_id, "@"+str(user_name)+" è un utente admin !")
@@ -287,6 +311,7 @@ def risposte(msg):
                     messaggio["message_id"] = message_id
                     if type_msg != "J" and type_msg != "L":
                         bot.deleteMessage(telepot.message_identifier(messaggio))
+                        text="(eliminato dal bot) "+text
                     status_user = "B"  # BlackList
                     #bot.sendMessage(chat_id, "@"+str(user_name)+" non è stato verificato: Messaggio eliminato.")
                 elif int(user_id) in TempList.values() and type_msg != "NI" and not controllo_parole_vietate:
@@ -295,6 +320,7 @@ def risposte(msg):
                     if type_msg != "NM":
                         if type_msg != "J" and type_msg != "L":
                             bot.deleteMessage(telepot.message_identifier(messaggio))
+                            text="(eliminato dal bot) "+text
                     status_user = "T"  # TempList
                 elif type_msg=="NCP":
                     status_user = "-"
@@ -318,6 +344,7 @@ def risposte(msg):
                         BlackList[str(message_id)] = int(user_id)
                         BlackList_name[str(user_id)] = str(user_name)
                         bot.deleteMessage(telepot.message_identifier(messaggio))
+                        text="(eliminato dal bot) "+text
                         status_user = "B"
                         try:
                             with open(blacklist_path, "wb") as f:
@@ -331,6 +358,7 @@ def risposte(msg):
                         # bot.sendMessage(chat_id, "Il messaggio non è stato riconosciuto e, pertanto, è stato rimosso.")
                         if type_msg != "J" and type_msg != "L":
                             bot.deleteMessage(telepot.message_identifier(messaggio))
+                            text="(deleted by bot) "+text
                             status_user = "-"
             else:
                 if text == "/leggiregolamento" and type_msg == "BIC":
@@ -569,7 +597,7 @@ def risposte(msg):
                             esito = "OK"
                         elif azione[1] == "aggiungi" and len(azione) >= 4:
                             print("Gruppo aggiunto")
-                            id_gruppo = azione[2]
+                            id_gruppo = str(azione[2])
                             del azione[0]
                             del azione[0]
                             del azione[0]
@@ -578,12 +606,10 @@ def risposte(msg):
                                 int(id_gruppo)
                                 if not id_gruppo in chat_name:
                                     chat_name[str(id_gruppo)] = str(gruppo)
-                                    bot.sendMessage(
-                                        chat_id, "Gruppo \""+str(gruppo)+"\" aggiunto correttamente ai gruppi abilitati")
+                                    bot.sendMessage(chat_id, "Gruppo \""+str(gruppo)+"\" aggiunto correttamente ai gruppi abilitati")
                                     try:
                                         with open(chat_name_path, "wb") as f:
-                                            f.write(json.dumps(
-                                                chat_name).encode("utf-8"))
+                                            f.write(json.dumps(chat_name).encode("utf-8"))
                                         esito = "OK"
                                     except Exception as e:
                                         print("Excep:11 -> "+str(e))
