@@ -258,7 +258,7 @@ def risposte(msg):
                 if type_msg == "NI":
                     messaggio["message_id"] = message_id
                     bot.deleteMessage(telepot.message_identifier(messaggio))
-                    text="(deleted by bot) "+text
+                    text="(eliminato dal bot) "+text
                     # Elimina messaggio nel caso in cui risulti proprio uguale a (vedi sopra)
 
                 if int(user_id) in SpamList:
@@ -358,7 +358,7 @@ def risposte(msg):
                         # bot.sendMessage(chat_id, "Il messaggio non è stato riconosciuto e, pertanto, è stato rimosso.")
                         if type_msg != "J" and type_msg != "L":
                             bot.deleteMessage(telepot.message_identifier(messaggio))
-                            text="(deleted by bot) "+text
+                            text="(eliminato dal bot) "+text
                             status_user = "-"
             else:
                 if text == "/leggiregolamento" and type_msg == "BIC":
@@ -597,7 +597,7 @@ def risposte(msg):
                             esito = "OK"
                         elif azione[1] == "aggiungi" and len(azione) >= 4:
                             print("Gruppo aggiunto")
-                            id_gruppo = str(azione[2])
+                            id_gruppo = azione[2]
                             del azione[0]
                             del azione[0]
                             del azione[0]
