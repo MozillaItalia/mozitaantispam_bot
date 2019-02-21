@@ -23,10 +23,13 @@ if TOKEN == "":
     print("Token non presente.")
     exit()
 
-versione = "1.1.9"
-ultimoAggiornamento = "20-02-2019"
+versione = "1.2.0"
+ultimoAggiornamento = "21-02-2019"
 
 print("Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento)
+
+data_salvataggio=""
+response=""
 
 adminlist_path = "adminlist.json"
 whitelist_path = "whitelist.json"
@@ -53,16 +56,39 @@ if Path(parole_vietate_path).exists():
 else:
     parole_vietate = []
 
+def stampa_su_file(stampa,err):
+    global response, data_salvataggio
+    if err:
+        stampa=str(response)+"\n\n"+str(stampa)
+    stampa=stampa+"\n--------------------\n"
+    try:
+        if(os.path.exists("./history_mozitaantispam")==False):
+            os.mkdir("./history_mozitaantispam")
+    except Exception as e:
+        print("Excep:21 -> "+str(e))
+        stampa_su_file("Except:21 ->"+str(e),True)
+
+    try:
+        # apre il file in scrittura "append" per inserire orario e data -> log di utilizzo del bot (ANONIMO)
+        file = open("./history_mozitaantispam/log_"+str(data_salvataggio)+".txt", "a", -1, "UTF-8")
+        # ricordare che l'orario è in fuso orario UTC pari a 0 (Greenwich, Londra) - mentre l'Italia è a +1 (CET) o +2 (CEST - estate)
+        file.write(stampa)
+        file.close()
+    except Exception as e:
+        print("Excep:03 -> "+str(e))
+        stampa_su_file("Except:03 ->"+str(e),True)
 
 def invia_messaggio_admin(msg):
     for admin_x in AdminList:
         try:
-            bot.sendMessage(admin_x, msg, parse_mode="Markdown")
+            bot.sendMessage(admin_x, msg, parse_mode="HTML")
         except Exception as e:
             print("Excep:25 -> "+str(e))
+            stampa_su_file("Except:25 ->"+str(e),True)
 
 def risposte(msg):
     localtime = datetime.now()
+    global data_salvataggio
     data_salvataggio = localtime.strftime("%Y_%m_%d")
     localtime = localtime.strftime("%d/%m/%y %H:%M:%S")
     messaggio = msg
@@ -189,33 +215,40 @@ def risposte(msg):
         # EVENTO NON CATTURA/GESTITO -> ELIMINARE AUTOMATICAMENTE IL MESSAGGIO.
         text = "--Testo non identificato--"
         type_msg = "NI"  # Not Identified
+    try:
+        if type_msg=="J" and not (msg['from']['id']==msg['new_chat_participant']['id']):
+            user_id = msg['new_chat_participant']['id']
+            nousername = False
+            if "username" in msg['new_chat_participant']:
+                user_name = msg['new_chat_participant']['username']
+            else:
+                user_name = "[*NessunUsername*]"+str(user_id)
+                nousername = True
+            text="|| Un utente è stato aggiunto ||"
+        elif type_msg=="L" and not (msg['from']['id']==msg['left_chat_participant']['id']):
+            user_id = msg['left_chat_participant']['id']
+            nousername = False
+            if "username" in msg['left_chat_participant']:
+                user_name = msg['left_chat_participant']['username']
+            else:
+                user_name = "[*NessunUsername*]"+str(user_id)
+                nousername = True
+            text="|| Un utente è stato rimosso ||"
+        else:
+            user_id = msg['from']['id']
+            nousername = False
+            if "username" in msg['from']:
+                user_name = msg['from']['username']
+            else:
+                user_name = "[*NessunUsername*]"+str(user_id)
+                nousername = True
+    except Exception as e:
+        print("Excep:22 -> "+str(e))
+        stampa_su_file("Except:22 ->"+str(e),True)
 
-    if type_msg=="J" and not (msg['from']['id']==msg['new_chat_participant']['id']):
-        user_id = msg['new_chat_participant']['id']
-        nousername = False
-        if "username" in msg['new_chat_participant']:
-            user_name = msg['new_chat_participant']['username']
-        else:
-            user_name = "[*NessunUsername*]"+str(user_id)
-            nousername = True
-        text="|| Un utente è stato aggiunto ||"
-    elif type_msg=="L" and not (msg['from']['id']==msg['left_chat_participant']['id']):
-        user_id = msg['left_chat_participant']['id']
-        nousername = False
-        if "username" in msg['left_chat_participant']:
-            user_name = msg['left_chat_participant']['username']
-        else:
-            user_name = "[*NessunUsername*]"+str(user_id)
-            nousername = True
-        text="|| Un utente è stato rimosso ||"
-    else:
         user_id = msg['from']['id']
-        nousername = False
-        if "username" in msg['from']:
-            user_name = msg['from']['username']
-        else:
-            user_name = "[*NessunUsername*]"+str(user_id)
-            nousername = True
+        user_name = "[*NessunUsername*]"+str(user_id)
+        nousername = True
     # print(user_id)
     # print(user_name)
     if not "chat" in msg:
@@ -225,8 +258,9 @@ def risposte(msg):
     message_id = msg['message_id']
     # print(message_id)
 
-    #response = bot.getUpdates()
-    #print(response)
+    global response
+    response = bot.getUpdates()
+    # print(response)
 
     if str(chat_id) in chat_name and msg['chat']['type'] != "private":
         # BOT NEI GRUPPI ABILITATI
@@ -234,26 +268,29 @@ def risposte(msg):
 
         new = InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='Mostra Regolamento ⏬',callback_data="/leggiregolamento")],
+            [InlineKeyboardButton(text='Blocca utente ❌',callback_data="/bloccautente")],
         ])
         regolamentoletto = InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='Leggi il Regolamento completo 📙',url='https://github.com/Sav22999/Guide/blob/master/Mozilla%20Italia/Telegram/regolamento.md')],
             [InlineKeyboardButton(text='Conferma identità utente ☑️', callback_data='/confutente')],
+            [InlineKeyboardButton(text='Blocca utente ❌',callback_data="/bloccautente")],
         ])
 
         status_user = "-"
         if nousername:
-            username_utente_nousername = "["+str(user_id)+"](tg://user?id="+str(user_id)+")"
+            username_utente_nousername = "<a href='tg://user?id="+str(user_id)+"'>"+str(user_id)+"</a>"
         else:
             username_utente_nousername = "@"+str(user_name)
         
-        messaggio_benvenuto = username_utente_nousername+", benvenuto nel gruppo '"+str(nome_gruppo) + "'! Per prima cosa 'Mostra il Regolamento' e leggilo attentamente; è molto breve ma fondamentale!\nAl momento non puoi inviare messaggi di alcun genere (verranno automaticamente eliminati)."
+        messaggio_benvenuto = username_utente_nousername+", benvenuto nel gruppo <b>"+str(nome_gruppo) + "</b>! Per prima cosa fai clic <b>Mostra Regolamento</b> per leggere il succo del regolamento.\nTi consigliamo, inoltre, di leggerlo; è molto breve ma fondamentale!\n\n<b>Al momento non puoi inviare messaggi di alcun genere finché non premi su quel pulsante (verranno automaticamente eliminati).</b>"
 
         controllo_parole_vietate = False
         if any(ext in text.lower() for ext in parole_vietate):
             controllo_parole_vietate = True
 
         try:
-            if type_msg != "BIC":
+            # 732117113 -> userid del bot stesso
+            if type_msg != "BIC" and not str(user_id) == "732117113":
                 # Se si vuole solamente eliminare un messaggio in base a una specifica condizione
                 if type_msg == "NI":
                     messaggio["message_id"] = message_id
@@ -261,42 +298,44 @@ def risposte(msg):
                     text="(eliminato dal bot) "+text
                     # Elimina messaggio nel caso in cui risulti proprio uguale a (vedi sopra)
 
-                if int(user_id) in SpamList:
+                if int(user_id) in SpamList and type_msg!="L":
                     #print ("Utente spam")
                     # L'utente può essere presente anche in altre liste -> ma se è presente qui viene bloccato e cacciato ugualmente
                     messaggio["message_id"] = message_id
                     bot.deleteMessage(telepot.message_identifier(messaggio))
                     if not(user_id in AdminList):
                         try:
-                            SpamList.append(int(user_id))
+                            # SpamList.append(int(user_id))
                             bot.kickChatMember(chat_id, user_id, until_date=None)
                             if nousername:
-                                username_utente_nousername = "["+str(user_id)+"](tg://user?id="+str(user_id)+")"
+                                username_utente_nousername = "<a href='tg://user?id="+str(user_id)+"'>"+str(user_id)+"</a>"
                             else:
                                 username_utente_nousername = "@"+str(user_name)
                             bot.sendMessage(chat_id, "‼️ " + username_utente_nousername + " è stato cacciato perché identificato come utente spam.")
                             status_user = "S"  # SpamList
                         except Exception as e:
                             print("Excep:24 -> "+str(e))
+                            stampa_su_file("Except:24 ->"+str(e),True)
                         try:
                             with open(spamlist_path, "wb") as f:
                                 f.write(json.dumps(SpamList).encode("utf-8"))
                         except Exception as e:
                             print("Excep:04 -> "+str(e))
+                            stampa_su_file("Except:04 ->"+str(e),True)
                     if(user_id in AdminList):
                         status_user = "A"
-                    invia_messaggio_admin("📌  "+username_utente_nousername+": CACCIATO -- Gruppo: *"+str(nome_gruppo)+"*")
+                    invia_messaggio_admin("📌  "+username_utente_nousername+": CACCIATO -- Gruppo: <b>"+str(nome_gruppo)+"</b>")
                     text="(eliminato dal bot) "+text
                 elif controllo_parole_vietate:
                     # Parola vietata inserita
                     messaggio["message_id"] = message_id
                     bot.deleteMessage(telepot.message_identifier(messaggio))
                     if nousername:
-                        username_utente_nousername = "["+str(user_id)+"](tg://user?id="+str(user_id)+")"
+                        username_utente_nousername = "<a href='tg://user?id="+str(user_id)+"'>"+str(user_id)+"</a>"
                     else:
                         username_utente_nousername = "@"+str(user_name)
                     bot.sendMessage(chat_id, "‼️ " + username_utente_nousername + ", presta attenzione a ciò che scrivi! Il messaggio conteneva una o più parole vietate ed è stato eliminato.")
-                    invia_messaggio_admin("📌  "+username_utente_nousername+": PAROLA VIETATA -- Gruppo: *"+str(nome_gruppo)+"*")
+                    invia_messaggio_admin("📌  "+username_utente_nousername+": PAROLA VIETATA -- Gruppo: <b>"+str(nome_gruppo)+"</b>")
                     text="(eliminato dal bot) "+text
                 elif (int(user_id) in AdminList and int(user_id) in WhiteList) and type_msg != "NI" and not controllo_parole_vietate:
                     #print ("Utente admin!")
@@ -338,9 +377,10 @@ def risposte(msg):
                                 f.write(json.dumps(BlackList_name).encode("utf-8"))
                         except Exception as e:
                             print("Excep:13 -> "+str(e))
+                            stampa_su_file("Except:13 ->"+str(e),True)
                     elif type_msg != "J" and type_msg != "L":
                         # Utente già presente nel gruppo ma non presente in alcuna lista
-                        bot.sendMessage(chat_id, messaggio_benvenuto, reply_markup=new, parse_mode="Markdown")
+                        bot.sendMessage(chat_id, messaggio_benvenuto, reply_markup=new, parse_mode="HTML")
                         BlackList[str(message_id)] = int(user_id)
                         BlackList_name[str(user_id)] = str(user_name)
                         bot.deleteMessage(telepot.message_identifier(messaggio))
@@ -353,6 +393,7 @@ def risposte(msg):
                                 f.write(json.dumps(BlackList_name).encode("utf-8"))
                         except Exception as e:
                             print("Excep:14 -> "+str(e))
+                            stampa_su_file("Except:14 ->"+str(e),True)
                     else:
                         # Messaggio non riconosciuto
                         # bot.sendMessage(chat_id, "Il messaggio non è stato riconosciuto e, pertanto, è stato rimosso.")
@@ -363,7 +404,6 @@ def risposte(msg):
             else:
                 if text == "/leggiregolamento" and type_msg == "BIC":
                     if user_id == int(BlackList[str(int(message_id)-1)]):
-
                         TempList[str(int(message_id)-1)] = BlackList[str(int(message_id)-1)]
                         print(TempList[str(int(message_id)-1)])
                         TempList_name[str(TempList[str(int(message_id)-1)])] = BlackList_name[str(BlackList[str(int(message_id)-1)])]
@@ -371,10 +411,10 @@ def risposte(msg):
                         del BlackList[str(int(message_id)-1)]
                         status_user = "T"
                         if nousername:
-                            username_utente_nousername = "["+str(user_id)+"](tg://user?id="+str(user_id)+")"
+                            username_utente_nousername = "<a href='tg://user?id="+str(user_id)+"'>"+str(user_id)+"</a>"
                         else:
                             username_utente_nousername = "@"+str(user_name)
-                        bot.sendMessage(chat_id, username_utente_nousername+", ecco qui alcune delle regole principali da seguire.\nTi preghiamo di leggere TUTTO il regolamento: è breve e molto semplice, ma essenziale!\n\nRegole principali:\n1. Avere rispetto di tutti.\n2. Non utilizzare un linguaggio scurrile\n\nAttualmente puoi scrivere dei messaggi di solo testo (NO LINK) finché un altro utente, già verificato, non conferma la tua identità di UTENTE REALE e non spam.", reply_markup=regolamentoletto, parse_mode="Markdown")
+                        bot.sendMessage(chat_id, username_utente_nousername+", ora puoi inviare messaggi di solo testo (<b>no link, no sticker</b>), finché un utente già verificato preme su <b>Conferma utente</b>.\nEcco qui le linee guida principali da seguire:\n1. Avere rispetto di tutti.\n2. Non utilizzare un linguaggio scurrile\nTi invitiamo a leggere il regolamento completo, basta un clic in basso <b>Leggi il Regolamento completo</b>: è breve ma fondamentale per una buona permanenza.", reply_markup=regolamentoletto, parse_mode="HTML")
 
                         try:
                             with open(blacklist_path, "wb") as f:
@@ -387,30 +427,31 @@ def risposte(msg):
                                 f.write(json.dumps(TempList_name).encode("utf-8"))
                         except Exception as e:
                             print("Excep:15 -> "+str(e))
+                            stampa_su_file("Except:15 ->"+str(e),True)
 
                 elif text == "/confutente" and type_msg == "BIC":
                     if user_id in WhiteList or user_id in AdminList:
                         user_name_temp = str(msg['text'].split(",")[0]).lstrip("@")
-                        print("Username temp: "+str(user_name_temp))
-                        print("Messaggio:"+msg['text'])
+                        #print("Username temp: "+str(user_name_temp))
+                        #print("Messaggio:"+msg['text'])
                         nousername_temp=False
                         if "[*NessunUsername*]"+str(user_name_temp) in TempList_name.values():
                             nousername_temp=True
                             user_name_temp="[*NessunUsername*]"+str(user_name_temp)
                         if str(user_name_temp) in TempList_name.values() or nousername_temp:
                             if nousername:
-                                username_utente_nousername = "["+str(user_id)+"](tg://user?id="+str(user_id)+")"
+                                username_utente_nousername = "<a href='tg://user?id="+str(user_id)+"'>"+str(user_id)+"</a>"
                             else:
                                 username_utente_nousername = "@"+str(user_name)
                             user_id_temp = int(next((x for x in TempList_name if TempList_name[x] == str(user_name_temp)), None))
                             message_id_temp = int(next((x for x in TempList if TempList[x] == int(user_id_temp)), None))+1
                             if nousername_temp:
-                                username_utente_nousername_temp = "["+str(user_id_temp)+"](tg://user?id="+str(user_id_temp)+")"
+                                username_utente_nousername_temp = "<a href='tg://user?id="+str(user_id_temp)+"'>"+str(user_id_temp)+"</a>"
                             else:
                                 username_utente_nousername_temp = "@"+str(TempList_name[str(TempList[str(int(message_id_temp)-1)])])
                             #print("Utente da verificare: "+str(TempList[int(message_id_temp)-1]) + "Message id: "+str(message_id_temp))
-                            bot.sendMessage(chat_id, "✅ "+username_utente_nousername+" ha confermato "+username_utente_nousername_temp+".", parse_mode="Markdown")
-                            bot.sendMessage(chat_id, username_utente_nousername_temp+" ora puoi inviare messaggi di qualsiasi genere, nei limiti del [Regolamento](https://github.com/Sav22999/Guide/blob/master/Mozilla%20Italia/Telegram/regolamento.md) 📙.\nBenvenuto, ancora una volta, ufficialmente nella comunità Mozilla Italia 🇮🇹.", parse_mode="Markdown")
+                            bot.sendMessage(chat_id, "✅ "+username_utente_nousername+" ha confermato "+username_utente_nousername_temp+".", parse_mode="HTML")
+                            bot.sendMessage(chat_id, username_utente_nousername_temp+", ora sei un utente confermato e puoi inviare messaggi di qualsiasi genere, nei limiti del <a href='https://github.com/Sav22999/Guide/blob/master/Mozilla%20Italia/Telegram/regolamento.md'>Regolamento</a> 📙.\nBenvenuto, ancora una volta, ufficialmente nella comunità Mozilla Italia 🇮🇹.\n\nTi consigliamo di <b>impostare un username</b>, <b>un'immagine di profilo</b> e di <b>presentarti</b>.Buona permanenza.", parse_mode="HTML")
                             WhiteList.append(int(TempList[str(int(message_id_temp)-1)]))
                             del TempList_name[str(TempList[str(int(message_id_temp)-1)])]
                             del TempList[str(int(message_id_temp)-1)]
@@ -425,44 +466,57 @@ def risposte(msg):
                                     f.write(json.dumps(TempList_name).encode("utf-8"))
                             except Exception as e:
                                 print("Excep:16 -> "+str(e))
+                                stampa_su_file("Except:16 ->"+str(e),True)
+                elif text == "/bloccautente" and type_msg == "BIC":
+                    if user_id in AdminList:
+                        user_name_temp = str(msg['text'].split(",")[0]).lstrip("@")
+                        user_id_temp=0
+                        if user_name_temp in BlackList_name.values():
+                            user_id_temp = int(list(BlackList_name.keys())[list(BlackList_name.values()).index(str(user_name_temp))])
+                        elif user_name_temp in TempList_name.values():
+                            user_id_temp = int(list(TempList_name.keys())[list(TempList_name.values()).index(str(user_name_temp))])
+                        
+                        if not(user_id_temp in AdminList) and not user_id_temp==0:
+                            try:
+                                SpamList.append(int(user_id_temp))
+                                bot.kickChatMember(chat_id, user_id_temp, until_date=None)
+                                if nousername:
+                                    username_utente_nousername = "<a href='tg://user?id="+str(user_id_temp)+"'>"+str(user_id_temp)+"</a>"
+                                else:
+                                    username_utente_nousername = "@"+str(user_name_temp)
+                                bot.sendMessage(chat_id, "‼️ " + username_utente_nousername + " è stato cacciato perché identificato come utente spam.")
+                                status_user = "S"  # SpamList
+                            except Exception as e:
+                                print("Excep:23 -> "+str(e))
+                                stampa_su_file("Except:23 ->"+str(e),True)
+                            try:
+                                with open(spamlist_path, "wb") as f:
+                                    f.write(json.dumps(SpamList).encode("utf-8"))
+                            except Exception as e:
+                                print("Excep:18 -> "+str(e))
+                                stampa_su_file("Except:18 ->"+str(e),True)
+                            if(user_id in AdminList):
+                                status_user = "A"
+                            invia_messaggio_admin("📌  "+username_utente_nousername+": BLOCCATO E CACCIATO -- Gruppo: <b>"+str(nome_gruppo)+"</b>")
+                            text="|| Un utente è stato cacciato ||"
         except Exception as e:
             print("Excep:01 -> "+str(e))
+            stampa_su_file("Except:01 ->"+str(e),True)
 
         try:
-            #print("AdminList: "+str(AdminList))
-            #print("WhiteList: "+str(WhiteList))
-            #print("BlackList: "+str(BlackList))
-            #print("BlackList_name: "+str(BlackList_name))
-            #print("TempList: "+str(TempList))
-            #print("TempList_name: "+str(TempList_name))
-            #print("SpamList: "+str(SpamList))
-            #print("chat_name: "+str(chat_name))
-            #print("parole_vietate: "+str(parole_vietate))
             dettagli = ""
             if modificato:
                 dettagli += "(modificato) "
             if risposta:
                 dettagli += "(risposta) "
-            stampa = "Id Msg: "+str(message_id)+"  --  "+str(localtime)+"  --  Utente: "+str(user_name)+" ("+str(user_id)+")["+str(status_user)+"]  --  Gruppo: "+str(nome_gruppo)+"("+str(chat_id)+")\n >> >> Tipo messaggio: "+str(type_msg)+"\n >> >> Contenuto messaggio: "+str(dettagli)+str(text)+"\n--------------------\n"
-            print(stampa)
+            stampa = "Id Msg: "+str(message_id)+"  --  "+str(localtime)+"  --  Utente: "+str(user_name)+" ("+str(user_id)+")["+str(status_user)+"]  --  Gruppo: "+str(nome_gruppo)+"("+str(chat_id)+")\n >> >> Tipo messaggio: "+str(type_msg)+"\n >> >> Contenuto messaggio: "+str(dettagli)+str(text)
+            print(stampa+"\n--------------------\n")
         except Exception as e:
-            stampa = "Excep:02 -> "+str(e)+"\n--------------------\n"
-            print(stampa)
+            stampa = "Excep:02 -> "+str(e)
+            print(stampa+"\n--------------------\n")
 
-        try:
-            if(os.path.exists("./history_mozitaantispam")==False):
-                os.mkdir("./history_mozitaantispam")
-        except Exception as e:
-            print("Excep:21 -> "+str(e))
+        stampa_su_file(stampa,False)
 
-        try:
-            # apre il file in scrittura "append" per inserire orario e data -> log di utilizzo del bot (ANONIMO)
-            file = open("./history_mozitaantispam/log_"+str(data_salvataggio)+".txt", "a", -1, "UTF-8")
-            # ricordare che l'orario è in fuso orario UTC pari a 0 (Greenwich, Londra) - mentre l'Italia è a +1 (CET) o +2 (CEST - estate)
-            file.write(stampa)
-            file.close()
-        except Exception as e:
-            print("Excep:03 -> "+str(e))
     elif msg['chat']['type'] == "private":
         # BOT IN CHAT PRIVATA
 
@@ -549,6 +603,7 @@ def risposte(msg):
                                     esito = "OK"
                                 except Exception as e:
                                     print("Excep:06 -> "+str(e))
+                                    stampa_su_file("Except:06 ->"+str(e),True)
                             else:
                                 err2 = True
                         elif azione[1] == "blocca":
@@ -566,6 +621,7 @@ def risposte(msg):
                                         f.write(json.dumps(SpamList).encode("utf-8"))
                                 except Exception as e:
                                     print("Excep:07 -> "+str(e))
+                                    stampa_su_file("Except:07 ->"+str(e),True)
                             else:
                                 err2 = True
                         elif azione[1] == "sblocca":
@@ -581,6 +637,7 @@ def risposte(msg):
                                         esito = "OK"
                                     except Exception as e:
                                         print("Excep:08 -> "+str(e))
+                                        stampa_su_file("Except:08 ->"+str(e),True)
                                 else:
                                     bot.sendMessage(chat_id, "Errore: l'userid digitato non è presente nella SpamList")
                             else:
@@ -608,6 +665,7 @@ def risposte(msg):
                                     esito = "OK"
                                 except Exception as e:
                                     print("Excep:09 -> "+str(e))
+                                    stampa_su_file("Except:09 ->"+str(e),True)
                             else:
                                 bot.sendMessage(
                                     chat_id, "Parola già presente nelle parole vietate")
@@ -626,6 +684,7 @@ def risposte(msg):
                                     esito = "OK"
                                 except Exception as e:
                                     print("Excep:10 -> "+str(e))
+                                    stampa_su_file("Except:10 ->"+str(e),True)
                             else:
                                 bot.sendMessage(chat_id, "Parola non presente nelle parole vietate")
                         else:
@@ -653,11 +712,13 @@ def risposte(msg):
                                         esito = "OK"
                                     except Exception as e:
                                         print("Excep:11 -> "+str(e))
+                                        stampa_su_file("Except:11 ->"+str(e),True)
                                 else:
                                     bot.sendMessage(chat_id, "Gruppo già presente nei gruppi abilitati")
                             except Exception as e:
                                 bot.sendMessage(chat_id, "ChatId errata. Inserirne una valida")
                                 print("Excep:19 -> "+str(e))
+                                stampa_su_file("Except:19 ->"+str(e),True)
                         elif azione[1] == "elimina" and len(azione) == 3:
                             print("Gruppo rimosso")
                             id_gruppo = azione[2]
@@ -672,11 +733,13 @@ def risposte(msg):
                                         esito = "OK"
                                     except Exception as e:
                                         print("Excep:12 -> "+str(e))
+                                        stampa_su_file("Except:12 ->"+str(e),True)
                                 else:
                                     bot.sendMessage(chat_id, "Gruppo non presente nei gruppi abilitati")
                             except Exception as e:
                                 bot.sendMessage(chat_id, "ChatId errata. Inserirne una valida")
                                 print("Excep:20 -> "+str(e))
+                                stampa_su_file("Except:20 ->"+str(e),True)
                         else:
                             err1 = True
                     elif azione[0] == "invia" and azione[1] == "messaggio" and len(azione) >= 3:
@@ -686,12 +749,13 @@ def risposte(msg):
                         if len(chat_name) > 0:
                             for gruppo_x in chat_name.keys():
                                 try:
-                                    bot.sendMessage(gruppo_x, messaggio, parse_mode="Markdown")
+                                    bot.sendMessage(gruppo_x, messaggio, parse_mode="HTML")
                                     bot.sendMessage(chat_id, "Messaggio inviato in \""+str(chat_name[gruppo_x])+"\"")
                                 except Exception as e:
                                     print("Excep:05 -> "+str(e))
+                                    stampa_su_file("Except:05 ->"+str(e),True)
                                     bot.sendMessage(chat_id, "Non è stato possibile inviare il messaggio in: "+str(chat_name[gruppo_x]))
-                            bot.sendMessage(chat_id, "Messaggio inviato in tutti i gruppi abilitati.\n\nIl messaggio che è stato inviato è:\n"+messaggio, parse_mode="Markdown")
+                            bot.sendMessage(chat_id, "Messaggio inviato in tutti i gruppi abilitati.\n\nIl messaggio che è stato inviato è:\n"+messaggio, parse_mode="HTML")
                             esito = "OK"
                         else:
                             bot.sendMessage(
@@ -713,26 +777,13 @@ def risposte(msg):
 
             try:
                 stampa = "Utente: "+str(user_name)+" ("+str(user_id)+")["+str(status_user)+"]  --  Gruppo: ChatPrivataBot ("+str(
-                    chat_id)+")\n >> >> Esito: "+str(esito)+"\n >> >> Contenuto messaggio: "+str(text)+"\n--------------------\n"
-                print(stampa)
+                    chat_id)+")\n >> >> Esito: "+str(esito)+"\n >> >> Contenuto messaggio: "+str(text)
+                print(stampa+"\n--------------------\n")
             except Exception as e:
-                stampa = "Excep:17 -> "+str(e)+"\n--------------------\n"
-                print(stampa)
+                stampa = "Excep:17 -> "+str(e)
+                print(stampa+"\n--------------------\n")
 
-            try:
-                if(os.path.exists("./history_mozitaantispam")==False):
-                    os.mkdir("./history_mozitaantispam")
-            except Exception as e:
-                print("Excep:22 -> "+str(e))
-
-            try:
-                # apre il file in scrittura "append" per inserire orario e data -> log di utilizzo del bot (ANONIMO)
-                file = open("./history_mozitaantispam/log_"+str(data_salvataggio)+".txt", "a", -1, "UTF-8")
-                # ricordare che l'orario è in fuso orario UTC pari a 0 (Greenwich, Londra) - mentre l'Italia è a +1 (CET) o +2 (CEST - estate)
-                file.write(stampa)
-                file.close()
-            except Exception as e:
-                print("Excep:23 -> "+str(e))
+            stampa_su_file(stampa,False)
         else:
             bot.sendMessage(chat_id, "Non sei un amministratore, perciò non puoi interagire con il bot in privato.")
             bot.sendMessage(chat_id, messaggio_sviluppatore_versione_aggiornamento)
