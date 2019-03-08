@@ -23,8 +23,14 @@ if TOKEN == "":
     print("Token non presente.")
     exit()
 
-versione = "1.2.0"
-ultimoAggiornamento = "21-02-2019"
+if Path("frasi.json").exists():
+    frasi = json.loads(open("frasi.json",encoding="utf8").read())
+else:
+    print("File frasi non presente.")
+    exit()
+
+versione = "1.2.1"
+ultimoAggiornamento = "08-03-2019"
 
 print("Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento)
 
@@ -267,13 +273,13 @@ def risposte(msg):
         nome_gruppo = str(chat_name[str(chat_id)])
 
         new = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text='Mostra Regolamento ⏬',callback_data="/leggiregolamento")],
-            [InlineKeyboardButton(text='Blocca utente ❌',callback_data="/bloccautente")],
+            [InlineKeyboardButton(text=frasi["button_mostra_regolamento"],callback_data="/leggiregolamento")],
+            [InlineKeyboardButton(text=frasi["button_blocca_utente"],callback_data="/bloccautente")],
         ])
         regolamentoletto = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text='Leggi il Regolamento completo 📙',url='https://github.com/Sav22999/Guide/blob/master/Mozilla%20Italia/Telegram/regolamento.md')],
-            [InlineKeyboardButton(text='Conferma identità utente ☑️', callback_data='/confutente')],
-            [InlineKeyboardButton(text='Blocca utente ❌',callback_data="/bloccautente")],
+            [InlineKeyboardButton(text=frasi["button_leggi_regolamento"],url='https://github.com/Sav22999/Guide/blob/master/Mozilla%20Italia/Telegram/regolamento.md')],
+            [InlineKeyboardButton(text=frasi["button_conferma_utente"], callback_data='/confutente')],
+            [InlineKeyboardButton(text=frasi["button_blocca_utente"],callback_data="/bloccautente")],
         ])
 
         status_user = "-"
@@ -282,7 +288,7 @@ def risposte(msg):
         else:
             username_utente_nousername = "@"+str(user_name)
         
-        messaggio_benvenuto = username_utente_nousername+", benvenuto nel gruppo <b>"+str(nome_gruppo) + "</b>! Per prima cosa fai clic <b>Mostra Regolamento</b> per leggere il succo del regolamento.\nTi consigliamo, inoltre, di leggerlo; è molto breve ma fondamentale!\n\n<b>Al momento non puoi inviare messaggi di alcun genere finché non premi su quel pulsante (verranno automaticamente eliminati).</b>"
+        messaggio_benvenuto = str((frasi["benvenuto"]).replace("{{**username**}}",str(username_utente_nousername))).replace("{{**nome_gruppo**}}",str(nome_gruppo))
 
         controllo_parole_vietate = False
         if any(ext in text.lower() for ext in parole_vietate):
@@ -311,7 +317,7 @@ def risposte(msg):
                                 username_utente_nousername = "<a href='tg://user?id="+str(user_id)+"'>"+str(user_id)+"</a>"
                             else:
                                 username_utente_nousername = "@"+str(user_name)
-                            bot.sendMessage(chat_id, "‼️ " + username_utente_nousername + " è stato cacciato perché identificato come utente spam.")
+                            bot.sendMessage(chat_id, str(frasi["utente_cacciato"]).replace("{{**username**}}",str(username_utente_nousername)))
                             status_user = "S"  # SpamList
                         except Exception as e:
                             print("Excep:24 -> "+str(e))
@@ -334,7 +340,7 @@ def risposte(msg):
                         username_utente_nousername = "<a href='tg://user?id="+str(user_id)+"'>"+str(user_id)+"</a>"
                     else:
                         username_utente_nousername = "@"+str(user_name)
-                    bot.sendMessage(chat_id, "‼️ " + username_utente_nousername + ", presta attenzione a ciò che scrivi! Il messaggio conteneva una o più parole vietate ed è stato eliminato.")
+                    bot.sendMessage(chat_id, str(frasi["parola_vietata_presente"]).replace("{{**username**}}",str(username_utente_nousername)))
                     invia_messaggio_admin("📌  "+username_utente_nousername+": PAROLA VIETATA -- Gruppo: <b>"+str(nome_gruppo)+"</b>")
                     text="(eliminato dal bot) "+text
                 elif (int(user_id) in AdminList and int(user_id) in WhiteList) and type_msg != "NI" and not controllo_parole_vietate:
@@ -414,7 +420,7 @@ def risposte(msg):
                             username_utente_nousername = "<a href='tg://user?id="+str(user_id)+"'>"+str(user_id)+"</a>"
                         else:
                             username_utente_nousername = "@"+str(user_name)
-                        bot.sendMessage(chat_id, username_utente_nousername+", ora puoi inviare messaggi di solo testo (<b>no link, no sticker</b>), finché un utente già verificato preme su <b>Conferma utente</b>.\nEcco qui le linee guida principali da seguire:\n1. Avere rispetto di tutti.\n2. Non utilizzare un linguaggio scurrile\nTi invitiamo a leggere il regolamento completo, basta un clic in basso <b>Leggi il Regolamento completo</b>: è breve ma fondamentale per una buona permanenza.", reply_markup=regolamentoletto, parse_mode="HTML")
+                        bot.sendMessage(chat_id, str(frasi["regolamento_letto"]).replace("{{**username**}}",str(username_utente_nousername)), reply_markup=regolamentoletto, parse_mode="HTML")
 
                         try:
                             with open(blacklist_path, "wb") as f:
@@ -450,8 +456,8 @@ def risposte(msg):
                             else:
                                 username_utente_nousername_temp = "@"+str(TempList_name[str(TempList[str(int(message_id_temp)-1)])])
                             #print("Utente da verificare: "+str(TempList[int(message_id_temp)-1]) + "Message id: "+str(message_id_temp))
-                            bot.sendMessage(chat_id, "✅ "+username_utente_nousername+" ha confermato "+username_utente_nousername_temp+".", parse_mode="HTML")
-                            bot.sendMessage(chat_id, username_utente_nousername_temp+", ora sei un utente confermato e puoi inviare messaggi di qualsiasi genere, nei limiti del <a href='https://github.com/Sav22999/Guide/blob/master/Mozilla%20Italia/Telegram/regolamento.md'>Regolamento</a> 📙.\nBenvenuto, ancora una volta, ufficialmente nella comunità Mozilla Italia 🇮🇹.\n\nTi consigliamo di <b>impostare un username</b>, <b>un'immagine di profilo</b> e di <b>presentarti</b>.Buona permanenza.", parse_mode="HTML")
+                            bot.sendMessage(chat_id, str((frasi["utente_confermato"]).replace("{{**utenteCheConferma**}}",str(username_utente_nousername))).replace("{{**utenteConfermato**}}",str(username_utente_nousername_temp)), parse_mode="HTML")
+                            bot.sendMessage(chat_id, str(frasi["utente_confermato2"]).replace("{{**username**}}",str(username_utente_nousername_temp)), parse_mode="HTML")
                             WhiteList.append(int(TempList[str(int(message_id_temp)-1)]))
                             del TempList_name[str(TempList[str(int(message_id_temp)-1)])]
                             del TempList[str(int(message_id_temp)-1)]
@@ -484,7 +490,7 @@ def risposte(msg):
                                     username_utente_nousername = "<a href='tg://user?id="+str(user_id_temp)+"'>"+str(user_id_temp)+"</a>"
                                 else:
                                     username_utente_nousername = "@"+str(user_name_temp)
-                                bot.sendMessage(chat_id, "‼️ " + username_utente_nousername + " è stato cacciato perché identificato come utente spam.")
+                                bot.sendMessage(chat_id, str(frasi["utente_cacciato"]).replace("{{**username**}}",str(username_utente_nousername)))
                                 status_user = "S"  # SpamList
                             except Exception as e:
                                 print("Excep:23 -> "+str(e))
