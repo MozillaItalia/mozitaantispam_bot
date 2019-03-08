@@ -29,7 +29,7 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.2.5"
+versione = "1.2.6"
 ultimoAggiornamento = "08-03-2019"
 
 print("Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento)
@@ -611,6 +611,8 @@ def risposte(msg):
                                 bot.sendMessage(chat_id, "SpamList:\n"+str(SpamList))
                             else:
                                 err1=True
+                        else:
+                            err1=True
                         try:
                             with open(blacklist_path, "wb") as f:
                                 f.write(json.dumps(BlackList).encode("utf-8"))
@@ -623,8 +625,6 @@ def risposte(msg):
                             esito = "OK"
                         except Exception as e:
                             print("Excep:26 -> "+str(e))
-                        else:
-                            err1=True
                     elif azione[0] == "utente" and len(azione) == 3 and type_msg != "LK":
                         if azione[1] == "aggiungi":
                             if azione[2].isdigit():
