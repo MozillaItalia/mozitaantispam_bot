@@ -26,3 +26,6 @@ Questo è l'elenco delle eccezioni gestite nel bot, con la relativa descrizione:
  - 24: Non è stato possibile cacciare (e bannare) l'utente
  - 25: Errore invio messaggio ad Admin (in chat privata) 
  - 26: Salvataggio liste su file
+ - 27: Eliminazione messaggio di 'benvenuto' (evento "/leggiregolamento")
+ - 28: Eliminazione messaggio di 'regolamento letto' (evento "/confutente")
+ - 29: Eliminazione messaggio di 'benvenuto' o regolamento letto' (evento "/bloccautente")

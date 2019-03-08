@@ -29,7 +29,7 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.2.4"
+versione = "1.2.5"
 ultimoAggiornamento = "08-03-2019"
 
 print("Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento)
@@ -317,7 +317,7 @@ def risposte(msg):
                                 username_utente_nousername = "<a href='tg://user?id="+str(user_id)+"'>"+str(user_id)+"</a>"
                             else:
                                 username_utente_nousername = "<a href='tg://user?id="+str(user_id)+"'>"+"@"+str(user_name)+"</a>"+" (<code>"+str(user_id)+"</code>)"
-                            bot.sendMessage(chat_id, str(frasi["utente_cacciato"]).replace("{{**username**}}",str(username_utente_nousername)))
+                            bot.sendMessage(chat_id, str(frasi["utente_cacciato"]).replace("{{**username**}}",str(username_utente_nousername)), parse_mode="HTML")
                             status_user = "S"  # SpamList
                         except Exception as e:
                             print("Excep:24 -> "+str(e))
@@ -340,7 +340,7 @@ def risposte(msg):
                         username_utente_nousername = "<a href='tg://user?id="+str(user_id)+"'>"+str(user_id)+"</a>"
                     else:
                         username_utente_nousername = "<a href='tg://user?id="+str(user_id)+"'>"+"@"+str(user_name)+"</a>"+" (<code>"+str(user_id)+"</code>)"
-                    bot.sendMessage(chat_id, str(frasi["parola_vietata_presente"]).replace("{{**username**}}",str(username_utente_nousername)))
+                    bot.sendMessage(chat_id, str(frasi["parola_vietata_presente"]).replace("{{**username**}}",str(username_utente_nousername)), parse_mode="HTML")
                     invia_messaggio_admin("📌  "+username_utente_nousername+": PAROLA VIETATA -- Gruppo: <b>"+str(nome_gruppo)+"</b>")
                     text=frasi["eliminato_da_bot"]+text
                 elif (int(user_id) in AdminList and int(user_id) in WhiteList) and type_msg != "NI" and not controllo_parole_vietate:
@@ -410,8 +410,9 @@ def risposte(msg):
             else:
                 if text == "/leggiregolamento" and type_msg == "BIC":
                     if user_id == int(BlackList[str(int(message_id)-1)]):
+                        #print(response)
                         TempList[str(int(message_id)-1)] = BlackList[str(int(message_id)-1)]
-                        print(TempList[str(int(message_id)-1)])
+                        # print(TempList[str(int(message_id)-1)]) #userid
                         TempList_name[str(TempList[str(int(message_id)-1)])] = BlackList_name[str(BlackList[str(int(message_id)-1)])]
                         del BlackList_name[str(BlackList[str(int(message_id)-1)])]
                         del BlackList[str(int(message_id)-1)]
@@ -420,6 +421,14 @@ def risposte(msg):
                             username_utente_nousername = "<a href='tg://user?id="+str(user_id)+"'>"+str(user_id)+"</a>"
                         else:
                             username_utente_nousername = "<a href='tg://user?id="+str(user_id)+"'>@"+str(user_name)+"</a>"+" (<code>"+str(user_id)+"</code>)"
+                        try:
+                            # cancella messaggio di benvenuto
+                            message_id_temp_deletemessage = int(message_id)
+                            bot.deleteMessage((chat_id,message_id_temp_deletemessage))
+                            # print(message_id_temp_deletemessage)
+                        except Exception as e:
+                            print("Excep:27 -> "+str(e))
+                            stampa_su_file("Except:27 ->"+str(e),True)
                         bot.sendMessage(chat_id, str(frasi["regolamento_letto"]).replace("{{**username**}}",str(username_utente_nousername)), reply_markup=regolamentoletto, parse_mode="HTML")
 
                         try:
@@ -457,6 +466,14 @@ def risposte(msg):
                             else:
                                 username_utente_nousername_temp = "<a href='tg://user?id="+str(user_id)+"'>@"+str(TempList_name[str(TempList[str(int(message_id_temp)-1)])])+"</a>"+" (<code>"+str(user_id_temp)+"</code>)"
                             #print("Utente da verificare: "+str(TempList[int(message_id_temp)-1]) + "Message id: "+str(message_id_temp))
+                            try:
+                                # cancella messaggio di 'regolamento letto'
+                                message_id_temp_deletemessage = int(message_id)
+                                bot.deleteMessage((chat_id,message_id_temp_deletemessage))
+                                # print(message_id_temp_deletemessage)
+                            except Exception as e:
+                                print("Excep:28 -> "+str(e))
+                                stampa_su_file("Except:28 ->"+str(e),True)
                             bot.sendMessage(chat_id, str((frasi["utente_confermato"]).replace("{{**utenteCheConferma**}}",str(username_utente_nousername))).replace("{{**utenteConfermato**}}",str(username_utente_nousername_temp)), parse_mode="HTML")
                             bot.sendMessage(chat_id, str(frasi["utente_confermato2"]).replace("{{**username**}}",str(username_utente_nousername_temp)), parse_mode="HTML")
                             WhiteList.append(int(TempList[str(int(message_id_temp)-1)]))
@@ -492,6 +509,14 @@ def risposte(msg):
                                     username_utente_nousername = "<a href='tg://user?id="+str(user_id_temp)+"'>"+str(user_id_temp)+"</a>"
                                 else:
                                     username_utente_nousername = "<a href='tg://user?id="+str(user_id_temp)+"'>@"+str(user_name_temp)+"</a>"+" (<code>"+str(user_id_temp)+"</code>)"
+                                try:
+                                    # cancella messaggio
+                                    message_id_temp_deletemessage = int(message_id)
+                                    bot.deleteMessage((chat_id,message_id_temp_deletemessage))
+                                    # print(message_id_temp_deletemessage)
+                                except Exception as e:
+                                    print("Excep:29 -> "+str(e))
+                                    stampa_su_file("Except:29 ->"+str(e),True)
                                 bot.sendMessage(chat_id, str(frasi["utente_cacciato"]).replace("{{**username**}}",str(username_utente_nousername)), parse_mode="HTML")
                                 status_user = "S"  # SpamList
                                 if(user_id in AdminList):
