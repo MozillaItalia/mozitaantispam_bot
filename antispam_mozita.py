@@ -372,7 +372,7 @@ def risposte(msg):
                 else:
                     if type_msg == "J":
                         # Nuovo utente
-                        bot.sendMessage(chat_id, messaggio_benvenuto, reply_markup=new)
+                        bot.sendMessage(chat_id, messaggio_benvenuto, reply_markup=new, parse_mode="HTML")
                         BlackList[str(message_id)] = int(user_id)
                         BlackList_name[str(user_id)] = str(user_name)
                         status_user = "B"
