@@ -62,14 +62,18 @@ Il bot, ugualmente, filtrerà i messaggi inviati per verificare che rispettino i
 `Non vogliamo negare la libertà di espressione, ma bisogna avere rispetto di tutti e seguire delle regole prestabilite, che sono state pensate, scritte e approvate da molti altri precedentemente. Per il bene comune (**Fast for Good**).`
 
 ### Lettura regolamento
-Quando si preme su "Leggi Regolamento" in automatico viene inviato un messaggio (nella chat del gruppo) con delle regole basi che NON sostituiscono in alcun modo il Regolamento (che, comunque, è breve! Perciò è bene perdere 5 minuti nel leggerlo).
+Quando si preme su "Mostra Regolamento" in automatico viene inviato un messaggio (nella chat del gruppo) con delle regole basi che NON sostituiscono in alcun modo il Regolamento (che, comunque, è breve! Perciò è bene perdere 5 minuti nel leggerlo).
 Il bot, in automatico, inserisce il nominativo (user_id) nella **TempList** in attesa che un utente verificato confermi la tua identità. Puoi, comunque, scrivere messaggi di testo per farci capire che, effettivamente, se una persona in carne e ossa :).
+Inoltre il messaggio di benvenuto relativo all'utente viene automaticamente eliminato.
+Gli Admin possono anche premere su "Blocca utente" che bannerà l'utente in un singolo clic.
 
 ### Conferma identità
 Tutti gli utenti presenti nella **WhiteList** possono confermare l'identità degli utenti.
 Si noti che prima di confermare l'identità è necessario accertarsi che l'utente non sia uno spam:
  - Vedere l'immagine del profilo: è una foto "normale"? O contiene contenuti non accettati?
  - Vedere il nome utente: è un nome utente "normale"? O sono solo alcune lettere messe insieme?
+Una volta premuto su "Conferma utente" il messaggio di "Regolamento letto" viene automaticamente eliminato.
+Gli Admin possono anche premere su "Blocca utente" che bannerà l'utente in un singolo clic.
 
 > **Se non si è sicuri dell'identità dell'utente *non* bisogna confermare ma, piuttosto, scrivere un messaggio taggando un amministratore e spiegando la situazione. Egli procederà alle verifiche più accurate**.
 
@@ -98,6 +102,13 @@ Ecco ciò che si può fare in chat (**solo in chat: i comandi non funzionano nei
     > gruppo elimina *123456789*
 - Inviare un messaggio in tutti i gruppo abilitati: `invia messaggio *TESTO MESSAGGIO*`
   > invia messaggio *Testo messaggio di esempio*
+- Gestire liste:
+    - Mostrare utenti in WhiteList: `lista white mostra`
+    - Mostrare utenti in SpamList: `lista spam mostra`
+    - Mostrare utenti in BlackList: `lista black mostra`
+    - Eliminare utenti in BlackList: `lista black elimina`
+    - Mostrare utenti in TempList: `lista temp mostra`
+    - Eliminare utenti in TempList: `lista temp elimina`
 
 # Librerie utilizzate
 Elenco delle librerie utilizzate nel codice (Python):
