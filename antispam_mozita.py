@@ -29,7 +29,7 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.2.3"
+versione = "1.2.4"
 ultimoAggiornamento = "08-03-2019"
 
 print("Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento)
@@ -62,6 +62,7 @@ if Path(parole_vietate_path).exists():
 else:
     parole_vietate = []
 
+# stampa_su_file(<cosa stampare>,<{True|False} indica se è una stampa di ERRORE/ECCEZIONE o una stampa 'normale'>)
 def stampa_su_file(stampa,err):
     global response, data_salvataggio
     if err:
@@ -431,6 +432,7 @@ def risposte(msg):
                             with open(templist_name_path, "wb") as f:
                                 f.write(json.dumps(TempList_name).encode("utf-8"))
                         except Exception as e:
+                            text+="\n >> >> Esito: NO"
                             print("Excep:15 -> "+str(e))
                             stampa_su_file("Except:15 ->"+str(e),True)
 
@@ -470,6 +472,7 @@ def risposte(msg):
                                 with open(templist_name_path, "wb") as f:
                                     f.write(json.dumps(TempList_name).encode("utf-8"))
                             except Exception as e:
+                                text+="\n >> >> Esito: NO"
                                 print("Excep:16 -> "+str(e))
                                 stampa_su_file("Except:16 ->"+str(e),True)
                 elif text == "/bloccautente" and type_msg == "BIC":
@@ -480,7 +483,7 @@ def risposte(msg):
                             user_id_temp = int(list(BlackList_name.keys())[list(BlackList_name.values()).index(str(user_name_temp))])
                         elif user_name_temp in TempList_name.values():
                             user_id_temp = int(list(TempList_name.keys())[list(TempList_name.values()).index(str(user_name_temp))])
-                        
+                        #print(str(user_id_temp) + " " + str(user_name_temp))
                         if not(user_id_temp in AdminList) and not user_id_temp==0:
                             try:
                                 SpamList.append(int(user_id_temp))
@@ -489,9 +492,14 @@ def risposte(msg):
                                     username_utente_nousername = "<a href='tg://user?id="+str(user_id_temp)+"'>"+str(user_id_temp)+"</a>"
                                 else:
                                     username_utente_nousername = "<a href='tg://user?id="+str(user_id_temp)+"'>@"+str(user_name_temp)+"</a>"+" (<code>"+str(user_id_temp)+"</code>)"
-                                bot.sendMessage(chat_id, str(frasi["utente_cacciato"]).replace("{{**username**}}",str(username_utente_nousername)))
+                                bot.sendMessage(chat_id, str(frasi["utente_cacciato"]).replace("{{**username**}}",str(username_utente_nousername)), parse_mode="HTML")
                                 status_user = "S"  # SpamList
+                                if(user_id in AdminList):
+                                    status_user = "A"
+                                invia_messaggio_admin("📌  "+username_utente_nousername+": BLOCCATO E CACCIATO -- Gruppo: <b>"+str(nome_gruppo)+"</b>")
+                                text="|| Un utente è stato cacciato ||"
                             except Exception as e:
+                                text+="\n >> >> Esito: NO"
                                 print("Excep:23 -> "+str(e))
                                 stampa_su_file("Except:23 ->"+str(e),True)
                             try:
@@ -500,10 +508,6 @@ def risposte(msg):
                             except Exception as e:
                                 print("Excep:18 -> "+str(e))
                                 stampa_su_file("Except:18 ->"+str(e),True)
-                            if(user_id in AdminList):
-                                status_user = "A"
-                            invia_messaggio_admin("📌  "+username_utente_nousername+": BLOCCATO E CACCIATO -- Gruppo: <b>"+str(nome_gruppo)+"</b>")
-                            text="|| Un utente è stato cacciato ||"
         except Exception as e:
             print("Excep:01 -> "+str(e))
             stampa_su_file("Except:01 ->"+str(e),True)
