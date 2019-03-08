@@ -29,7 +29,7 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.2.2"
+versione = "1.2.3"
 ultimoAggiornamento = "08-03-2019"
 
 print("Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento)
@@ -539,61 +539,61 @@ def risposte(msg):
                     lk = True
                     esito = "OK"
                 elif text == "/help" and type_msg == "LK":
-                    bot.sendMessage(chat_id, "Elenco azioni disponibili:\n - utente aggiungi |USERID|\n - utente blocca |USERID|\n - utente sblocca |USERID|\n - parola mostra\n - parola aggiungi |PAROLA/FRASE|\n - parola elimina |PAROLA/FRASE|\n - gruppo mostra\n - gruppo aggiungi |USERID| |NOME GRUPPO|\n - gruppo elimina |USERID|\n - invia messaggio |TESTO MESSAGGIO|\n\n(FASE DI TEST)\n- test cancella tutte / test cancella liste\n- test cancella white\n- test cancella black\n- test cancella temp\n- test cancella spam")
+                    bot.sendMessage(chat_id, "Elenco azioni disponibili:\n - utente aggiungi |USERID|\n - utente blocca |USERID|\n - utente sblocca |USERID|\n - parola mostra\n - parola aggiungi |PAROLA/FRASE|\n - parola elimina |PAROLA/FRASE|\n - gruppo mostra\n - gruppo aggiungi |USERID| |NOME GRUPPO|\n - gruppo elimina |USERID|\n - invia messaggio |TESTO MESSAGGIO|\n - lista white mostra\n - lista spam mostra\n - lista black mostra\n - lista black elimina\n - lista temp mostra\n - lista temp elimina")
                     bot.sendMessage(chat_id, messaggio_sviluppatore_versione_aggiornamento)
                     lk = True
                     esito = "OK"
 
-                if ("utente" in text or "parola" in text or "gruppo" in text or "invia messaggio" in text or "test" in text) and not lk:
+                if ("utente" in text or "parola" in text or "gruppo" in text or "invia messaggio" in text or "lista" in text) and not lk:
                     azione = list(text.split(" "))
-                    if(azione[0] == "test" and len(azione) == 3 and type_msg != "LK"):
+                    if(azione[0] == "lista" and len(azione) == 3 and type_msg != "LK"):
                         # SOLO A SCOPO DI TEST -> DA ELIMINARE SUCCESSIVAMENTE (o inserire sottoforma di commento)
-                        if(azione[1] == "cancella"):
-                            if(azione[2] == "liste" or azione[2] == "tutte"):
-                                # azzera tutte le liste (white, black, temp e spam)
-                                WhiteList = []
-                                BlackList = {}
-                                BlackList_name = {}
-                                TempList = {}
-                                TempList_name = {}
-                                SpamList = []
-                                bot.sendMessage(chat_id, "Le seguenti liste sono state azzerate:\n- WhiteList\n- BlackList\n- BlackList_name\n- TempList\n- TempList_name\n- SpamList")
-                            elif(azione[2] == "white"):
-                                # azzera solo la white list
-                                WhiteList = []
-                                bot.sendMessage(chat_id, "Le seguenti liste sono state azzerate:\n- WhiteList")
-                            elif(azione[2] == "black"):
-                                # azzera solo le black list
+                        if(azione[1] == "white"):
+                            if(azione[2] == "mostra"):
+                                # mostra la WhiteList
+                                bot.sendMessage(chat_id, "WhiteList:\n"+str(WhiteList))
+                            else:
+                                err1=True
+                        elif(azione[1] == "black"):
+                            if(azione[2]=="elimina"):
+                                # elimina il contenuto delle BlackList
                                 BlackList = {}
                                 BlackList_name = {}
                                 bot.sendMessage(chat_id, "Le seguenti liste sono state azzerate:\n- BlackList\n- BlackList_name")
-                            elif(azione[2] == "temp"):
-                                # azzera solo le temp list
+                            elif(azione[2]=="mostra"):
+                                # mostra le BlackList
+                                bot.sendMessage(chat_id, "BlackList:\n"+str(BlackList)+"\n\nBlackList_name:\n"+str(BlackList_name))
+                            else:
+                                err1=True
+                        elif(azione[1] == "temp"):
+                            if(azione[2]=="elimina"):
+                                # elimina il contenuto delle TempList
                                 TempList = {}
                                 TempList_name = {}
                                 bot.sendMessage(chat_id, "Le seguenti liste sono state azzerate:\n- TempList\n- TempList_name")
-                            elif(azione[2] == "spam"):
-                                # azzera solo la spam list
-                                SpamList = []
-                                bot.sendMessage(chat_id, "Le seguenti liste sono state azzerate:\n- SpamList")
+                            elif(azione[2]=="mostra"):
+                                # mostra le TempList
+                                bot.sendMessage(chat_id, "TempList:\n"+str(TempList)+"\n\nTempList_name:\n"+str(TempList_name))
                             else:
                                 err1=True
-                            try:
-                                with open(whitelist_path, "wb") as f:
-                                    f.write(json.dumps(WhiteList).encode("utf-8"))
-                                with open(blacklist_path, "wb") as f:
-                                    f.write(json.dumps(BlackList).encode("utf-8"))
-                                with open(blacklist_name_path, "wb") as f:
-                                    f.write(json.dumps(BlackList_name).encode("utf-8"))
-                                with open(templist_path, "wb") as f:
-                                    f.write(json.dumps(TempList).encode("utf-8"))
-                                with open(templist_name_path, "wb") as f:
-                                    f.write(json.dumps(TempList_name).encode("utf-8"))
-                                with open(spamlist_path, "wb") as f:
-                                    f.write(json.dumps(SpamList).encode("utf-8"))
-                                esito = "OK"
-                            except Exception as e:
-                                print("Excep:TEST-01 -> "+str(e))
+                        elif(azione[1] == "spam"):
+                            if(azione[2]=="mostra"):
+                                # mostra la SpamList
+                                bot.sendMessage(chat_id, "SpamList:\n"+str(SpamList))
+                            else:
+                                err1=True
+                        try:
+                            with open(blacklist_path, "wb") as f:
+                                f.write(json.dumps(BlackList).encode("utf-8"))
+                            with open(blacklist_name_path, "wb") as f:
+                                f.write(json.dumps(BlackList_name).encode("utf-8"))
+                            with open(templist_path, "wb") as f:
+                                f.write(json.dumps(TempList).encode("utf-8"))
+                            with open(templist_name_path, "wb") as f:
+                                f.write(json.dumps(TempList_name).encode("utf-8"))
+                            esito = "OK"
+                        except Exception as e:
+                            print("Excep:26 -> "+str(e))
                         else:
                             err1=True
                     elif azione[0] == "utente" and len(azione) == 3 and type_msg != "LK":

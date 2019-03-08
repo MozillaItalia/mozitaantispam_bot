@@ -25,5 +25,4 @@ Questo è l'elenco delle eccezioni gestite nel bot, con la relativa descrizione:
  - 23: Non è stato possibile cacciare (e bannare) l'utente ("/bloccautente)
  - 24: Non è stato possibile cacciare (e bannare) l'utente
  - 25: Errore invio messaggio ad Admin (in chat privata) 
- 
- - TEST-01: Salvataggio liste su file
+ - 26: Salvataggio liste su file
