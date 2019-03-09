@@ -19,6 +19,28 @@ Per poter eseguire il codice, quindi far girare il bot, è necessario seguire i 
  - Installare la libreria **telepot**, tramite *pip* (o verificare di averla già installata)
    > pip3 install telepot
 
+### Frasi visualizzate e contenuto bottoni
+
+Le frasi e il testo contenuto nei bottoni che vengono visualizzati dall'utente quando viene utilizzato il bot sono contenuti nel file **frasi.json**. È possibile perfino utilizzare l'HTML (vedi sotto "_Tag HTML supportati_")
+
+Può essere sempre modificato, ma è necessario seguire le seguenti regole:
+
+- Le variabili non vanno modificate.
+  Le variabili sono identificabili facilmente perché sono del tipo: `{{**nome_variabile**}}`
+- La variabile `{{**username**}}` in '_benvenuto_', '_regolamento_letto_' e '_utente_confermato_' deve essere **obbligatoriamente** all'inizio del messaggio/frase
+
+##### Tag HTML Supportati
+
+I tag HTML supportati da Telegram sono:
+
+- `<b></b>`: testo in grassetto
+- `<i></i>`: testo in corsivo
+- `<a href="https://..."></a>`: inserire link
+- `<a href="tg://user?id="></a>`: menzionare un utente sapendo il suo *user_id*
+- `<code></code>`: codice/monospazio
+- `<pre></pre>`: codice "preformattato"
+
+**Altri tag potrebbero mandare il bot in crash**
 
 # Funzionamento del bot
 _Per poter entrare nel gruppo è consigliato impostare un username_

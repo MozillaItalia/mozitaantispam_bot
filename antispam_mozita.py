@@ -9,6 +9,8 @@ from pathlib import Path
 from configparser import ConfigParser
 import os
 
+import telegram_events
+
 if not os.path.isfile("config.ini"):
     print("Il file di configurazione non è presente. Rinomina il file 'config-sample.ini' in 'config.ini' e inserisci il token.")
     exit()
@@ -29,8 +31,8 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.2.6"
-ultimoAggiornamento = "08-03-2019"
+versione = "1.3.0"
+ultimoAggiornamento = "09-03-2019"
 
 print("Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento)
 
@@ -129,99 +131,14 @@ def risposte(msg):
         global SpamList
         SpamList = json.loads(open(spamlist_path).read())
 
-    if "text" in msg:
-        # EVENTO MESSAGGIO (SOTTO-EVENTI MESSAGGIO)
-        text = str(msg['text'])
-        if "entities" in msg:
-            # EVENTO LINK
-            type_msg = "LK"  # Link
-        else:
-            # EVENTO MESSAGGIO PURO
-            type_msg = "NM"  # Normal Message
-        if "edit_date" in msg:
-            # EVENTO MODIFICA
-            modificato = True
-        elif "reply_to_message" in msg:
-            # EVENTO RISPOSTA
-            risposta = True
-    elif "data" in msg:
-        # EVENTO PRESS BY INLINE BUTTON
-        text = str(msg['data'])
-        # print("Callback_query")
-        type_msg = "BIC"  # Button Inline Click
-    elif "new_chat_participant" in msg:
-        # EVENTO JOIN
-        #print("Join event")
-        type_msg = "J"  # Join
-        text = "|| Un utente è entrato ||"
-    elif "left_chat_participant" in msg:
-        # EVENTO LEFT
-        #print("Left event")
-        type_msg = "L"  # Left
-        text = "|| Un utente è uscito ||"
-    elif "document" in msg:
-        # EVENTO FILE
-        type_msg = "D"  # Document
-        if "caption" in msg:
-            text = str(msg["caption"])
-        else:
-            text = ""
-    elif "voice" in msg:
-        # EVENTO VOICE MESSAGE
-        type_msg = "VM"  # Voice Message
-        text = "|| Messaggio vocale ||"
-    elif "video_note" in msg:
-        # EVENTO VIDEO-MESSAGE
-        type_msg = "VMSG"  # Video Message
-        text = "|| Video messaggio ||"
-    elif "photo" in msg:
-        # EVENTO FOTO/IMMAGINE
-        type_msg = "I"  # Photo
-        if "caption" in msg:
-            text = str(msg["caption"])
-        else:
-            text = ""
-    elif "music" in msg:
-        # EVENTO MUSICA
-        type_msg = "M"  # Music
-        if "caption" in msg:
-            text = str(msg["caption"])
-        else:
-            text = ""
-    elif "video" in msg:
-        # EVENTO VIDEO
-        type_msg = "V"  # Video
-        if "caption" in msg:
-            text = str(msg["caption"])
-        else:
-            text = ""
-    elif "contact" in msg:
-        # EVENTO CONTATTO
-        type_msg = "C"  # Contact
-        if "caption" in msg:
-            text = str(msg["caption"])
-        else:
-            text = ""
-    elif "location" in msg:
-        # EVENTO POSIZIONE
-        type_msg = "P"  # Position
-        text = ""
-    elif "sticker" in msg:
-        # EVENTO STICKER
-        type_msg = "S"  # Stiker
-        text = "(sticker) "+msg["sticker"]["emoji"]
-    elif "animation" in msg:
-        # EVENTO GIF
-        type_msg = "G"  # Gif
-        text = ""
-    elif "new_chat_photo" in msg:
-        # EVENTO IMMAGINE CHAT AGGIORNATA
-        type_msg = "NCP" # New Chat Photo
-        text="|| Immagine chat aggiornata ||"
-    else:
-        # EVENTO NON CATTURA/GESTITO -> ELIMINARE AUTOMATICAMENTE IL MESSAGGIO.
-        text = "--Testo non identificato--"
-        type_msg = "NI"  # Not Identified
+    # caricamento degli eventi gestiti
+    EventiList={}
+    EventiList=telegram_events.events(msg,["[[ALL]]"])
+    text=EventiList["text"]
+    type_msg=EventiList["type_msg"]
+    modificato=EventiList["modificato"]
+    risposta=EventiList["risposta"]
+
     try:
         if type_msg=="J" and not (msg['from']['id']==msg['new_chat_participant']['id']):
             user_id = msg['new_chat_participant']['id']
@@ -444,6 +361,9 @@ def risposte(msg):
                             text+="\n >> >> Esito: NO"
                             print("Excep:15 -> "+str(e))
                             stampa_su_file("Except:15 ->"+str(e),True)
+                        text="|| Lettura regolamento ||\n >> >> Esito: OK"
+                    else:
+                        text="|| Lettura regolamento ||\n >> >> Esito: NO"
 
                 elif text == "/confutente" and type_msg == "BIC":
                     if user_id in WhiteList or user_id in AdminList:
@@ -491,7 +411,10 @@ def risposte(msg):
                             except Exception as e:
                                 text+="\n >> >> Esito: NO"
                                 print("Excep:16 -> "+str(e))
-                                stampa_su_file("Except:16 ->"+str(e),True)
+                                stampa_su_file("Except:16 ->"+str(e),True)     
+                        text="|| Conferma utente ||\n >> >> Esito: OK"
+                    else:
+                        text="|| Conferma utente ||\n >> >> Esito: NO"
                 elif text == "/bloccautente" and type_msg == "BIC":
                     if user_id in AdminList:
                         user_name_temp = str(msg['text'].split(" ")[0]).lstrip("@")
@@ -533,6 +456,9 @@ def risposte(msg):
                             except Exception as e:
                                 print("Excep:18 -> "+str(e))
                                 stampa_su_file("Except:18 ->"+str(e),True)
+                        text="|| Blocca utente ||\n >> >> Esito: OK"
+                    else:
+                        text="|| Blocca utente ||\n >> >> Esito: NO"
         except Exception as e:
             print("Excep:01 -> "+str(e))
             stampa_su_file("Except:01 ->"+str(e),True)
