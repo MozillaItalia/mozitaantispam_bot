@@ -31,7 +31,7 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.3.1" # Cambiare manualmente
+versione = "1.3.2" # Cambiare manualmente
 ultimoAggiornamento = "16-03-2019" # Cambiare manualmentente
 
 print("Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento) # Per poter sapere quale versione è in esecuzione (da terminale)
@@ -68,8 +68,8 @@ if Path(parole_vietate_path).exists():
 else:
     parole_vietate = []
 
-# elimina il messaggio con messa
-def elimina_msg(chat_id,message_id,messaggio_eliminato):
+# elimina il messaggio - Passare chat_id e message_id
+def elimina_msg(chat_id,message_id,messaggio_eliminato=False):
     if not messaggio_eliminato:
         bot.deleteMessage((chat_id,message_id))
         return True
@@ -347,7 +347,7 @@ def risposte(msg):
                         username_utente_nousername=nousername_assegnazione(nousername,user_id,user_name)
                         try:
                             # cancella messaggio di benvenuto
-                            elimina_msg(chat_id,message_id,False)
+                            elimina_msg(chat_id,message_id)
                             # print(message_id_temp_deletemessage)
                         except Exception as e:
                             print("Excep:27 -> "+str(e))
@@ -388,7 +388,7 @@ def risposte(msg):
                             #print("Utente da verificare: "+str(TempList[int(message_id_temp)-1]) + "Message id: "+str(message_id_temp))
                             try:
                                 # cancella messaggio di 'regolamento letto'
-                                elimina_msg(chat_id,message_id,False)
+                                elimina_msg(chat_id,message_id)
                                 # print(message_id_temp_deletemessage)
                             except Exception as e:
                                 print("Excep:28 -> "+str(e))
