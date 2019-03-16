@@ -17,6 +17,7 @@ Per poter eseguire il codice, quindi far girare il bot, è necessario seguire i 
  - Clonare questa repository, quindi premere su *Fork* in alto a destra
  - Installare Python 3 (o verificare di averlo già installato) **sviluppato e testato con Python 3.6.6**, ma dovrebbe funzionare anche con altre versioni
  - Installare la libreria **telepot**, tramite *pip* (o verificare di averla già installata)
+
    > pip3 install telepot
 
 ### Frasi visualizzate e contenuto bottoni
@@ -51,11 +52,11 @@ Il bot si compone di 5 liste:
  - **BlackList** -> tutti gli utenti *nuovi*, ovvero coloro che non hanno neppure letto il [Regolamento](https://github.com/Sav22999/Guide/blob/master/Mozilla%20Italia/Telegram/regolamento.md): essi NON possono inviare nulla nei gruppi Mozilla Italia (verranno automaticamente eliminati)
  - **TempList** -> tutti gli utenti *non verificati* ma che hanno letto già il Regolamento: possono inviare solamente del testo
  - **SpamList** -> tutti gli utenti *spam* vengono raccolti in questa lista: essi vengono automaticamente cacciati e bannati dai gruppi Mozilla Italia non appena inviano qualcosa
- 
+
 Inoltre sono presenti altre due liste:
  - **chat_name** -> dove sono racchiusi tutti i gruppi abilitati con il relativo nominativo
  - **parole_vietate** -> dove sono racchiuse tutte le parole/frasi vietate
- 
+
 > Le liste valgono per tutti i gruppi Mozilla Italia (da qui MozIta) e sono unificate, quindi un utente presente nella lista *spam* e già cacciato e bannato in un gruppo MozIta, appena invia qualcosa in un altro gruppo MozIta viene *automaticamente* bannato e cacciato anche da quel gruppo. Così come se un utente è già *verificato* in un gruppo lo è anche in tutti gli altri.
 
 Le liste vengono salvate in file *.json*. I file generati sono i seguenti:
@@ -103,26 +104,35 @@ Gli Admin possono anche premere su "Blocca utente" che bannerà l'utente in un s
 Ecco ciò che si può fare in chat (**solo in chat: i comandi non funzionano nei gruppi**).
  - Gestire utenti:
     - Inserire (manualmente) un utente nella WhiteList: `utente aggiungi *USERID*`
+
       > utente aggiungi *123456789*
     - Inserire un utente nella SpamList: `utente blocca *USERID*`
+
       > utente blocca *123456789*
     - Rimuovere un utente dalla SpamList -> bisognerà procedere, poi, manualmente a "sbloccarli" nei singoli gruppi (da "Gestione gruppo"): `utente sblocca *USERID*`
+
       > utente sblocca *12345678*
 - Gestire parole vietate:
     - Mostrare tutte le parole vietate: `parola mostra`
+
       > parola mostra
     - Aggiungere nuove parole (**tutto in minuscolo**): `parola aggiungi *PAROLA/FRASE*`
+
       > parola aggiungi *parola/frase di esempio*
     - Rimuovere delle parole (**tutto in minuscolo**): `parola elimina *PAROLA/FRASE*`
+
       > parola elimina *parola/frase di esempio*
 - Gestire gruppi abilitati:
     - Mostrare tutti i gruppi abilitati: `gruppo mostra`
+
       > gruppo mostra
     - Aggiungere un gruppo: `gruppo aggiungi *USERID GRUPPO* *NOME GRUPPO*`
+
       > gruppo aggiungi *123456789* *Nome Gruppo di esempio*
     - Rimuove un gruppo `gruppo elimina *USERID*`
     > gruppo elimina *123456789*
 - Inviare un messaggio in tutti i gruppo abilitati: `invia messaggio *TESTO MESSAGGIO*`
+
   > invia messaggio *Testo messaggio di esempio*
 - Gestire liste:
     - Mostrare utenti in WhiteList: `lista white mostra`
