@@ -31,7 +31,7 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.3.4" # Cambiare manualmente
+versione = "1.3.5" # Cambiare manualmente
 ultimoAggiornamento = "17-03-2019" # Cambiare manualmentente
 
 print("(Antispam) Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento) # Per poter sapere quale versione è in esecuzione (da terminale)
@@ -285,12 +285,12 @@ def risposte(msg):
                     print("Excep:24 -> "+str(e))
                     stampa_su_file("Except:24 ->"+str(e),True)
                 invia_messaggio_admin(username_utente_nousername+": CACCIATO -- Gruppo: <b>"+str(nome_gruppo)+"</b>")
-            elif status_user=="B":
+            elif status_user=="B" and type_msg!="BIC":
                 if type_msg != "J" and type_msg != "L":
                     if not messaggio_eliminato:
                         messaggio_eliminato=elimina_msg(chat_id,message_id,messaggio_eliminato)
                         text=frasi["eliminato_da_bot"]+text
-            elif status_user=="T":
+            elif status_user=="T" and type_msg!="BIC":
                 # Accettati solamente messaggi di TESTO, STICKER e GIF
                 if type_msg != "NM" and type_msg!="S" and type_msg != "G" and (type_msg != "J" and type_msg != "L"):
                     if not messaggio_eliminato:
