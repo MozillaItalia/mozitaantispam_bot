@@ -31,10 +31,10 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.3.3" # Cambiare manualmente
+versione = "1.3.4" # Cambiare manualmente
 ultimoAggiornamento = "17-03-2019" # Cambiare manualmentente
 
-print("Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento) # Per poter sapere quale versione è in esecuzione (da terminale)
+print("(Antispam) Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento) # Per poter sapere quale versione è in esecuzione (da terminale)
 
 BLOCCO_PAROLE_VIETATE=2 ## 0 -> Attivato: Elimina messaggi e invia messaggio agli admin in privato
                         ## 1 -> Disattivato: Non effettua alcun controllo
@@ -151,7 +151,7 @@ def risposte(msg):
     data_salvataggio = localtime.strftime("%Y_%m_%d")
     localtime = localtime.strftime("%d/%m/%y %H:%M:%S")
     messaggio = msg
-    type_msg = "NM"  # Normal Message
+    type_msg = ""
 
     modificato = False
     risposta = False
@@ -483,6 +483,7 @@ def risposte(msg):
             err1 = False
             err2 = False
             esito = "NO"
+            print(type_msg)
             if type_msg == "NM" or type_msg == "LK":
                 lk = False
                 if(type_msg=="LK"):

@@ -1,11 +1,10 @@
 ## it permits you to catch every events in telegram (telepot)
-## version 1.1 - 2019-03-17
 
 '''
 parameters have to be the message (msg) and a list (allowed_events), and inside event(s) you want to catch
 (possibile) parameters:
 "NM" -> Normal Message (Only Text)
-"LK" -> Link
+"LK" -> Link (or Bot Command)
 "T" -> Tag/Mention
 "D" -> Document
 "VM" -> Voice Message
@@ -27,6 +26,10 @@ These are other possible return value (in addition to elements above):
 "LR" -> Left (Removed)
 "NI" -> Not Identified (or Not Allowed)
 '''
+versione = "1.2" # Cambiare manualmente
+ultimoAggiornamento = "17-03-2019" # Cambiare manualmentente
+
+print("(Telegram events) Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento) # Per poter sapere quale versione è in esecuzione (da terminale)
 
 def events(msg,allowed_events,response):
     all_events=False # to check if [[ALL]]
@@ -38,12 +41,12 @@ def events(msg,allowed_events,response):
     if "text" in msg:
         # EVENTO MESSAGGIO 'TESTO' (SOTTO-EVENTI 'TESTO')
         text = str(msg['text'])
-        if ("entities" in msg and "type" in msg["entities"]) and (("NM" in allowed_events or "LK" in allowed_events or "T" in allowed_events or "PN" in allowed_events) or all_events):
+        if ("entities" in msg and "type" in msg["entities"][0]) and (("NM" in allowed_events or "LK" in allowed_events or "T" in allowed_events) or all_events):
             # EVENTO LINK
-            if (msg["entities"]["type"] == "mention"):
+            if (msg["entities"][0]["type"] == "mention") and ("T" in allowed_events or all_events):
                 type_msg = "T" # Tag/Mention
-            elif (msg["entities"]["type"] == "url"):
-                type_msg = "LK"  # Link
+            elif (msg["entities"][0]["type"] == "url" or msg["entities"][0]["type"] == "bot_command") and ("LK" in allowed_events or all_events):
+                type_msg = "LK"  # Link (or Bot Command)
             else:
                 type_msg = "NM" # Normal Message
         else:
