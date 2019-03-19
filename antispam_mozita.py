@@ -32,10 +32,10 @@ else:
     exit()
 
 versione = "1.3.6"  # Cambiare manualmente
-ultimoa_aggiornamento = "19-03-2019"  # Cambiare manualmentente
+ultimo_aggiornamento = "19-03-2019"  # Cambiare manualmentente
 
 # Per poter sapere quale versione è in esecuzione (da terminale)
-print("(Antispam) Versione: " + versione + " - Aggiornamento: " + ultimoa_aggiornamento)
+print("(Antispam) Versione: " + versione + " - Aggiornamento: " + ultimo_aggiornamento)
 
 BLOCCO_PAROLE_VIETATE = 2  # 0 -> Attivato: Elimina messaggi e invia messaggio agli admin in privato
 # 1 -> Disattivato: Non effettua alcun controllo
@@ -559,7 +559,7 @@ def risposte(msg):
         # BOT IN CHAT PRIVATA
 
         messaggio_sviluppatore_versione_aggiornamento = "MozIta Antispam Bot è stato sviluppato, per la comunità italiana di Mozilla Italia, da Saverio Morelli (@Sav22999) con il supporto e aiuto di Damiano Gualandri (@dag7dev), Simone Massaro (@mone27) e molti altri.\n\n" + \
-            "Versione: " + versione + " - Aggiornamento: " + ultimoa_aggiornamento
+            "Versione: " + versione + " - Aggiornamento: " + ultimo_aggiornamento
         status_user = identifica_utente(user_id)
         if status_user == "A":
             err1 = False
