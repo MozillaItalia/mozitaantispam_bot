@@ -31,7 +31,7 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.3.6"  # Cambiare manualmente
+versione = "1.3.7"  # Cambiare manualmente
 ultimo_aggiornamento = "19-03-2019"  # Cambiare manualmentente
 
 # Per poter sapere quale versione è in esecuzione (da terminale)
@@ -449,9 +449,9 @@ def risposte(msg):
                                 chat_id,
                                 str(
                                     (frasi["utente_confermato"]).replace(
-                                        "{{**utenteCheConferma**}}",
+                                        "{{**utente_che_conferma**}}",
                                         str(username_utente_nousername))).replace(
-                                    "{{**utenteConfermato**}}",
+                                    "{{**utente_confermato**}}",
                                     str(username_utente_nousername_temp)),
                                 parse_mode="HTML")
                             bot.sendMessage(chat_id, str( frasi["utente_confermato2"]).replace(
