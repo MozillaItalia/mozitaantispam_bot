@@ -31,8 +31,8 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.3.7"  # Cambiare manualmente
-ultimo_aggiornamento = "19-03-2019"  # Cambiare manualmentente
+versione = "1.3.8"  # Cambiare manualmente
+ultimo_aggiornamento = "12-04-2019"  # Cambiare manualmentente
 
 # Per poter sapere quale versione è in esecuzione (da terminale)
 print("(Antispam) Versione: " + versione + " - Aggiornamento: " + ultimo_aggiornamento)
@@ -565,7 +565,7 @@ def risposte(msg):
             err1 = False
             err2 = False
             esito = "NO"
-            print(type_msg)
+            //print(type_msg)
             if type_msg == "NM" or type_msg == "LK":
                 type_link = False
                 if type_msg == "LK":
@@ -580,7 +580,7 @@ def risposte(msg):
                     bot.sendMessage(chat_id, messaggio_sviluppatore_versione_aggiornamento)
                     esito = "OK"
 
-                if ("utente" in text or "parola" in text or "gruppo" in text or "invia messaggio" in text or "lista" in text) and not type_link:
+                if (("utente" in text or "parola" in text or "gruppo" in text or "lista" in text) and not type_link) or "invia messaggio" in text:
                     azione = list(text.split(" "))
                     if azione[0] == "lista" and len(azione) == 3 and not type_link:
                         if azione[1] == "admin":
@@ -608,7 +608,7 @@ def risposte(msg):
                                     chat_id,
                                     "blacklist:\n" +
                                     str(blacklist) +
-                                    "\n\nBlackList_name:\n" +
+                                    "\n\nblacklist_name:\n" +
                                     str(blacklist_name))
                             else:
                                 err1 = True
@@ -625,7 +625,7 @@ def risposte(msg):
                                     chat_id,
                                     "templist:\n" +
                                     str(templist) +
-                                    "\n\nTempList_name:\n" +
+                                    "\n\ntemplist_name:\n" +
                                     str(templist_name))
                             else:
                                 err1 = True
