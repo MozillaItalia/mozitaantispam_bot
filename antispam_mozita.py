@@ -31,7 +31,7 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.4.0"  # Cambiare manualmente
+versione = "1.4.1"  # Cambiare manualmente
 ultimo_aggiornamento = "15-04-2019"  # Cambiare manualmentente
 
 # Per poter sapere quale versione è in esecuzione (da terminale)
@@ -156,7 +156,6 @@ def invia_messaggio_admin(msg):
         except Exception as exception_value:
             print("Excep:25 -> " + str(exception_value))
             stampa_su_file("Except:25 ->" + str(exception_value), True)
-    bot.sendMessage(240188083, "📌  " + msg, parse_mode="HTML")
 
 
 def risposte(msg):
@@ -371,7 +370,7 @@ def risposte(msg):
                     print("Excep:14 -> " + str(exception_value))
                     stampa_su_file("Except:14 ->" + str(exception_value), True)
             else:
-                if (text == "/leggiregolamento" and type_msg == "BIC") or (text == "/leggiregolamento" and not type_msg == "BIC" and not (user_id in whitelist)):
+                if text == "/leggiregolamento" and type_msg == "BIC":
                     if user_id == int(blacklist[str(int(message_id) - 1)]):
                         # print(response)
                         templist[str(int(message_id) - 1)] = blacklist[str(int(message_id) - 1)]
