@@ -92,7 +92,7 @@ Il bot, in automatico, inserisce il nominativo (user_id) nella **TempList** in a
 Inoltre il messaggio di benvenuto relativo all'utente viene automaticamente eliminato.
 Gli Admin possono anche premere su "Blocca utente" che bannerà l'utente in un singolo clic.
 
-Il messaggio viene visualizzato **solo** nel primo gruppo in cui si ci unisce. È possibile mostrare il messaggio di benvenuto (anche negli altri gruppi) digitando il comando <code>/benvenuto</code>.
+Il messaggio viene visualizzato **solo** nel primo gruppo in cui si ci unisce. È possibile (ri)mostrare il messaggio di benvenuto (anche negli altri gruppi) digitando il comando <code>/benvenuto</code>.
 
 ### Conferma identità
 Tutti gli utenti presenti nella **WhiteList** possono confermare l'identità degli utenti.
@@ -152,10 +152,10 @@ Ecco ciò che si può fare in chat (**solo in chat: i comandi non funzionano nei
 Gli utenti *bloccati*, se credono di esserlo stati (bloccati) per errore, possono inviare una segnalazione tramite chat privata dal bot (<code>@mozita_antispam_bot</code>):
 
 1. Digitare <code>/start</code> 
-1. Premere sul bottone <code>Segnala il possibile errore</code>
+1. Premere sul bottone <code>Segnala il possibile errore</code> del messaggio visualizzato
 
 Gli amministratori effettueranno tutte le dovute verifiche.
-**Il messaggio può essere inviato una singola volta.**
+**Il messaggio di segnalazione può essere inviato una singola volta.**
 
 In caso ci fosse stato un errore, l’utente interessato verrà sbloccato e potrà unirsi nuovamente ai gruppi di Mozilla Italia. In caso contrario, invece, rimarrà nello stato di *Bloccato/Utente spam* e, quindi, non potrà entrare più nei gruppi comunitari.
 
