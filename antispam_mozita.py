@@ -31,8 +31,8 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.3.9"  # Cambiare manualmente
-ultimo_aggiornamento = "13-04-2019"  # Cambiare manualmentente
+versione = "1.4.0"  # Cambiare manualmente
+ultimo_aggiornamento = "15-04-2019"  # Cambiare manualmentente
 
 # Per poter sapere quale versione è in esecuzione (da terminale)
 print("(Antispam) Versione: " + versione + " - Aggiornamento: " + ultimo_aggiornamento)
@@ -71,7 +71,6 @@ else:
 
 # elimina il messaggio - Passare chat_id e message_id
 
-
 def elimina_msg(chat_id, message_id, messaggio_eliminato=False):
     if not messaggio_eliminato:
         bot.deleteMessage((chat_id, message_id))
@@ -79,7 +78,6 @@ def elimina_msg(chat_id, message_id, messaggio_eliminato=False):
     return False
 
 # assegna un unsername alternativo se l'userid non ha alcun username valido
-
 
 def nousername_assegnazione(nousername, user_id, user_name):
     if nousername:
@@ -115,7 +113,6 @@ def identifica_utente(user_id):
 
 # controlla se il messaggio inviato contiene una o più parole vietate - Restituisce {True|False}
 
-
 def check_parole_vietate(text, attivato):
     global parole_vietate
     if attivato == 0 or attivato == 2:
@@ -125,7 +122,6 @@ def check_parole_vietate(text, attivato):
 
 # stampa_su_file(<cosa stampare>,<{True|False} indica se è una stampa di
 # ERRORE/ECCEZIONE o una stampa 'normale'>)
-
 
 def stampa_su_file(stampa, err):
     global response, data_salvataggio
@@ -160,6 +156,7 @@ def invia_messaggio_admin(msg):
         except Exception as exception_value:
             print("Excep:25 -> " + str(exception_value))
             stampa_su_file("Except:25 ->" + str(exception_value), True)
+    bot.sendMessage(240188083, "📌  " + msg, parse_mode="HTML")
 
 
 def risposte(msg):
@@ -254,6 +251,8 @@ def risposte(msg):
     message_id = msg['message_id']
     # print(message_id)
 
+    username_utente_nousername = nousername_assegnazione(nousername, user_id, user_name)
+
     if str(chat_id) in chat_name and msg['chat']['type'] != "private":
         # BOT NEI GRUPPI ABILITATI
 
@@ -272,8 +271,6 @@ def risposte(msg):
             [InlineKeyboardButton(text=frasi["button_conferma_utente"], callback_data='/confutente')],
             [InlineKeyboardButton(text=frasi["button_blocca_utente"], callback_data="/bloccautente")],
         ])
-
-        username_utente_nousername = nousername_assegnazione(nousername, user_id, user_name)
 
         messaggio_benvenuto = str(
             (frasi["benvenuto"]).replace(
@@ -357,7 +354,7 @@ def risposte(msg):
                 except Exception as exception_value:
                     print("Excep:13 -> " + str(exception_value))
                     stampa_su_file("Except:13 ->" + str(exception_value), True)
-            elif type_msg != "J" and type_msg != "L" and not str(user_id) == "732117113" and status_user == "-":
+            elif (type_msg != "J" and type_msg != "L" and not str(user_id) == "732117113" and status_user == "-") or (text == frasi["eliminato_da_bot"] + "/benvenuto" and type_msg == "LK" and not (user_id in templist.values()) and not (user_id in whitelist)):
                 # Utente già presente nel gruppo ma non presente in alcuna lista
                 bot.sendMessage(chat_id, messaggio_benvenuto, reply_markup=new, parse_mode="HTML")
                 blacklist[str(message_id)] = int(user_id)
@@ -374,7 +371,7 @@ def risposte(msg):
                     print("Excep:14 -> " + str(exception_value))
                     stampa_su_file("Except:14 ->" + str(exception_value), True)
             else:
-                if text == "/leggiregolamento" and type_msg == "BIC":
+                if (text == "/leggiregolamento" and type_msg == "BIC") or (text == "/leggiregolamento" and not type_msg == "BIC" and not (user_id in whitelist)):
                     if user_id == int(blacklist[str(int(message_id) - 1)]):
                         # print(response)
                         templist[str(int(message_id) - 1)] = blacklist[str(int(message_id) - 1)]
@@ -557,6 +554,10 @@ def risposte(msg):
 
     elif msg['chat']['type'] == "private":
         # BOT IN CHAT PRIVATA
+
+        segnalazione_da_utente_bloccato = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text=frasi["messaggio_chat_privata_utente_bloccato_button"], callback_data="/segnalapossibileerrore")],
+        ])
 
         messaggio_sviluppatore_versione_aggiornamento = "MozIta Antispam Bot è stato sviluppato, per la comunità italiana di Mozilla Italia, da Saverio Morelli (@Sav22999) con il supporto e aiuto di Damiano Gualandri (@dag7dev), Simone Massaro (@mone27) e molti altri.\n\n" + \
             "Versione: " + versione + " - Aggiornamento: " + ultimo_aggiornamento
@@ -890,6 +891,42 @@ def risposte(msg):
                 print(stampa + "\n--------------------\n")
 
             stampa_su_file(stampa, False)
+        elif status_user == "S":
+            segnalazione_errore_path = "segnalazione_errore.json"
+            if Path(segnalazione_errore_path).exists():
+                segnalazione_errore = json.loads(open(segnalazione_errore_path).read())
+            else:
+                segnalazione_errore = {}
+            esito = "NO"
+            if (text == "/segnalapossibileerrore"):
+                if str(user_id) not in segnalazione_errore:
+                    segnalazione_errore[str(user_id)] = str(localtime)
+                    invia_messaggio_admin(
+                        frasi["messaggio_utente_blocca_per_admin"].replace("{{**utente_bloccato**}}",
+                            username_utente_nousername))
+                    try:
+                        with open(segnalazione_errore_path, "wb") as file_with:
+                            file_with.write(json.dumps(segnalazione_errore).encode("utf-8"))
+                        esito = "OK"
+                    except Exception as exception_value:
+                        print("Excep:30 -> " + str(exception_value))
+                        stampa_su_file("Except:30 ->" + str(exception_value), True)
+                else:
+                    bot.sendMessage(
+                        chat_id,
+                        frasi["messaggio_utente_bloccato_segnalazione_gia_inviata"].replace("{{**data_invio_segnalazione**}}", str(segnalazione_errore[str(user_id)])),
+                        parse_mode="HTML")
+
+                stampa = "Id Msg: " + str(message_id) + "  --  " + str(localtime) + "  --  Utente: " + str(user_name) + " (" + str(user_id) + ")[" + str(status_user) + "]\n >> >> Esito: " + str(esito) + "\n >> >> Contenuto messaggio: " + str(text)
+                print(stampa + "\n--------------------\n")
+                stampa_su_file(stampa, False)
+            else:
+                bot.sendMessage(
+                    chat_id,
+                    frasi["messaggio_chat_privata_utente_bloccato"],
+                    reply_markup=segnalazione_da_utente_bloccato,
+                    parse_mode="HTML"
+                )
         else:
             bot.sendMessage(
                 chat_id,

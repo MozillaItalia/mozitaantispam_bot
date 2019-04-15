@@ -9,5 +9,9 @@
 	"button_blocca_utente": "Blocca utente ❌",
 	"button_leggi_regolamento": "Leggi il regolamento completo 📙",
 	"button_conferma_utente": "Conferma identità utente ☑️",
-	"eliminato_da_bot": "(eliminato dal bot) "
+	"eliminato_da_bot": "(eliminato dal bot) ",
+	"messaggio_chat_privata_utente_bloccato": "Sei stato bloccato, perciò non hai più la possibilità di unirti ai gruppi comunitari.\nSe pensi che tu sia stato bloccato per errore, ti preghiamo di premere il pulsante di seguito e provvederemo ad effettuare verifiche più approfondite.",
+	"messaggio_chat_privata_utente_bloccato_button": "Segnala il possibile errore",
+	"messaggio_utente_blocca_per_admin": "L'utente {{**utente_bloccato**}} (bloccato) chiede di effettuare verifiche sul perché sia stato bloccato.",
+	"messaggio_utente_bloccato_segnalazione_gia_inviata": "Hai già inviato una segnalazione (<b>{{**data_invio_segnalazione**}}</b>). Gli amministratori provvederanno ad effettuare le dovute verifiche.\nIn caso di errore sarai sbloccato (verrai contattato in chat privata), altrimenti rimarrai alla stato attuale."
 }
