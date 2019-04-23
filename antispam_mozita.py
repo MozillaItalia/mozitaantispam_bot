@@ -31,8 +31,8 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.4.1"  # Cambiare manualmente
-ultimo_aggiornamento = "15-04-2019"  # Cambiare manualmentente
+versione = "1.4.2"  # Cambiare manualmente
+ultimo_aggiornamento = "23-04-2019"  # Cambiare manualmentente
 
 # Per poter sapere quale versione è in esecuzione (da terminale)
 print("(Antispam) Versione: " + versione + " - Aggiornamento: " + ultimo_aggiornamento)
@@ -249,7 +249,6 @@ def risposte(msg):
     # print(chat_id)
     message_id = msg['message_id']
     # print(message_id)
-
     username_utente_nousername = nousername_assegnazione(nousername, user_id, user_name)
 
     if str(chat_id) in chat_name and msg['chat']['type'] != "private":
@@ -413,14 +412,14 @@ def risposte(msg):
 
                 elif text == "/confutente" and type_msg == "BIC":
                     if user_id in whitelist or user_id in adminlist:
-                        user_name_temp = str(msg['text'].split(" ")[0]).lstrip("@")
-                        #print("Username temp: "+str(user_name_temp))
+                        user_name_temp = str(msg['text'].split(" ")[0])
+                        # print("Username temp: "+str(user_name_temp))
                         # print("Messaggio:"+msg['text'])
-                        nousername_temp = False
-                        if "[*NessunUsername*]" + str(user_name_temp) in templist_name.values():
-                            nousername_temp = True
+                        if "@" in user_name_temp:
+                            user_name_temp = user_name_temp.lstrip("@")
+                        else:
                             user_name_temp = "[*NessunUsername*]" + str(user_name_temp)
-                        if str(user_name_temp) in templist_name.values() or nousername_temp:
+                        if str(user_name_temp) in templist_name.values():
                             username_utente_nousername = nousername_assegnazione(
                                 nousername, user_id, user_name)
                             user_id_temp = int(
@@ -474,7 +473,11 @@ def risposte(msg):
                         text = "|| Conferma utente ||\n >> >> Esito: NO"
                 elif text == "/bloccautente" and type_msg == "BIC":
                     if user_id in adminlist:
-                        user_name_temp = str(msg['text'].split(" ")[0]).lstrip("@")
+                        user_name_temp = str(msg['text'].split(" ")[0])
+                        if "@" in user_name_temp:
+                            user_name_temp = user_name_temp.lstrip("@")
+                        else:
+                            user_name_temp = "[*NessunUsername*]" + str(user_name_temp)
                         user_id_temp = 0  # imposto l'user_id a "0"
                         if user_name_temp in blacklist_name.values():
                             user_id_temp = int(
@@ -490,12 +493,12 @@ def risposte(msg):
                                     list(
                                         templist_name.values()).index(
                                         str(user_name_temp))])
-                        #print(str(user_id_temp) + " " + str(user_name_temp))
+                        # print(str(user_id_temp) + " " + str(user_name_temp))
                         if not(user_id_temp in adminlist) and not user_id_temp == 0:
                             try:
                                 if not int(user_id_temp) in spamlist:
                                     spamlist.append(int(user_id_temp))
-                                bot.kickChatMember(chat_id, user_id_temp, until_date=None)
+                                # bot.kickChatMember(chat_id, user_id_temp, until_date=None)
                                 username_utente_nousername = nousername_assegnazione(
                                     nousername, user_id_temp, user_name_temp)
                                 try:
