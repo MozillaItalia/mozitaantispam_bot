@@ -31,7 +31,7 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.4.2"  # Cambiare manualmente
+versione = "1.4.3"  # Cambiare manualmente
 ultimo_aggiornamento = "23-04-2019"  # Cambiare manualmentente
 
 # Per poter sapere quale versione è in esecuzione (da terminale)
@@ -249,6 +249,7 @@ def risposte(msg):
     # print(chat_id)
     message_id = msg['message_id']
     # print(message_id)
+
     username_utente_nousername = nousername_assegnazione(nousername, user_id, user_name)
 
     if str(chat_id) in chat_name and msg['chat']['type'] != "private":
@@ -479,6 +480,7 @@ def risposte(msg):
                         else:
                             user_name_temp = "[*NessunUsername*]" + str(user_name_temp)
                         user_id_temp = 0  # imposto l'user_id a "0"
+
                         if user_name_temp in blacklist_name.values():
                             user_id_temp = int(
                                 list(
@@ -486,6 +488,15 @@ def risposte(msg):
                                     list(
                                         blacklist_name.values()).index(
                                         str(user_name_temp))])
+                            msg_id_temp = int(
+                                list(
+                                    blacklist.keys())[
+                                    list(
+                                        blacklist.values()).index(
+                                        int(user_id_temp))])
+                            del blacklist_name[str(user_id_temp)]
+                            del blacklist[str(msg_id_temp)]
+                            # print("Utente blacklist eliminato\n")
                         elif user_name_temp in templist_name.values():
                             user_id_temp = int(
                                 list(
@@ -493,7 +504,16 @@ def risposte(msg):
                                     list(
                                         templist_name.values()).index(
                                         str(user_name_temp))])
-                        # print(str(user_id_temp) + " " + str(user_name_temp))
+                            msg_id_temp = int(
+                                list(
+                                    templist.keys())[
+                                    list(
+                                        templist.values()).index(
+                                        int(user_id_temp))])
+                            del templist_name[str(user_id_temp)]
+                            del templist[str(msg_id_temp)]
+                            # print("Utente templist eliminato\n")
+                        # print(str(user_id_temp) + " " + str(user_name_temp) + " " + str(msg_id_temp))
                         if not(user_id_temp in adminlist) and not user_id_temp == 0:
                             try:
                                 if not int(user_id_temp) in spamlist:
@@ -529,6 +549,14 @@ def risposte(msg):
                             try:
                                 with open(spamlist_path, "wb") as file_with:
                                     file_with.write(json.dumps(spamlist).encode("utf-8"))
+                                with open(blacklist_path, "wb") as file_with:
+                                    file_with.write(json.dumps(blacklist).encode("utf-8"))
+                                with open(blacklist_name_path, "wb") as file_with:
+                                    file_with.write(json.dumps(blacklist_name).encode("utf-8"))
+                                with open(templist_path, "wb") as file_with:
+                                    file_with.write(json.dumps(templist).encode("utf-8"))
+                                with open(templist_name_path, "wb") as file_with:
+                                    file_with.write(json.dumps(templist_name).encode("utf-8"))
                             except Exception as exception_value:
                                 print("Excep:18 -> " + str(exception_value))
                                 stampa_su_file("Except:18 ->" + str(exception_value), True)
