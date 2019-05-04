@@ -31,7 +31,7 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.4.5"  # Cambiare manualmente
+versione = "1.4.6"  # Cambiare manualmente
 ultimo_aggiornamento = "05-05-2019"  # Cambiare manualmentente
 
 # Per poter sapere quale versione è in esecuzione (da terminale)
@@ -516,7 +516,30 @@ def risposte(msg):
                             user_name_temp = "[*NessunUsername*]" + str(user_name_temp)
                         user_id_temp = 0  # imposto l'user_id a "0"
 
-                        if user_name_temp in blacklist_name.values():
+                        if user_name_temp in templist_name.values():
+                            user_id_temp = int(
+                                list(
+                                    templist_name.keys())[
+                                    list(
+                                        templist_name.values()).index(
+                                        str(user_name_temp))])
+                            msg_id_temp = int(
+                                list(
+                                    templist.keys())[
+                                    list(
+                                        templist.values()).index(
+                                        int(user_id_temp))])
+                            del blacklist_name[str(user_id_temp)] # cancello l'utente da BlackList_name
+                            del templist_name[str(user_id_temp)] # cancello l'utente da TempList_name
+
+                            list_temp_msg_id_to_delete = []
+                            for x in templist:
+                                if str(templist[x]) == str(user_id_temp):
+                                    list_temp_msg_id_to_delete.append(x)
+                            for x in list_temp_msg_id_to_delete:
+                                del templist[x] # cancello ogni traccia dell'utente spam dalla TempList
+                            # print("Utente templist eliminato\n")
+                        elif user_name_temp in blacklist_name.values():
                             user_id_temp = int(
                                 list(
                                     blacklist_name.keys())[
@@ -530,69 +553,57 @@ def risposte(msg):
                                         blacklist.values()).index(
                                         int(user_id_temp))])
                             del blacklist_name[str(user_id_temp)]
-                            del blacklist[str(msg_id_temp)]
+
+                            list_black_msg_id_to_delete = []
+                            for x in blacklist:
+                                if str(blacklist[x]) == str(user_id_temp):
+                                    list_black_msg_id_to_delete.append(x)
+                            for x in list_black_msg_id_to_delete:
+                                del blacklist[x] # cancello ogni traccia dell'utente spam dalla BlackList
                             # print("Utente blacklist eliminato\n")
-                        elif user_name_temp in templist_name.values():
-                            user_id_temp = int(
-                                list(
-                                    templist_name.keys())[
-                                    list(
-                                        templist_name.values()).index(
-                                        str(user_name_temp))])
-                            msg_id_temp = int(
-                                list(
-                                    templist.keys())[
-                                    list(
-                                        templist.values()).index(
-                                        int(user_id_temp))])
-                            del templist_name[str(user_id_temp)]
-                            del templist[str(msg_id_temp)]
-                            # print("Utente templist eliminato\n")
                         # print(str(user_id_temp) + " " + str(user_name_temp) + " " + str(msg_id_temp))
                         if not(user_id_temp in adminlist) and not user_id_temp == 0:
                             try:
                                 if not int(user_id_temp) in spamlist:
                                     spamlist.append(int(user_id_temp))
-                                # bot.kickChatMember(chat_id, user_id_temp, until_date=None)
-                                username_utente_nousername = nousername_assegnazione(
-                                    nousername, user_id_temp, user_name_temp)
-                                try:
-                                    # cancella messaggio
-                                    message_id_temp_deletemessage = int(message_id)
-                                    bot.deleteMessage((chat_id, message_id_temp_deletemessage))
-                                    # print(message_id_temp_deletemessage)
-                                except Exception as exception_value:
-                                    print("Excep:29 -> " + str(exception_value))
-                                    stampa_su_file("Except:29 ->" + str(exception_value), True)
-                                # bot.sendMessage(chat_id, str(frasi["utente_cacciato"]).replace("{{**username**}}", str(username_utente_nousername)), parse_mode="HTML")
-                                status_user = "S"  # spamlist
-                                if user_id in adminlist:
-                                    status_user = "A"
-                                invia_messaggio_admin(
-                                    username_utente_nousername +
-                                    ": BLOCCATO E CACCIATO -- Gruppo: <b>" +
-                                    str(nome_gruppo) +
-                                    "</b>")
+                                    bot.kickChatMember(chat_id, user_id_temp, until_date=None)
+                                    username_utente_nousername = nousername_assegnazione(
+                                        nousername, user_id_temp, user_name_temp)
+                                    # bot.sendMessage(chat_id, str(frasi["utente_cacciato"]).replace("{{**username**}}", str(username_utente_nousername)), parse_mode="HTML")
+                                    status_user = "S"  # spamlist
+                                    if user_id in adminlist:
+                                        status_user = "A"
+                                    invia_messaggio_admin(
+                                        username_utente_nousername +
+                                        ": BLOCCATO E CACCIATO -- Gruppo: <b>" +
+                                        str(nome_gruppo) +
+                                        "</b>")
                                 text = "|| Un utente è stato cacciato ||"
                             except Exception as exception_value:
                                 text += "\n >> >> Esito: NO"
                                 print("Excep:23 -> " + str(exception_value))
                                 stampa_su_file("Except:23 ->" + str(exception_value), True)
-                            try:
-                                with open(spamlist_path, "wb") as file_with:
-                                    file_with.write(json.dumps(spamlist).encode("utf-8"))
-                                with open(blacklist_path, "wb") as file_with:
-                                    file_with.write(json.dumps(blacklist).encode("utf-8"))
-                                with open(blacklist_name_path, "wb") as file_with:
-                                    file_with.write(json.dumps(blacklist_name).encode("utf-8"))
-                                with open(templist_path, "wb") as file_with:
-                                    file_with.write(json.dumps(templist).encode("utf-8"))
-                                with open(templist_name_path, "wb") as file_with:
-                                    file_with.write(json.dumps(templist_name).encode("utf-8"))
-                            except Exception as exception_value:
-                                print("Excep:18 -> " + str(exception_value))
-                                stampa_su_file("Except:18 ->" + str(exception_value), True)
+                        try:
+                            with open(spamlist_path, "wb") as file_with:
+                                file_with.write(json.dumps(spamlist).encode("utf-8"))
+                            with open(blacklist_path, "wb") as file_with:
+                                file_with.write(json.dumps(blacklist).encode("utf-8"))
+                            with open(blacklist_name_path, "wb") as file_with:
+                                file_with.write(json.dumps(blacklist_name).encode("utf-8"))
+                            with open(templist_path, "wb") as file_with:
+                                file_with.write(json.dumps(templist).encode("utf-8"))
+                            with open(templist_name_path, "wb") as file_with:
+                                file_with.write(json.dumps(templist_name).encode("utf-8"))
+                        except Exception as exception_value:
+                            print("Excep:18 -> " + str(exception_value))
+                            stampa_su_file("Except:18 ->" + str(exception_value), True)
                         text = "|| Blocca utente ||\n >> >> Esito: OK"
+                        try:
+                            # cancella messaggio
+                            elimina_msg(chat_id, message_id)
+                        except Exception as exception_value:
+                            print("Excep:29 -> " + str(exception_value))
+                            stampa_su_file("Except:29 ->" + str(exception_value), True)
                     else:
                         text = "|| Blocca utente ||\n >> >> Esito: NO"
         except Exception as exception_value:
