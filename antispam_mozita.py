@@ -31,8 +31,8 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.4.3"  # Cambiare manualmente
-ultimo_aggiornamento = "23-04-2019"  # Cambiare manualmentente
+versione = "1.4.4"  # Cambiare manualmente
+ultimo_aggiornamento = "04-05-2019"  # Cambiare manualmentente
 
 # Per poter sapere quale versione è in esecuzione (da terminale)
 print("(Antispam) Versione: " + versione + " - Aggiornamento: " + ultimo_aggiornamento)
@@ -529,10 +529,7 @@ def risposte(msg):
                                 except Exception as exception_value:
                                     print("Excep:29 -> " + str(exception_value))
                                     stampa_su_file("Except:29 ->" + str(exception_value), True)
-                                bot.sendMessage(
-                                    chat_id, str(
-                                        frasi["utente_cacciato"]).replace(
-                                        "{{**username**}}", str(username_utente_nousername)), parse_mode="HTML")
+                                # bot.sendMessage(chat_id, str(frasi["utente_cacciato"]).replace("{{**username**}}", str(username_utente_nousername)), parse_mode="HTML")
                                 status_user = "S"  # spamlist
                                 if user_id in adminlist:
                                     status_user = "A"
