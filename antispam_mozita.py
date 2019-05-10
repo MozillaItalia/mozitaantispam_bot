@@ -31,8 +31,8 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.4.6"  # Cambiare manualmente
-ultimo_aggiornamento = "05-05-2019"  # Cambiare manualmentente
+versione = "1.4.7"  # Cambiare manualmente
+ultimo_aggiornamento = "10-05-2019"  # Cambiare manualmentente
 
 # Per poter sapere quale versione è in esecuzione (da terminale)
 print("(Antispam) Versione: " + versione + " - Aggiornamento: " + ultimo_aggiornamento)
@@ -40,6 +40,8 @@ print("(Antispam) Versione: " + versione + " - Aggiornamento: " + ultimo_aggiorn
 BLOCCO_PAROLE_VIETATE = 2  # 0 -> Attivato: Elimina messaggi e invia messaggio agli admin in privato
 # 1 -> Disattivato: Non effettua alcun controllo
 # 2 -> "Semi"-Attivo: NON elimina messaggi, ma invia messaggio agli admin in privato
+
+USER_ID_BOT = "732117113"
 
 data_salvataggio = ""
 response = ""
@@ -171,7 +173,7 @@ def risposte(msg):
 
     global response
     response = bot.getUpdates()
-    # print(response)
+    # print(response) # da mettere come commento nella stabile
 
     global adminlist
     global whitelist
@@ -300,7 +302,13 @@ def risposte(msg):
         status_user = identifica_utente(user_id)
 
         try:
-            if status_user == "S":
+            if status_user == "-":
+                if not messaggio_eliminato and not type_msg == "BIC":
+                    messaggio_eliminato = elimina_msg(chat_id, message_id, messaggio_eliminato)
+                    text = frasi["eliminato_da_bot"] + text
+                elif type_msg == "BIC":
+                    messaggio_eliminato = True
+            elif status_user == "S":
                 if not messaggio_eliminato:
                     messaggio_eliminato = elimina_msg(chat_id, message_id, messaggio_eliminato)
                     text = frasi["eliminato_da_bot"] + text
@@ -338,9 +346,12 @@ def risposte(msg):
                 if not messaggio_eliminato:
                     messaggio_eliminato = elimina_msg(chat_id, message_id, messaggio_eliminato)
                     text = frasi["eliminato_da_bot"] + text
+            if text == frasi["eliminato_da_bot"] + "/confutente":
+                messaggio_eliminato = True # 
 
+            global USER_ID_BOT
             # 732117113 -> userid del bot
-            if type_msg == "J" and not str(user_id) == "732117113":
+            if type_msg == "J" and not str(user_id) == USER_ID_BOT:
                 # Nuovo utente
                 bot.sendMessage(chat_id, messaggio_benvenuto, reply_markup=new, parse_mode="HTML")
                 blacklist[str(message_id)] = int(user_id)
@@ -353,7 +364,7 @@ def risposte(msg):
                 except Exception as exception_value:
                     print("Excep:13 -> " + str(exception_value))
                     stampa_su_file("Except:13 ->" + str(exception_value), True)
-            elif (type_msg != "J" and type_msg != "L" and not str(user_id) == "732117113" and status_user == "-") or (text == frasi["eliminato_da_bot"] + "/benvenuto" and type_msg == "LK" and not (user_id in templist.values()) and not (user_id in whitelist)):
+            elif (type_msg != "J" and type_msg != "L" and not str(user_id) == USER_ID_BOT and status_user == "-") or (text == frasi["eliminato_da_bot"] + "/benvenuto" and type_msg == "LK" and not (user_id in templist.values()) and not (user_id in whitelist)):
                 # Utente già presente nel gruppo ma non presente in alcuna lista
                 bot.sendMessage(chat_id, messaggio_benvenuto, reply_markup=new, parse_mode="HTML")
                 blacklist[str(message_id)] = int(user_id)
