@@ -31,8 +31,8 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.4.8"  # Cambiare manualmente
-ultimo_aggiornamento = "14-05-2019"  # Cambiare manualmentente
+versione = "1.4.9"  # Cambiare manualmente
+ultimo_aggiornamento = "15-05-2019"  # Cambiare manualmentente
 
 # Per poter sapere quale versione è in esecuzione (da terminale)
 print("(Antispam) Versione: " + versione + " - Aggiornamento: " + ultimo_aggiornamento)
@@ -308,7 +308,7 @@ def risposte(msg):
                     text = frasi["eliminato_da_bot"] + text
                 elif type_msg == "BIC":
                     messaggio_eliminato = True
-            elif status_user == "S" and not (text == "/bloccautente" and type_msg == "BIC"):
+            elif status_user == "S" and not (type_msg == "LR"):
                 if not messaggio_eliminato:
                     messaggio_eliminato = elimina_msg(chat_id, message_id, messaggio_eliminato)
                     text = frasi["eliminato_da_bot"] + text
