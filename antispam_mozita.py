@@ -31,8 +31,8 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.4.9"  # Cambiare manualmente
-ultimo_aggiornamento = "15-05-2019"  # Cambiare manualmentente
+versione = "1.4.10"  # Cambiare manualmente
+ultimo_aggiornamento = "01-06-2019"  # Cambiare manualmentente
 
 # Per poter sapere quale versione è in esecuzione (da terminale)
 print("(Antispam) Versione: " + versione + " - Aggiornamento: " + ultimo_aggiornamento)
@@ -351,7 +351,7 @@ def risposte(msg):
 
             global USER_ID_BOT
             # 732117113 -> userid del bot
-            if type_msg == "J" and not str(user_id) == USER_ID_BOT:
+            if type_msg == "J" and not str(user_id) == USER_ID_BOT and not status_user == "S":
                 # Nuovo utente
                 bot.sendMessage(chat_id, messaggio_benvenuto, reply_markup=new, parse_mode="HTML")
                 blacklist[str(message_id)] = int(user_id)
