@@ -31,8 +31,8 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.4.10"  # Cambiare manualmente
-ultimo_aggiornamento = "01-06-2019"  # Cambiare manualmentente
+versione = "1.4.10.1"  # Cambiare manualmente
+ultimo_aggiornamento = "22-07-2019"  # Cambiare manualmentente
 
 # Per poter sapere quale versione è in esecuzione (da terminale)
 print("(Antispam) Versione: " + versione + " - Aggiornamento: " + ultimo_aggiornamento)
@@ -245,6 +245,7 @@ def risposte(msg):
         nousername = True
     # print(user_id)
     # print(user_name)
+
     if "chat" not in msg:
         msg = msg["message"]
     chat_id = msg['chat']['id']
@@ -314,8 +315,6 @@ def risposte(msg):
                     text = frasi["eliminato_da_bot"] + text
                 try:
                     bot.kickChatMember(chat_id, user_id, until_date=None)
-                    username_utente_nousername = nousername_assegnazione(
-                        nousername, user_id, user_name)
                     bot.sendMessage(
                         chat_id, str(
                             frasi["utente_cacciato"]).replace(
@@ -407,8 +406,6 @@ def risposte(msg):
                             quindi può essere presente più di una ricorrenza nella BlackList -> le altre ricorrenze vengono automaticamente rimosse quando l'utente viene confermato
                             '''
                             status_user = "T"
-                            username_utente_nousername = nousername_assegnazione(
-                                nousername, user_id, user_name)
 
                             bot.sendMessage(
                             chat_id, str(
