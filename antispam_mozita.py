@@ -31,8 +31,8 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.4.10.1"  # Cambiare manualmente
-ultimo_aggiornamento = "22-07-2019"  # Cambiare manualmentente
+versione = "1.4.10.2"  # Cambiare manualmente
+ultimo_aggiornamento = "06-09-2019"  # Cambiare manualmentente
 
 # Per poter sapere quale versione è in esecuzione (da terminale)
 print("(Antispam) Versione: " + versione + " - Aggiornamento: " + ultimo_aggiornamento)
@@ -70,6 +70,7 @@ if Path(parole_vietate_path).exists():
     parole_vietate = json.loads(open(parole_vietate_path).read())
 else:
     parole_vietate = []
+link_regolamento = "https://github.com/MozillaItalia/mozitaantispam_bot/wiki/Regolamento"
 
 # elimina il messaggio - Passare chat_id e message_id
 
@@ -269,9 +270,13 @@ def risposte(msg):
             [InlineKeyboardButton(text=frasi["button_blocca_utente"], callback_data="/bloccautente")],
         ])
         regolamentoletto = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text=frasi["button_leggi_regolamento"], url='https://github.com/Sav22999/Guide/blob/master/Mozilla%20Italia/Telegram/regolamento.md')],
+            [InlineKeyboardButton(text=frasi["button_leggi_regolamento"], url=link_regolamento)],
             [InlineKeyboardButton(text=frasi["button_conferma_utente"], callback_data='/confutente')],
             [InlineKeyboardButton(text=frasi["button_blocca_utente"], callback_data="/bloccautente")],
+        ])
+
+        linkregolamento = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text=frasi["button_leggi_regolamento"], url=link_regolamento)],
         ])
 
         messaggio_benvenuto = str(
@@ -468,9 +473,9 @@ def risposte(msg):
                                             str(username_utente_nousername))).replace(
                                         "{{**utente_confermato**}}",
                                         str(username_utente_nousername_temp)),
-                                    parse_mode="HTML")
-                                bot.sendMessage(chat_id, str( frasi["utente_confermato2"]).replace(
-                                    "{{**username**}}", str(username_utente_nousername_temp)), parse_mode="HTML")
+                                            parse_mode="HTML")
+                                bot.sendMessage(chat_id, str(frasi["utente_confermato2"]).replace(
+                                    "{{**username**}}", str(username_utente_nousername_temp)), reply_markup=linkregolamento, parse_mode="HTML")
                                 if not int(templist[str(int(message_id_temp) - 1)]) in whitelist:
                                     whitelist.append(int(templist[str(int(message_id_temp) - 1)]))
                                 user_id_to_delete = str(templist[str(int(message_id_temp) - 1)])
