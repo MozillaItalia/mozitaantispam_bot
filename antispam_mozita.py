@@ -31,8 +31,8 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.4.10.2"  # Cambiare manualmente
-ultimo_aggiornamento = "06-09-2019"  # Cambiare manualmentente
+versione = "1.4.11"  # Cambiare manualmente
+ultimo_aggiornamento = "21-10-2019"  # Cambiare manualmentente
 
 # Per poter sapere quale versione è in esecuzione (da terminale)
 print("(Antispam) Versione: " + versione + " - Aggiornamento: " + ultimo_aggiornamento)
@@ -87,7 +87,7 @@ def nousername_assegnazione(nousername, user_id, user_name):
         return "<a href='tg://user?id=" + str(user_id) + "'>" + str(user_id) + "</a>"
     else:
         return "<a href='tg://user?id=" + \
-            str(user_id) + "'>@" + str(user_name) + "</a>" + " (<code>" + str(user_id) + "</code>)"
+               str(user_id) + "'>@" + str(user_name) + "</a>" + " (<code>" + str(user_id) + "</code>)"
 
 
 # determina lo status dell'utente: user_id -> intero e type_msg -> stringa
@@ -404,7 +404,7 @@ def risposte(msg):
                             templist[str(int(message_id) - 1)] = blacklist[str(int(message_id) - 1)]
                             # print(templist[str(int(message_id)-1)]) #userid
                             templist_name[str(templist[str(int(message_id) - 1)])
-                                        ] = blacklist_name[str(blacklist[str(int(message_id) - 1)])]
+                            ] = blacklist_name[str(blacklist[str(int(message_id) - 1)])]
                             del blacklist[str(int(message_id) - 1)] # cancello l'utente SOLO dalla BlackList (quando viene confermato, poi, viene rimosso anche dalla BlackList_name e viene rimosso ogni voce correlata residua anche da BlackList)
                             '''
                             Spiegazione: Un utente può entrare in vari gruppi (o comunque mostrare il messaggio di benvenuto tramite /benvenuto),
@@ -413,9 +413,9 @@ def risposte(msg):
                             status_user = "T"
 
                             bot.sendMessage(
-                            chat_id, str(
-                                frasi["regolamento_letto"]).replace(
-                                "{{**username**}}", str(username_utente_nousername)), reply_markup=regolamentoletto, parse_mode="HTML")
+                                chat_id, str(
+                                    frasi["regolamento_letto"]).replace(
+                                    "{{**username**}}", str(username_utente_nousername)), reply_markup=regolamentoletto, parse_mode="HTML")
 
                         try:
                             with open(blacklist_path, "wb") as file_with:
@@ -431,7 +431,7 @@ def risposte(msg):
                         text = "|| Lettura regolamento ||\n >> >> Esito: OK"
                     else:
                         text = "|| Lettura regolamento ||\n >> >> Esito: NO"
-                    
+
                     if not user_id_presente:
                         try:
                             # cancella messaggio di benvenuto
@@ -473,7 +473,7 @@ def risposte(msg):
                                             str(username_utente_nousername))).replace(
                                         "{{**utente_confermato**}}",
                                         str(username_utente_nousername_temp)),
-                                            parse_mode="HTML")
+                                    parse_mode="HTML")
                                 bot.sendMessage(chat_id, str(frasi["utente_confermato2"]).replace(
                                     "{{**username**}}", str(username_utente_nousername_temp)), reply_markup=linkregolamento, parse_mode="HTML")
                                 if not int(templist[str(int(message_id_temp) - 1)]) in whitelist:
@@ -645,8 +645,8 @@ def risposte(msg):
             [InlineKeyboardButton(text=frasi["messaggio_chat_privata_utente_bloccato_button"], callback_data="/segnalapossibileerrore")],
         ])
 
-        messaggio_sviluppatore_versione_aggiornamento = "MozIta Antispam Bot è stato sviluppato, per la comunità italiana di Mozilla Italia, da Saverio Morelli (@Sav22999) con il supporto e aiuto di Damiano Gualandri (@dag7dev), Simone Massaro (@mone27) e molti altri.\n\n" + \
-            "Versione: " + versione + " - Aggiornamento: " + ultimo_aggiornamento
+        messaggio_sviluppatore_versione_aggiornamento = "MozIta Antispam Bot è stato sviluppato, per la comunità italiana di Mozilla Italia, da Saverio Morelli (@Sav22999) con il supporto e aiuto di Damiano Gualandri (@dag7dev), Simone Massaro (@mone27) e molti altri (vedi su GitHub la lista completa).\n\n" + \
+                                                        "Versione: " + versione + " - Aggiornamento: " + ultimo_aggiornamento
         status_user = identifica_utente(user_id)
         if status_user == "A":
             err1 = False
@@ -657,18 +657,61 @@ def risposte(msg):
                 type_link = False
                 if type_msg == "LK":
                     type_link = True
-                if text == "/start" and type_link:
+                if text.lower() == "/start" and type_link:
                     bot.sendMessage(
                         chat_id,
                         "Benvenuto nella chat privata del bot.\nPuoi interagire con il bot, in chat privata, perché sei un amministratore.\nDigita /help per ottenere la lista di tutte le azioni che puoi fare nel bot IN PRIVATO (i comandi NON funzionano nei gruppi abilitati).")
                     esito = "OK"
-                elif text == "/help" and type_link:
-                    bot.sendMessage(chat_id, "Elenco azioni disponibili:\n - utente aggiungi |USERID|\n - utente blocca |USERID|\n - utente sblocca |USERID|\n - parola mostra\n - parola aggiungi |PAROLA/FRASE|\n - parola elimina |PAROLA/FRASE|\n - gruppo mostra\n - gruppo aggiungi |USERID| |NOME GRUPPO|\n - gruppo elimina |USERID|\n - invia messaggio |TESTO MESSAGGIO|\n - lista white mostra\n - lista spam mostra\n - lista black mostra\n - lista black elimina\n - lista temp mostra\n - lista temp elimina")
+                elif text.lower() == "/help" and type_link:
+                    # Elenco azioni
+                    bot.sendMessage(chat_id,
+                                    "Questo è l'elenco dei comandi che puoi eseguire:\n" +
+                                    "\n\n" +
+                                    "<b>Generali</b>:\n"
+                                    "- <code>invia messaggio |Testo del messaggio|</code> \n" +
+                                    "  <i>È supportata anche la formattazione (ma NON nidificata)</i>\n" +
+                                    "\n" +
+                                    "<b>Gestione utenti</b>:\n"
+                                    "- <code>utente aggiungi |UserID|</code>\n" +
+                                    "- <code>utente blocca |UserID|</code>\n" +
+                                    "- <code>utente sblocca |UserID|</code>\n" +
+                                    "\n" +
+                                    "<b>Gestione parole vietate</b>\n" +
+                                    "- <code>parola mostra</code>\n" +
+                                    "- <code>parola aggiungi |Parola/Frase|</code>\n" +
+                                    "- <code>parola elimina |Parola/Frase|</code>\n" +
+                                    "\n" +
+                                    "<b>Gestione gruppi abilitati</b>:\n" +
+                                    "- <code>gruppo mostra</code>\n" +
+                                    "- <code>gruppo aggiungi |UserID| |Nome gruppo|</code>\n" +
+                                    "  <i>Solitamente gli user_id dei (super)gruppi sono negativi</i>\n" +
+                                    "- <code>gruppo elimina |UserID|</code>\n" +
+                                    "\n" +
+                                    "<b>Gestione liste</b>:\n" +
+                                    "- <code>lista white mostra</code>\n" +
+                                    "- <code>lista spam mostra</code>\n" +
+                                    "- <code>lista black mostra</code>\n" +
+                                    "- <code>lista black elimina</code>\n" +
+                                    "- <code>lista temp mostra</code>\n" +
+                                    "- <code>lista temp elimina</code>\n" +
+                                    "\n" +
+                                    "<b>Scaricare file log di MozItaBot</b>:\n" +
+                                    "- <code>scarica |ANNO| |MESE| |GIORNO|</code>\n" +
+                                    "\n" +
+                                    "<b>Esempi:</b>\n" +
+                                    "- <code>invia messaggio Messaggio di prova</code>\n" +
+                                    "- <code>utente aggiungi 0123456789</code>\n" +
+                                    "- <code>gruppo aggiungi -0123456789 </code>1n" +
+                                    "- <code>scarica 2019 10 09</code>",
+                                    parse_mode="HTML")
                     bot.sendMessage(chat_id, messaggio_sviluppatore_versione_aggiornamento)
                     esito = "OK"
+                else:
+                    err1 = True
 
-                if (("utente" in text or "parola" in text or "gruppo" in text or "lista" in text) and not type_link) or "invia messaggio" in text:
-                    azione = list(text.split(" "))
+                if (("utente" in text.lower() or "parola" in text.lower() or "gruppo" in text.lower() or "lista" in text.lower() or "scarica" in text.lower()) and not type_link) or "invia messaggio" in text.lower():
+                    err1 = False
+                    azione = list(text.lower().split(" "))
                     if azione[0] == "lista" and len(azione) == 3 and not type_link:
                         if azione[1] == "admin":
                             if azione[2] == "mostra":
@@ -932,18 +975,22 @@ def risposte(msg):
                     elif azione[0] == "invia" and azione[1] == "messaggio" and len(azione) >= 3:
                         del azione[0]
                         del azione[0]
-                        messaggio = ' '.join(azione)
+                        azione_temp = list(text.split(" "))
+                        del azione_temp[0]
+                        del azione_temp[0]
+                        messaggio = ' '.join(azione_temp)
                         if len(chat_name) > 0:
                             for gruppo_x in chat_name.keys():
                                 try:
                                     bot.sendMessage(gruppo_x, messaggio, parse_mode="HTML")
-                                    bot.sendMessage(chat_id, "Messaggio inviato in \"" +
-                                                    str(chat_name[gruppo_x]) + "\"")
+                                    bot.sendMessage(chat_id, "Messaggio inviato in <a href=\"tg://user?id=" + str(gruppo_x) + "\">" + str(chat_name[gruppo_x]) + "</a>",
+                                                    parse_mode="HTML")
                                 except Exception as exception_value:
                                     print("Excep:05 -> " + str(exception_value))
                                     stampa_su_file("Except:05 ->" + str(exception_value), True)
                                     bot.sendMessage(
-                                        chat_id, "Non è stato possibile inviare il messaggio in: " + str(chat_name[gruppo_x]))
+                                        chat_id, "Non è stato possibile inviare il messaggio in: <a href=\"tg://user?id=" + str(gruppo_x) + "\">" + str(chat_name[gruppo_x]) + "</a>",
+                                        parse_mode="HTML")
                             bot.sendMessage(
                                 chat_id,
                                 "Messaggio inviato in tutti i gruppi abilitati.\n\nIl messaggio che è stato inviato è:\n" +
@@ -953,6 +1000,17 @@ def risposte(msg):
                         else:
                             bot.sendMessage(
                                 chat_id, "Non c'è alcun gruppo abilitato")
+                    elif azione[0].lower() == "scarica" and len(azione) == 4 and not type_link:
+                        # Azione per scaricare file di log -> esempio: scarica 2019 10 20
+                        nome_file = "log_" + azione[1] + "_" + azione[2] + "_" + azione[3] + ".txt"
+                        if os.path.exists("./history_mozitaantispam/" + nome_file):
+                            bot.sendMessage(chat_id, "<i>Invio del file " + nome_file + " in corso</i>",
+                                            parse_mode="HTML")
+                            bot.sendDocument(chat_id, open("./history_mozitaantispam/" + nome_file, "rb"))
+                            esito = "OK"
+                        else:
+                            bot.sendMessage(chat_id, "Il file <i>" + nome_file + "</i> non esiste.", parse_mode="HTML")
+                            esito = "NO"
                     else:
                         err1 = True
                 else:
@@ -989,7 +1047,7 @@ def risposte(msg):
                     segnalazione_errore[str(user_id)] = str(localtime)
                     invia_messaggio_admin(
                         frasi["messaggio_utente_blocca_per_admin"].replace("{{**utente_bloccato**}}",
-                            username_utente_nousername))
+                                                                           username_utente_nousername))
                     try:
                         with open(segnalazione_errore_path, "wb") as file_with:
                             file_with.write(json.dumps(segnalazione_errore).encode("utf-8"))
