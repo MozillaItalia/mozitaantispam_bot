@@ -146,6 +146,9 @@ Ecco ciò che si può fare in chat (**solo in chat: i comandi non funzionano nei
     - Eliminare utenti in BlackList: `lista black elimina`
     - Mostrare utenti in TempList: `lista temp mostra`
     - Eliminare utenti in TempList: `lista temp elimina`
+    
+- Scaricare file log: `scarica *AAAA* *MM* *GG*`
+    > scarica 2019 02 10
 
 ### Per gli utenti bloccati
 
