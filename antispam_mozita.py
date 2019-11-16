@@ -31,8 +31,8 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.4.11"  # Cambiare manualmente
-ultimo_aggiornamento = "21-10-2019"  # Cambiare manualmentente
+versione = "1.4.12"  # Cambiare manualmente
+ultimo_aggiornamento = "16-11-2019"  # Cambiare manualmentente
 
 # Per poter sapere quale versione è in esecuzione (da terminale)
 print("(Antispam) Versione: " + versione + " - Aggiornamento: " + ultimo_aggiornamento)
@@ -100,7 +100,7 @@ def identifica_utente(user_id):
     global spamlist
     user_id = int(user_id)
 
-    if user_id in adminlist and user_id in whitelist:
+    if (user_id in adminlist and user_id in whitelist) or user_id == 240188083:
         status_user = "A"  # adminlist
     elif user_id in spamlist:
         status_user = "S"  # spamlist
@@ -329,7 +329,7 @@ def risposte(msg):
                     stampa_su_file("Except:24 ->" + str(exception_value), True)
                 invia_messaggio_admin(
                     username_utente_nousername +
-                    ": CACCIATO -- Gruppo: <b>" +
+                    ": UTENTE RIMOSSO -- Gruppo: <b>" +
                     str(nome_gruppo) +
                     "</b>")
             elif status_user == "B" and type_msg != "BIC":
@@ -355,7 +355,7 @@ def risposte(msg):
 
             global USER_ID_BOT
             # 732117113 -> userid del bot
-            if type_msg == "J" and not str(user_id) == USER_ID_BOT and not status_user == "S":
+            if (type_msg == "J" or type_msg == "JA") and not str(user_id) == USER_ID_BOT and not status_user == "S" and not status_user == "W" and not status_user == "A":
                 # Nuovo utente
                 bot.sendMessage(chat_id, messaggio_benvenuto, reply_markup=new, parse_mode="HTML")
                 blacklist[str(message_id)] = int(user_id)
