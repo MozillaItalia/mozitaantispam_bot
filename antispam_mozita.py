@@ -445,7 +445,7 @@ def risposte(msg):
                         risposta_a_BIC(query_id)
                     else:
                         text = "|| Lettura regolamento ||\n >> >> Esito: NO"
-                        risposta_a_BIC(query_id, text="Non sei abilitato a premere questo pulsante.")
+                        risposta_a_BIC(query_id, "Non sei abilitato a premere questo pulsante.")
 
                     if not user_id_presente:
                         try:
@@ -536,7 +536,7 @@ def risposte(msg):
                         risposta_a_BIC(query_id)
                     else:
                         text = "|| Conferma utente ||\n >> >> Esito: NO"
-                        risposta_a_BIC(query_id, text="Non sei abilitato a premere questo pulsante.")
+                        risposta_a_BIC(query_id, "Non sei abilitato a premere questo pulsante.")
                 elif text == "/bloccautente" and type_msg == "BIC":
                     if user_id in adminlist:
                         user_name_temp = str(msg['text'].split(" ")[0])
@@ -637,7 +637,7 @@ def risposte(msg):
                         risposta_a_BIC(query_id)
                     else:
                         text = "|| Blocca utente ||\n >> >> Esito: NO"
-                        risposta_a_BIC(query_id, text="Non sei abilitato a premere questo pulsante.")
+                        risposta_a_BIC(query_id, "Non sei abilitato a premere questo pulsante.")
         except Exception as exception_value:
             print("Excep:01 -> " + str(exception_value))
             stampa_su_file("Except:01 ->" + str(exception_value), True)
