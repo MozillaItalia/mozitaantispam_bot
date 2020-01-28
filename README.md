@@ -1,5 +1,5 @@
 # MozIta Antispam Bot
-Questo è il repository della beta del nuovo bot antispam dei gruppi ufficiali della comunità di Mozilla Italia su Telegram.
+Questo è il repository del nuovo bot antispam dei gruppi ufficiali della comunità di Mozilla Italia su Telegram.
 
 
 # Informazioni utili
@@ -148,6 +148,7 @@ Ecco ciò che si può fare in chat (**solo in chat: i comandi non funzionano nei
     - Eliminare utenti in TempList: `lista temp elimina`
     
 - Scaricare file log: `scarica *AAAA* *MM* *GG*`
+    
     > scarica 2019 02 10
 
 ### Per gli utenti bloccati
