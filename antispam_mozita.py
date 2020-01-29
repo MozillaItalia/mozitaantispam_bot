@@ -31,8 +31,8 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.4.13"  # Cambiare manualmente
-ultimo_aggiornamento = "26-11-2019"  # Cambiare manualmentente
+versione = "1.5"  # Cambiare manualmente
+ultimo_aggiornamento = "28-01-2020"  # Cambiare manualmentente
 
 # Per poter sapere quale versione è in esecuzione (da terminale)
 print("(Antispam) Versione: " + versione + " - Aggiornamento: " + ultimo_aggiornamento)
@@ -183,7 +183,7 @@ def risposte(msg):
 
     global response
     response = bot.getUpdates()
-    # print(response) # da mettere come commento nella stabile
+    #print(response) # da mettere come commento nella stabile
 
     global adminlist
     global whitelist
@@ -321,7 +321,7 @@ def risposte(msg):
         status_user = identifica_utente(user_id)
 
         try:
-            if status_user == "-":
+            if status_user == "-" and not (type_msg == "LR"):
                 if not messaggio_eliminato and not type_msg == "BIC":
                     messaggio_eliminato = elimina_msg(chat_id, message_id, messaggio_eliminato)
                     text = frasi["eliminato_da_bot"] + text
@@ -368,7 +368,7 @@ def risposte(msg):
 
             global USER_ID_BOT
             # 732117113 -> userid del bot
-            if (type_msg == "J" or type_msg == "JA") and not str(user_id) == USER_ID_BOT and not status_user == "S" and not status_user == "W" and not status_user == "A":
+            if (type_msg == "J" or type_msg == "JA") and not str(user_id) == USER_ID_BOT and not status_user == "S" and not status_user == "W" and not status_user == "A" and not (type_msg == "LR" or type_msg=="L"):
                 # Nuovo utente
                 bot.sendMessage(chat_id, messaggio_benvenuto, reply_markup=new, parse_mode="HTML")
                 blacklist[str(message_id)] = int(user_id)
