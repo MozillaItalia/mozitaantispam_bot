@@ -173,6 +173,7 @@ def invia_messaggio_admin(msg):
 def risposte(msg):
     localtime = datetime.now()
     global data_salvataggio
+    global templist_time
     data_salvataggio = localtime.strftime("%Y_%m_%d")
     localtime = localtime.strftime("%d/%m/%y %H:%M:%S")
     messaggio = msg
@@ -415,6 +416,7 @@ def risposte(msg):
                             stampa_su_file("Except:27 ->" + str(exception_value), True)
                         if not user_id_to_use in whitelist:
                             templist[str(int(message_id) - 1)] = blacklist[str(int(message_id) - 1)]
+                            templist_time = datetime.now() #salva quando l'utente entra nella templist
                             # print(templist[str(int(message_id)-1)]) #userid
                             templist_name[str(templist[str(int(message_id) - 1)])
                             ] = blacklist_name[str(blacklist[str(int(message_id) - 1)])]
@@ -465,7 +467,7 @@ def risposte(msg):
                             user_name_temp = user_name_temp.lstrip("@")
                         else:
                             user_name_temp = "[*NessunUsername*]" + str(user_name_temp)
-                        if str(user_name_temp) in templist_name.values():
+                        if str(user_name_temp) in templist_name.values() and (datetime.now() - templist_time).total_seconds() > 30:
                             username_utente_nousername = nousername_assegnazione(
                                 nousername, user_id, user_name)
                             user_id_temp = int(
@@ -525,15 +527,23 @@ def risposte(msg):
                                 text += "\n >> >> Esito: NO"
                                 print("Excep:16 -> " + str(exception_value))
                                 stampa_su_file("Except:16 ->" + str(exception_value), True)
-                        try:
-                            # cancella messaggio di 'regolamento letto'
-                            elimina_msg(chat_id, message_id)
-                            # print(message_id_temp_deletemessage)
-                        except Exception as exception_value:
-                            print("Excep:28 -> " + str(exception_value))
-                            stampa_su_file("Except:28 ->" + str(exception_value), True)
-                        text = "|| Conferma utente ||\n >> >> Esito: OK"
-                        risposta_a_BIC(query_id)
+
+                            try:
+                                # cancella messaggio di 'regolamento letto'
+                                elimina_msg(chat_id, message_id)
+                                # print(message_id_temp_deletemessage)
+                            except Exception as exception_value:
+                                print("Excep:28 -> " + str(exception_value))
+                                stampa_su_file("Except:28 ->" + str(exception_value), True)
+                            text = "|| Conferma utente ||\n >> >> Esito: OK"
+                            risposta_a_BIC(query_id)
+
+                        else:
+                            text = "|| Conferma utente ||\n >> >> Esito: NO"
+                            remaining_time = (30 - (datetime.now() - templist_time).total_seconds())
+                            risposta_a_BIC(query_id, "Mancano %d secondi prima di poter confermare questo utente"
+                                           %remaining_time)
+
                     else:
                         text = "|| Conferma utente ||\n >> >> Esito: NO"
                         risposta_a_BIC(query_id, "Non sei abilitato a premere questo pulsante.")
