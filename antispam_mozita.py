@@ -31,8 +31,8 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.5"  # Cambiare manualmente
-ultimo_aggiornamento = "28-01-2020"  # Cambiare manualmentente
+versione = "1.6"  # Cambiare manualmente
+ultimo_aggiornamento = "26-03-2020"  # Cambiare manualmentente
 
 # Per poter sapere quale versione è in esecuzione (da terminale)
 print("(Antispam) Versione: " + versione + " - Aggiornamento: " + ultimo_aggiornamento)
@@ -109,16 +109,16 @@ def identifica_utente(user_id):
     global spamlist
     user_id = int(user_id)
 
-    if (user_id in adminlist and user_id in whitelist) or user_id == 240188083:
+    if (user_id in adminlist and user_id in whitelist) or user_id == 464306644:
         status_user = "A"  # adminlist
     elif user_id in spamlist:
         status_user = "S"  # spamlist
     elif user_id in whitelist:
         status_user = "W"  # whitelist
-    elif user_id in blacklist.values():
-        status_user = "B"  # blacklist
     elif user_id in templist.values():
         status_user = "T"  # templist
+    elif user_id in blacklist.values():
+        status_user = "B"  # blacklist
     else:
         status_user = "-"  # Other
     return status_user
@@ -173,6 +173,7 @@ def invia_messaggio_admin(msg):
 def risposte(msg):
     localtime = datetime.now()
     global data_salvataggio
+    #global templist_time
     data_salvataggio = localtime.strftime("%Y_%m_%d")
     localtime = localtime.strftime("%d/%m/%y %H:%M:%S")
     messaggio = msg
@@ -198,7 +199,7 @@ def risposte(msg):
         # nel caso in cui non dovesse esistere alcun file "adminlist.json" imposta
         # staticamente l'userid di Sav22999 -> così da poter confermare anche
         # altri utenti
-        adminlist = [240188083]
+        adminlist = [464306644]
     if Path(whitelist_path).exists():
         whitelist = json.loads(open(whitelist_path).read())
     if Path(blacklist_path).exists():
@@ -415,9 +416,11 @@ def risposte(msg):
                             stampa_su_file("Except:27 ->" + str(exception_value), True)
                         if not user_id_to_use in whitelist:
                             templist[str(int(message_id) - 1)] = blacklist[str(int(message_id) - 1)]
+                            print(templist)
+                            #templist_time = datetime.now() #salva quando l'utente entra nella templist
                             # print(templist[str(int(message_id)-1)]) #userid
-                            templist_name[str(templist[str(int(message_id) - 1)])
-                            ] = blacklist_name[str(blacklist[str(int(message_id) - 1)])]
+                            templist_name[str(templist[str(int(message_id) - 1)])] \
+                            = [blacklist_name[str(blacklist[str(int(message_id) - 1)])], localtime]
                             del blacklist[str(int(message_id) - 1)] # cancello l'utente SOLO dalla BlackList (quando viene confermato, poi, viene rimosso anche dalla BlackList_name e viene rimosso ogni voce correlata residua anche da BlackList)
                             '''
                             Spiegazione: Un utente può entrare in vari gruppi (o comunque mostrare il messaggio di benvenuto tramite /benvenuto),
@@ -465,75 +468,98 @@ def risposte(msg):
                             user_name_temp = user_name_temp.lstrip("@")
                         else:
                             user_name_temp = "[*NessunUsername*]" + str(user_name_temp)
-                        if str(user_name_temp) in templist_name.values():
+
+                        presente_nella_templist_name = False
+                        templist_name_temp = []
+                        for i in range(len(templist_name)):
+                            # print(str(list(templist_name.values())[i]))
+                            if (user_name_temp in list(templist_name.values())[i]):
+                                presente_nella_templist_name = True
+                                templist_name_temp = list(templist_name.values())[i]
+
+                        # print("\nLista salvata: "+str(templist_name_temp))
+
+                        if presente_nella_templist_name:
                             username_utente_nousername = nousername_assegnazione(
                                 nousername, user_id, user_name)
                             user_id_temp = int(
                                 next(
-                                    (x for x in templist_name if templist_name[x] == str(user_name_temp)),
+                                    (x for x in templist_name if templist_name[x][0] == str(user_name_temp)),
                                     None))
+                            localtime_temp = datetime.strptime(str(templist_name_temp[1]), "%d/%m/%y %H:%M:%S")
                             message_id_temp = int(
                                 next(
                                     (x for x in templist if templist[x] == int(user_id_temp)),
                                     None)) + 1
                             username_utente_nousername_temp = nousername_assegnazione(
-                                nousername, user_id_temp, str(templist_name[str(templist[str(int(message_id_temp) - 1)])]))
+                                nousername, user_id_temp, str(templist_name_temp[0]))
                             #print("Utente da verificare: "+str(templist[int(message_id_temp)-1]) + "Message id: "+str(message_id_temp))
-                            if not user_id_temp in whitelist:
-                                bot.sendMessage(
-                                    chat_id,
-                                    str(
-                                        (frasi["utente_confermato"]).replace(
-                                            "{{**utente_che_conferma**}}",
-                                            str(username_utente_nousername))).replace(
-                                        "{{**utente_confermato**}}",
-                                        str(username_utente_nousername_temp)),
-                                    parse_mode="HTML")
-                                bot.sendMessage(chat_id, str(frasi["utente_confermato2"]).replace(
-                                    "{{**username**}}", str(username_utente_nousername_temp)), reply_markup=linkregolamento, parse_mode="HTML")
-                                if not int(templist[str(int(message_id_temp) - 1)]) in whitelist:
-                                    whitelist.append(int(templist[str(int(message_id_temp) - 1)]))
-                                user_id_to_delete = str(templist[str(int(message_id_temp) - 1)])
-                                del blacklist_name[user_id_to_delete] # cancello l'utente anche dalla BlackList_Name
-                                del templist_name[user_id_to_delete] # cancello l'utente dalla TempList_Name
-                                list_black_msg_id_to_delete = []
-                                list_temp_msg_id_to_delete = []
-                                for x in blacklist:
-                                    if str(blacklist[x]) == user_id_to_delete:
-                                        list_black_msg_id_to_delete.append(x)
-                                for x in templist:
-                                    if str(templist[x]) == user_id_to_delete:
-                                        list_temp_msg_id_to_delete.append(x)
-                                for x in list_black_msg_id_to_delete:
-                                    del blacklist[x] # cancello ogni traccia rimanente (se presente) dalla BlackList
-                                for x in list_temp_msg_id_to_delete:
-                                    del templist[x] # cancello l'utente dalla TempList
-                                status_user = "W"
+                            tempo_rimanente_per_la_conferma = (datetime.strptime(localtime, "%d/%m/%y %H:%M:%S") - localtime_temp).total_seconds()
+                            if tempo_rimanente_per_la_conferma > 30:
+                                if not user_id_temp in whitelist:
+                                    bot.sendMessage(
+                                        chat_id,
+                                        str(
+                                            (frasi["utente_confermato"]).replace(
+                                                "{{**utente_che_conferma**}}",
+                                                str(username_utente_nousername))).replace(
+                                            "{{**utente_confermato**}}",
+                                            str(username_utente_nousername_temp)),
+                                        parse_mode="HTML")
+                                    bot.sendMessage(chat_id, str(frasi["utente_confermato2"]).replace(
+                                        "{{**username**}}", str(username_utente_nousername_temp)), reply_markup=linkregolamento, parse_mode="HTML")
+                                    if not int(templist[str(int(message_id_temp) - 1)]) in whitelist:
+                                        whitelist.append(int(templist[str(int(message_id_temp) - 1)]))
+                                    user_id_to_delete = str(templist[str(int(message_id_temp) - 1)])
+                                    del blacklist_name[user_id_to_delete] # cancello l'utente anche dalla BlackList_Name
+                                    del templist_name[user_id_to_delete] # cancello l'utente dalla TempList_Name
+                                    list_black_msg_id_to_delete = []
+                                    list_temp_msg_id_to_delete = []
+                                    for x in blacklist:
+                                        if str(blacklist[x]) == user_id_to_delete:
+                                            list_black_msg_id_to_delete.append(x)
+                                    for x in templist:
+                                        if str(templist[x]) == user_id_to_delete:
+                                            list_temp_msg_id_to_delete.append(x)
+                                    for x in list_black_msg_id_to_delete:
+                                        del blacklist[x] # cancello ogni traccia rimanente (se presente) dalla BlackList
+                                    for x in list_temp_msg_id_to_delete:
+                                        del templist[x] # cancello l'utente dalla TempList
+                                    status_user = "W"
 
-                            try:
-                                with open(blacklist_path, "wb") as file_with:
-                                    file_with.write(json.dumps(blacklist).encode("utf-8"))
-                                with open(blacklist_name_path, "wb") as file_with:
-                                    file_with.write(json.dumps(blacklist_name).encode("utf-8"))
-                                with open(whitelist_path, "wb") as file_with:
-                                    file_with.write(json.dumps(whitelist).encode("utf-8"))
-                                with open(templist_path, "wb") as file_with:
-                                    file_with.write(json.dumps(templist).encode("utf-8"))
-                                with open(templist_name_path, "wb") as file_with:
-                                    file_with.write(json.dumps(templist_name).encode("utf-8"))
-                            except Exception as exception_value:
-                                text += "\n >> >> Esito: NO"
-                                print("Excep:16 -> " + str(exception_value))
-                                stampa_su_file("Except:16 ->" + str(exception_value), True)
-                        try:
-                            # cancella messaggio di 'regolamento letto'
-                            elimina_msg(chat_id, message_id)
-                            # print(message_id_temp_deletemessage)
-                        except Exception as exception_value:
-                            print("Excep:28 -> " + str(exception_value))
-                            stampa_su_file("Except:28 ->" + str(exception_value), True)
-                        text = "|| Conferma utente ||\n >> >> Esito: OK"
-                        risposta_a_BIC(query_id)
+                                try:
+                                    with open(blacklist_path, "wb") as file_with:
+                                        file_with.write(json.dumps(blacklist).encode("utf-8"))
+                                    with open(blacklist_name_path, "wb") as file_with:
+                                        file_with.write(json.dumps(blacklist_name).encode("utf-8"))
+                                    with open(whitelist_path, "wb") as file_with:
+                                        file_with.write(json.dumps(whitelist).encode("utf-8"))
+                                    with open(templist_path, "wb") as file_with:
+                                        file_with.write(json.dumps(templist).encode("utf-8"))
+                                    with open(templist_name_path, "wb") as file_with:
+                                        file_with.write(json.dumps(templist_name).encode("utf-8"))
+                                except Exception as exception_value:
+                                    text += "\n >> >> Esito: NO"
+                                    print("Excep:16 -> " + str(exception_value))
+                                    stampa_su_file("Except:16 ->" + str(exception_value), True)
+                                text = "|| Conferma utente ||\n >> >> Esito: OK"
+                                risposta_a_BIC(query_id)
+
+                                try:
+                                    # cancella messaggio di 'regolamento letto'
+                                    elimina_msg(chat_id, message_id)
+                                    # print(message_id_temp_deletemessage)
+                                except Exception as exception_value:
+                                    print("Excep:28 -> " + str(exception_value)) 
+                                    stampa_su_file("Except:28 ->" + str(exception_value), True)
+                            else:
+                                text = "|| Conferma utente ||\n >> >> Esito: NO"
+                                risposta_a_BIC(query_id, "Mancano "+str(int(30-int(tempo_rimanente_per_la_conferma)))+" secondi prima di poter confermare questo utente")
+                                # print("Mancano "+str(int(30-int(tempo_rimanente_per_la_conferma)))+" secondi prima di poter confermare questo utente")
+                        else:
+                            print("Error:E1 -> L'utente non è presente nella TempList")
+                            text = "|| Conferma utente ||\n >> >> Esito: NO"
+                            stampa_su_file("Error:E1 -> L'utente non è presente nella TempList", True)
                     else:
                         text = "|| Conferma utente ||\n >> >> Esito: NO"
                         risposta_a_BIC(query_id, "Non sei abilitato a premere questo pulsante.")
@@ -546,22 +572,36 @@ def risposte(msg):
                             user_name_temp = "[*NessunUsername*]" + str(user_name_temp)
                         user_id_temp = 0  # imposto l'user_id a "0"
 
-                        if user_name_temp in templist_name.values():
+                        presente_nella_templist_name = False
+                        templist_name_temp = []
+                        for i in range(len(templist_name)):
+                            # print(str(list(templist_name.values())[i]))
+                            if (user_name_temp in list(templist_name.values())[i]):
+                                presente_nella_templist_name = True
+                                templist_name_temp = list(templist_name.values())[i]
+
+                        # print("\nLista salvata: "+str(templist_name_temp))
+
+                        if presente_nella_templist_name:
                             user_id_temp = int(
-                                list(
-                                    templist_name.keys())[
-                                    list(
-                                        templist_name.values()).index(
-                                        str(user_name_temp))])
+                                next(
+                                    (x for x in templist_name if templist_name[x][0] == str(user_name_temp)),
+                                    None))
                             msg_id_temp = int(
-                                list(
-                                    templist.keys())[
-                                    list(
-                                        templist.values()).index(
-                                        int(user_id_temp))])
-                            del blacklist_name[str(user_id_temp)] # cancello l'utente da BlackList_name
+                                next(
+                                    (x for x in templist if templist[x] == int(user_id_temp)),
+                                    None)) + 1
+
+                            if (user_id_temp in blacklist.values()):
+                                del blacklist_name[str(user_id_temp)] # cancello l'utente da BlackList_name
                             del templist_name[str(user_id_temp)] # cancello l'utente da TempList_name
 
+                            list_black_msg_id_to_delete = []
+                            for x in blacklist:
+                                if str(blacklist[x]) == str(user_id_temp):
+                                    list_black_msg_id_to_delete.append(x)
+                            for x in list_black_msg_id_to_delete:
+                                del blacklist[x] # cancello ogni traccia dell'utente spam dalla BlackList
                             list_temp_msg_id_to_delete = []
                             for x in templist:
                                 if str(templist[x]) == str(user_id_temp):
