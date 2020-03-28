@@ -26,8 +26,8 @@ These are other possible return value (in addition to elements above):
 "LR" -> Left (Removed)
 "NI" -> Not Identified (or Not Allowed)
 '''
-versione = "1.2" # Cambiare manualmente
-ultimoAggiornamento = "17-03-2019" # Cambiare manualmentente
+versione = "1.2.1" # Cambiare manualmente
+ultimoAggiornamento = "28-03-2019" # Cambiare manualmentente
 
 print("(Telegram events) Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento) # Per poter sapere quale versione è in esecuzione (da terminale)
 
