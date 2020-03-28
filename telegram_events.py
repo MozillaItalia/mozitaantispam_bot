@@ -81,7 +81,7 @@ def events(msg,allowed_events,response):
         else:
             type_msg = "L"  # Left
             text = "|| Un utente è uscito ||"
-    elif ("document" in msg) and (("D" in allowed_events) or all_events):
+    elif ("document" in msg) and not ("animation" in msg) and (("D" in allowed_events) or all_events):
         # EVENTO FILE
         type_msg = "D"  # Document
         if "caption" in msg:
