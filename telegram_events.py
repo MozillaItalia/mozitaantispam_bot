@@ -26,8 +26,8 @@ These are other possible return value (in addition to elements above):
 "LR" -> Left (Removed)
 "NI" -> Not Identified (or Not Allowed)
 '''
-versione = "1.2" # Cambiare manualmente
-ultimoAggiornamento = "17-03-2019" # Cambiare manualmentente
+versione = "1.2.1" # Cambiare manualmente
+ultimoAggiornamento = "28-03-2020" # Cambiare manualmentente
 
 print("(Telegram events) Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento) # Per poter sapere quale versione è in esecuzione (da terminale)
 
@@ -81,7 +81,7 @@ def events(msg,allowed_events,response):
         else:
             type_msg = "L"  # Left
             text = "|| Un utente è uscito ||"
-    elif ("document" in msg) and (("D" in allowed_events) or all_events):
+    elif ("document" in msg) and not ("animation" in msg) and (("D" in allowed_events) or all_events):
         # EVENTO FILE
         type_msg = "D"  # Document
         if "caption" in msg:
