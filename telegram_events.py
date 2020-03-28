@@ -27,7 +27,7 @@ These are other possible return value (in addition to elements above):
 "NI" -> Not Identified (or Not Allowed)
 '''
 versione = "1.2.1" # Cambiare manualmente
-ultimoAggiornamento = "28-03-2019" # Cambiare manualmentente
+ultimoAggiornamento = "28-03-2020" # Cambiare manualmentente
 
 print("(Telegram events) Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento) # Per poter sapere quale versione è in esecuzione (da terminale)
 
