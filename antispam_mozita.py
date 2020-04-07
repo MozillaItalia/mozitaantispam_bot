@@ -31,8 +31,8 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.6"  # Cambiare manualmente
-ultimo_aggiornamento = "26-03-2020"  # Cambiare manualmentente
+versione = "1.6.1"  # Cambiare manualmente
+ultimo_aggiornamento = "07-04-2020"  # Cambiare manualmentente
 
 # Per poter sapere quale versione è in esecuzione (da terminale)
 print("(Antispam) Versione: " + versione + " - Aggiornamento: " + ultimo_aggiornamento)
@@ -109,7 +109,7 @@ def identifica_utente(user_id):
     global spamlist
     user_id = int(user_id)
 
-    if (user_id in adminlist and user_id in whitelist) or user_id == 464306644:
+    if (user_id in adminlist and user_id in whitelist) or user_id == 240188083:
         status_user = "A"  # adminlist
     elif user_id in spamlist:
         status_user = "S"  # spamlist
@@ -132,13 +132,16 @@ def check_parole_vietate(text, attivato):
             return True
     return False
 
-# stampa_su_file(<cosa stampare>,<{True|False} indica se è una stampa di
-# ERRORE/ECCEZIONE o una stampa 'normale'>)
+'''
+stampa_su_file(<cosa stampare>,<{True|False} indica se è una stampa di
+ERRORE/ECCEZIONE o una stampa 'normale'>) -> se è TRUE viene anche
+stampato tutto il "response", così da poter individuare l'errore
+'''
 
 def stampa_su_file(stampa, err):
     global response, data_salvataggio
     if err:
-        stampa = str(response) + "\n\n" + str(stampa)
+        stampa = str(response) + "\n--------------------\n" + "!!! " + str(stampa) + " !!!"
     stampa = stampa + "\n--------------------\n"
     try:
         if os.path.exists("./history_mozitaantispam") == False:
@@ -152,13 +155,13 @@ def stampa_su_file(stampa, err):
         # utilizzo del bot (ANONIMO)
         file = open("./history_mozitaantispam/log_" +
                     str(data_salvataggio) + ".txt", "a", -1, "UTF-8")
-        # ricordare che l'orario è in fuso orario UTC pari a 0 (Greenwich, Londra)
-        # - mentre l'Italia è a +1 (CET) o +2 (CEST - estate)
+        # ricordare che l'orario è in fuso orario UTC pari a 0/+1 (Greenwich, Londra)
+        # mentre l'Italia è a +1 (CET) o +2 (CEST - estate)
         file.write(stampa)
         file.close()
     except Exception as exception_value:
         print("Excep:03 -> " + str(exception_value))
-        stampa_su_file("Except:03 ->" + str(exception_value), True)
+        # stampa_su_file("Except:03 ->" + str(exception_value), True)
 
 
 def invia_messaggio_admin(msg):
@@ -197,9 +200,9 @@ def risposte(msg):
         adminlist = json.loads(open(adminlist_path).read())
     else:
         # nel caso in cui non dovesse esistere alcun file "adminlist.json" imposta
-        # staticamente l'userid di Sav22999 -> così da poter confermare anche
-        # altri utenti
-        adminlist = [464306644]
+        # staticamente l'userid (240188083) di Sav22999 -> così da
+        # poter confermare anche altri utenti
+        adminlist = [240188083]
     if Path(whitelist_path).exists():
         whitelist = json.loads(open(whitelist_path).read())
     if Path(blacklist_path).exists():
@@ -838,6 +841,7 @@ def risposte(msg):
                             esito = "OK"
                         except Exception as exception_value:
                             print("Excep:26 -> " + str(exception_value))
+                            stampa_su_file("Except:26 ->" + str(exception_value), True)
                     elif azione[0] == "utente" and len(azione) == 3 and not type_link:
                         if azione[1] == "aggiungi":
                             if azione[2].isdigit():
