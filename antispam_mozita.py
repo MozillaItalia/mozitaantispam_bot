@@ -31,8 +31,8 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.6.1"  # Cambiare manualmente
-ultimo_aggiornamento = "07-04-2020"  # Cambiare manualmentente
+versione = "1.6.2"  # Cambiare manualmente
+ultimo_aggiornamento = "15-04-2020"  # Cambiare manualmentente
 
 # Per poter sapere quale versione è in esecuzione (da terminale)
 print("(Antispam) Versione: " + versione + " - Aggiornamento: " + ultimo_aggiornamento)
@@ -715,7 +715,7 @@ def risposte(msg):
             err2 = False
             esito = "NO"
             # print(type_msg)
-            if type_msg == "NM" or type_msg == "LK":
+            if type_msg == "NM" or type_msg == "LK" or type_msg == "T":
                 type_link = False
                 if type_msg == "LK":
                     type_link = True
