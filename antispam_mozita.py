@@ -31,8 +31,8 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.6.1"  # Cambiare manualmente
-ultimo_aggiornamento = "07-04-2020"  # Cambiare manualmentente
+versione = "1.6.2"  # Cambiare manualmente
+ultimo_aggiornamento = "15-04-2020"  # Cambiare manualmentente
 
 # Per poter sapere quale versione è in esecuzione (da terminale)
 print("(Antispam) Versione: " + versione + " - Aggiornamento: " + ultimo_aggiornamento)
