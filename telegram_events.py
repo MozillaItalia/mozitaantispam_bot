@@ -142,7 +142,7 @@ def events(msg,allowed_events,response):
         type_msg = "NCP" # New Chat Photo
         text="|| Immagine chat aggiornata ||"
     elif ("poll" in msg) and (("P" in allowed_events) or all_events):
-        # EVENTO IMMAGINE CHAT AGGIORNATA
+        # EVENTO SONDAGGIO
         type_msg = "P" # New Poll created
         text="|| Nuovo sondaggio creato ||"
     else:
