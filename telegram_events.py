@@ -16,7 +16,7 @@ parameters have to be the message (msg) and a list (allowed_events), and inside 
 "P" -> Position
 "S" -> Sticket
 "G" -> Gif
-"P" -> Poll
+"POLL" -> Poll
 "[[ALL]]" -> All events || If you want to use "all events" you have to put JUST "[[ALL]]" in the list
 
 These are other possible return value (in addition to elements above):
@@ -141,9 +141,9 @@ def events(msg,allowed_events,response):
         # EVENTO IMMAGINE CHAT AGGIORNATA
         type_msg = "NCP" # New Chat Photo
         text="|| Immagine chat aggiornata ||"
-    elif ("poll" in msg) and (("P" in allowed_events) or all_events):
+    elif ("poll" in msg) and (("POLL" in allowed_events) or all_events):
         # EVENTO SONDAGGIO
-        type_msg = "P" # New Poll created
+        type_msg = "POLL" # New Poll created
         text="|| Nuovo sondaggio creato ||"
     else:
         ni=True
