@@ -31,8 +31,8 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.6.2"  # Cambiare manualmente
-ultimo_aggiornamento = "15-04-2020"  # Cambiare manualmentente
+versione = "1.6.3"  # Cambiare manualmente
+ultimo_aggiornamento = "12-06-2020"  # Cambiare manualmentente
 
 # Per poter sapere quale versione è in esecuzione (da terminale)
 print("(Antispam) Versione: " + versione + " - Aggiornamento: " + ultimo_aggiornamento)
@@ -72,8 +72,8 @@ else:
     parole_vietate = []
 link_regolamento = "https://github.com/MozillaItalia/mozitaantispam_bot/wiki/Regolamento"
 
-# elimina il messaggio - Passare chat_id e message_id
 
+# elimina il messaggio - Passare chat_id e message_id
 def risposta_a_BIC(query_id, text = ""):
     if query_id != "-":
         if text == "":
@@ -83,14 +83,15 @@ def risposta_a_BIC(query_id, text = ""):
             bot.answerCallbackQuery(query_id, text,
                                     cache_time=0)
 
+            
 def elimina_msg(chat_id, message_id, messaggio_eliminato=False):
     if not messaggio_eliminato:
         bot.deleteMessage((chat_id, message_id))
         return True
     return False
 
-# assegna un unsername alternativo se l'userid non ha alcun username valido
 
+# assegna un nome utente alternativo se l'userid non ha alcun username valido
 def nousername_assegnazione(nousername, user_id, user_name):
     if nousername:
         return "<a href='tg://user?id=" + str(user_id) + "'>" + str(user_id) + "</a>"
@@ -123,14 +124,15 @@ def identifica_utente(user_id):
         status_user = "-"  # Other
     return status_user
 
-# controlla se il messaggio inviato contiene una o più parole vietate - Restituisce {True|False}
 
+# controlla se il messaggio inviato contiene una o più parole vietate - Restituisce {True|False}
 def check_parole_vietate(text, attivato):
     global parole_vietate
     if attivato == 0 or attivato == 2:
         if any(ext in text.lower() for ext in parole_vietate):
             return True
     return False
+
 
 '''
 stampa_su_file(<cosa stampare>,<{True|False} indica se è una stampa di
