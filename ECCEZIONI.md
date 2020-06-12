@@ -29,3 +29,5 @@ Questo è l'elenco delle eccezioni gestite nel bot, con la relativa descrizione:
  - 27: Eliminazione messaggio di 'benvenuto' (evento "/leggiregolamento")
  - 28: Eliminazione messaggio di 'regolamento letto' (evento "/confutente")
  - 29: Eliminazione messaggio di 'benvenuto' o regolamento letto' (evento "/bloccautente")
+ - 30: Errore salvataggio lista “segnalazione_errori.json”
+ - 31: Userid non presente nella blacklist

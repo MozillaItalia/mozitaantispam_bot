@@ -1,5 +1,5 @@
 # MozIta Antispam Bot
-Questo è il repository della beta del nuovo bot antispam dei gruppi ufficiali della comunità di Mozilla Italia su Telegram.
+Questo è il repository del nuovo bot antispam dei gruppi ufficiali della comunità di Mozilla Italia su Telegram.
 
 
 # Informazioni utili
@@ -53,9 +53,10 @@ Il bot si compone di 5 liste:
  - **TempList** -> tutti gli utenti *non verificati* ma che hanno letto già il Regolamento: possono inviare solamente del testo
  - **SpamList** -> tutti gli utenti *spam* vengono raccolti in questa lista: essi vengono automaticamente cacciati e bannati dai gruppi Mozilla Italia non appena inviano qualcosa
 
-Inoltre sono presenti altre due liste:
+Inoltre sono presenti altre tre liste:
  - **chat_name** -> dove sono racchiusi tutti i gruppi abilitati con il relativo nominativo
  - **parole_vietate** -> dove sono racchiuse tutte le parole/frasi vietate
+ - **segnalazione_errori** -> dove vengono raccolte le segnalazioni degli eventuali errori (utilizzata principalmente per gli utenti presenti nella SpamList)
 
 > Le liste valgono per tutti i gruppi Mozilla Italia (da qui MozIta) e sono unificate, quindi un utente presente nella lista *spam* e già cacciato e bannato in un gruppo MozIta, appena invia qualcosa in un altro gruppo MozIta viene *automaticamente* bannato e cacciato anche da quel gruppo. Così come se un utente è già *verificato* in un gruppo lo è anche in tutti gli altri.
 
@@ -69,6 +70,7 @@ Le liste vengono salvate in file *.json*. I file generati sono i seguenti:
  - spamlist.json
  - chat_name.json
  - parole_vietate.json
+ - segnalazione_errori.json
 
 Inoltre ogni singolo messaggio viene salvato in un file *.txt* per soli scopi di debug in caso di malfunzionamenti del bot:
  - log_YYYY_MM_DD.txt
@@ -90,9 +92,12 @@ Il bot, in automatico, inserisce il nominativo (user_id) nella **TempList** in a
 Inoltre il messaggio di benvenuto relativo all'utente viene automaticamente eliminato.
 Gli Admin possono anche premere su "Blocca utente" che bannerà l'utente in un singolo clic.
 
+Il messaggio viene visualizzato **solo** nel primo gruppo in cui si ci unisce. È possibile (ri)mostrare il messaggio di benvenuto (anche negli altri gruppi) digitando il comando <code>/benvenuto</code>.
+
 ### Conferma identità
 Tutti gli utenti presenti nella **WhiteList** possono confermare l'identità degli utenti.
 Si noti che prima di confermare l'identità è necessario accertarsi che l'utente non sia uno spam:
+
  - Vedere l'immagine del profilo: è una foto "normale"? O contiene contenuti non accettati?
  - Vedere il nome utente: è un nome utente "normale"? O sono solo alcune lettere messe insieme?
 Una volta premuto su "Conferma utente" il messaggio di "Regolamento letto" viene automaticamente eliminato.
@@ -141,6 +146,22 @@ Ecco ciò che si può fare in chat (**solo in chat: i comandi non funzionano nei
     - Eliminare utenti in BlackList: `lista black elimina`
     - Mostrare utenti in TempList: `lista temp mostra`
     - Eliminare utenti in TempList: `lista temp elimina`
+    
+- Scaricare file log: `scarica *AAAA* *MM* *GG*`
+    
+    > scarica 2019 02 10
+
+### Per gli utenti bloccati
+
+Gli utenti *bloccati*, se credono di esserlo stati (bloccati) per errore, possono inviare una segnalazione tramite chat privata dal bot (<code>@mozita_antispam_bot</code>):
+
+1. Digitare <code>/start</code> 
+1. Premere sul bottone <code>Segnala il possibile errore</code> del messaggio visualizzato
+
+Gli amministratori effettueranno tutte le dovute verifiche.
+**Il messaggio di segnalazione può essere inviato una singola volta.**
+
+In caso ci fosse stato un errore, l’utente interessato verrà sbloccato e potrà unirsi nuovamente ai gruppi di Mozilla Italia. In caso contrario, invece, rimarrà nello stato di *Bloccato/Utente spam* e, quindi, non potrà entrare più nei gruppi comunitari.
 
 # Librerie utilizzate
 Elenco delle librerie utilizzate nel codice (Python):

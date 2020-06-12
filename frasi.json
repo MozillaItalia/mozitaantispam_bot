@@ -2,12 +2,16 @@
 	"parola_vietata_presente": "‼️ {{**username**}} presta attenzione a ciò che scrivi, il messaggio conteneva una o più parole vietate ed è stato eliminato.",
 	"benvenuto": "{{**username**}} benvenuto in <b>{{**nome_gruppo**}}</b> 😊\n Prima di proseguire dovrai fare clic su <b>Mostra Regolamento</b>.\nTi consigliamo di leggerlo attentamente, è breve ma fondamentale per una sana convivenza di gruppo.\n\n<b>Non potrai chiacchierare con noi finché non farai clic sul pulsante, ogni messaggio inviato verrà infatti eliminato.</b>",
 	"utente_cacciato": "{{**username**}} è stato rimosso dal gruppo (causa: <b>spam</b>).",
-	"regolamento_letto": "{{**username**}} grazie, ora potrai inviare messaggi di solo testo (<b>no link, no stickers</b>) fino a quando un altro utente della comunità non verificherà la tua identità facendo clic su <b>Conferma utente</b>.\nRicorda sempre di:\n1. Avere rispetto di tutti.\n2. Non utilizzare un linguaggio scurrile\nCome già detto, ti consigliamo di leggere il regolamento completo facendo clic sul pulsante <b>Leggi il regolamento completo</b>.",
+	"regolamento_letto": "{{**username**}} grazie, ora potrai inviare messaggi di solo testo (<b>no link</b>) fino a quando un altro utente della comunità non verificherà la tua identità facendo clic su <b>Conferma utente</b>.\nRicorda sempre di:\n1. Avere rispetto di tutti.\n2. Non utilizzare un linguaggio scurrile\nCome già detto, ti consigliamo di leggere il regolamento completo facendo clic sul pulsante <b>Leggi il regolamento completo</b>.",
 	"utente_confermato": "✅ {{**utente_che_conferma**}} ha verificato l'identità di {{**utente_confermato**}}.",
-	"utente_confermato2": "{{**username**}} ora sei un utente verificato, potrai inviare messaggi di qualsiasi genere, nei limiti del <a href='https://github.com/Sav22999/Guide/blob/master/Mozilla%20Italia/Telegram/regolamento.md'>Regolamento</a> 📙.\n\nTi consigliamo di <b>impostare un nome utente</b>, <b>un'immagine di profilo</b> e di <b>presentarti</b>. Buona permanenza!",
+	"utente_confermato2": "{{**username**}} ora sei un utente verificato, potrai inviare messaggi di qualsiasi genere, nei limiti del <i>Regolamento</i>.\n\nTi consigliamo di <b>impostare un nome utente</b>, <b>un'immagine di profilo</b> e di <b>presentarti</b>. Buona permanenza!",
 	"button_mostra_regolamento": "Mostra Regolamento ⏬",
 	"button_blocca_utente": "Blocca utente ❌",
 	"button_leggi_regolamento": "Leggi il regolamento completo 📙",
 	"button_conferma_utente": "Conferma identità utente ☑️",
-	"eliminato_da_bot": "(eliminato dal bot) "
+	"eliminato_da_bot": "(eliminato dal bot) ",
+	"messaggio_chat_privata_utente_bloccato": "Sei stato bloccato, perciò non hai più la possibilità di unirti ai gruppi comunitari.\nSe pensi che tu sia stato bloccato per errore, ti preghiamo di premere il pulsante di seguito e provvederemo ad effettuare verifiche più approfondite.",
+	"messaggio_chat_privata_utente_bloccato_button": "Segnala il possibile errore",
+	"messaggio_utente_blocca_per_admin": "L'utente {{**utente_bloccato**}} (bloccato) chiede di effettuare verifiche sul perché sia stato bloccato.",
+	"messaggio_utente_bloccato_segnalazione_gia_inviata": "Hai già inviato una segnalazione (<b>{{**data_invio_segnalazione**}}</b>). Gli amministratori provvederanno ad effettuare le dovute verifiche.\nIn caso di errore sarai sbloccato (verrai contattato in chat privata), altrimenti rimarrai alla stato attuale."
 }

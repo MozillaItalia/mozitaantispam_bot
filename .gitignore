@@ -7,5 +7,11 @@ blacklist_name.json
 templist.json
 templist_name.json
 whitelist.json
+adminlist.json
+segnalazione_errore.json
+spamlist.json
 chat_name.json
 history_mozitaantispam/*
+.idea/*
+.vs/*
+.vscode/*

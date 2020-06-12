@@ -31,8 +31,8 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.3.7"  # Cambiare manualmente
-ultimo_aggiornamento = "19-03-2019"  # Cambiare manualmentente
+versione = "1.6.2"  # Cambiare manualmente
+ultimo_aggiornamento = "15-04-2020"  # Cambiare manualmentente
 
 # Per poter sapere quale versione è in esecuzione (da terminale)
 print("(Antispam) Versione: " + versione + " - Aggiornamento: " + ultimo_aggiornamento)
@@ -40,6 +40,8 @@ print("(Antispam) Versione: " + versione + " - Aggiornamento: " + ultimo_aggiorn
 BLOCCO_PAROLE_VIETATE = 2  # 0 -> Attivato: Elimina messaggi e invia messaggio agli admin in privato
 # 1 -> Disattivato: Non effettua alcun controllo
 # 2 -> "Semi"-Attivo: NON elimina messaggi, ma invia messaggio agli admin in privato
+
+USER_ID_BOT = "732117113"
 
 data_salvataggio = ""
 response = ""
@@ -68,9 +70,18 @@ if Path(parole_vietate_path).exists():
     parole_vietate = json.loads(open(parole_vietate_path).read())
 else:
     parole_vietate = []
+link_regolamento = "https://github.com/MozillaItalia/mozitaantispam_bot/wiki/Regolamento"
 
 # elimina il messaggio - Passare chat_id e message_id
 
+def risposta_a_BIC(query_id, text = ""):
+    if query_id != "-":
+        if text == "":
+            bot.answerCallbackQuery(query_id,
+                                    cache_time=0)
+        else:
+            bot.answerCallbackQuery(query_id, text,
+                                    cache_time=0)
 
 def elimina_msg(chat_id, message_id, messaggio_eliminato=False):
     if not messaggio_eliminato:
@@ -80,13 +91,12 @@ def elimina_msg(chat_id, message_id, messaggio_eliminato=False):
 
 # assegna un unsername alternativo se l'userid non ha alcun username valido
 
-
 def nousername_assegnazione(nousername, user_id, user_name):
     if nousername:
         return "<a href='tg://user?id=" + str(user_id) + "'>" + str(user_id) + "</a>"
     else:
         return "<a href='tg://user?id=" + \
-            str(user_id) + "'>@" + str(user_name) + "</a>" + " (<code>" + str(user_id) + "</code>)"
+               str(user_id) + "'>@" + str(user_name) + "</a>" + " (<code>" + str(user_id) + "</code>)"
 
 
 # determina lo status dell'utente: user_id -> intero e type_msg -> stringa
@@ -99,22 +109,21 @@ def identifica_utente(user_id):
     global spamlist
     user_id = int(user_id)
 
-    if user_id in adminlist and user_id in whitelist:
+    if (user_id in adminlist and user_id in whitelist) or user_id == 240188083:
         status_user = "A"  # adminlist
     elif user_id in spamlist:
         status_user = "S"  # spamlist
     elif user_id in whitelist:
         status_user = "W"  # whitelist
-    elif user_id in blacklist.values():
-        status_user = "B"  # blacklist
     elif user_id in templist.values():
         status_user = "T"  # templist
+    elif user_id in blacklist.values():
+        status_user = "B"  # blacklist
     else:
         status_user = "-"  # Other
     return status_user
 
 # controlla se il messaggio inviato contiene una o più parole vietate - Restituisce {True|False}
-
 
 def check_parole_vietate(text, attivato):
     global parole_vietate
@@ -123,14 +132,16 @@ def check_parole_vietate(text, attivato):
             return True
     return False
 
-# stampa_su_file(<cosa stampare>,<{True|False} indica se è una stampa di
-# ERRORE/ECCEZIONE o una stampa 'normale'>)
-
+'''
+stampa_su_file(<cosa stampare>,<{True|False} indica se è una stampa di
+ERRORE/ECCEZIONE o una stampa 'normale'>) -> se è TRUE viene anche
+stampato tutto il "response", così da poter individuare l'errore
+'''
 
 def stampa_su_file(stampa, err):
     global response, data_salvataggio
     if err:
-        stampa = str(response) + "\n\n" + str(stampa)
+        stampa = str(response) + "\n--------------------\n" + "!!! " + str(stampa) + " !!!"
     stampa = stampa + "\n--------------------\n"
     try:
         if os.path.exists("./history_mozitaantispam") == False:
@@ -144,13 +155,13 @@ def stampa_su_file(stampa, err):
         # utilizzo del bot (ANONIMO)
         file = open("./history_mozitaantispam/log_" +
                     str(data_salvataggio) + ".txt", "a", -1, "UTF-8")
-        # ricordare che l'orario è in fuso orario UTC pari a 0 (Greenwich, Londra)
-        # - mentre l'Italia è a +1 (CET) o +2 (CEST - estate)
+        # ricordare che l'orario è in fuso orario UTC pari a 0/+1 (Greenwich, Londra)
+        # mentre l'Italia è a +1 (CET) o +2 (CEST - estate)
         file.write(stampa)
         file.close()
     except Exception as exception_value:
         print("Excep:03 -> " + str(exception_value))
-        stampa_su_file("Except:03 ->" + str(exception_value), True)
+        # stampa_su_file("Except:03 ->" + str(exception_value), True)
 
 
 def invia_messaggio_admin(msg):
@@ -165,6 +176,7 @@ def invia_messaggio_admin(msg):
 def risposte(msg):
     localtime = datetime.now()
     global data_salvataggio
+    #global templist_time
     data_salvataggio = localtime.strftime("%Y_%m_%d")
     localtime = localtime.strftime("%d/%m/%y %H:%M:%S")
     messaggio = msg
@@ -175,7 +187,7 @@ def risposte(msg):
 
     global response
     response = bot.getUpdates()
-    # print(response)
+    #print(response) # da mettere come commento nella stabile
 
     global adminlist
     global whitelist
@@ -188,8 +200,8 @@ def risposte(msg):
         adminlist = json.loads(open(adminlist_path).read())
     else:
         # nel caso in cui non dovesse esistere alcun file "adminlist.json" imposta
-        # staticamente l'userid di Sav22999 -> così da poter confermare anche
-        # altri utenti
+        # staticamente l'userid (240188083) di Sav22999 -> così da
+        # poter confermare anche altri utenti
         adminlist = [240188083]
     if Path(whitelist_path).exists():
         whitelist = json.loads(open(whitelist_path).read())
@@ -211,6 +223,10 @@ def risposte(msg):
     type_msg = EventiList["type_msg"]
     modificato = EventiList["modificato"]
     risposta = EventiList["risposta"]
+
+    query_id = "-"
+    if type_msg == "BIC" and "id" in msg:
+        query_id = msg["id"]
 
     # verifica se (1) è stato AGGIUNTO (2) è stato RIMOSSO (3) si è UNITO (4) è USCITO
     try:
@@ -247,12 +263,15 @@ def risposte(msg):
         nousername = True
     # print(user_id)
     # print(user_name)
+
     if "chat" not in msg:
         msg = msg["message"]
     chat_id = msg['chat']['id']
     # print(chat_id)
     message_id = msg['message_id']
     # print(message_id)
+
+    username_utente_nousername = nousername_assegnazione(nousername, user_id, user_name)
 
     if str(chat_id) in chat_name and msg['chat']['type'] != "private":
         # BOT NEI GRUPPI ABILITATI
@@ -268,12 +287,14 @@ def risposte(msg):
             [InlineKeyboardButton(text=frasi["button_blocca_utente"], callback_data="/bloccautente")],
         ])
         regolamentoletto = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text=frasi["button_leggi_regolamento"], url='https://github.com/Sav22999/Guide/blob/master/Mozilla%20Italia/Telegram/regolamento.md')],
+            [InlineKeyboardButton(text=frasi["button_leggi_regolamento"], url=link_regolamento)],
             [InlineKeyboardButton(text=frasi["button_conferma_utente"], callback_data='/confutente')],
             [InlineKeyboardButton(text=frasi["button_blocca_utente"], callback_data="/bloccautente")],
         ])
 
-        username_utente_nousername = nousername_assegnazione(nousername, user_id, user_name)
+        linkregolamento = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text=frasi["button_leggi_regolamento"], url=link_regolamento)],
+        ])
 
         messaggio_benvenuto = str(
             (frasi["benvenuto"]).replace(
@@ -304,14 +325,18 @@ def risposte(msg):
         status_user = identifica_utente(user_id)
 
         try:
-            if status_user == "S":
+            if status_user == "-" and not (type_msg == "LR"):
+                if not messaggio_eliminato and not type_msg == "BIC":
+                    messaggio_eliminato = elimina_msg(chat_id, message_id, messaggio_eliminato)
+                    text = frasi["eliminato_da_bot"] + text
+                elif type_msg == "BIC":
+                    messaggio_eliminato = True
+            elif status_user == "S" and not (type_msg == "LR"):
                 if not messaggio_eliminato:
                     messaggio_eliminato = elimina_msg(chat_id, message_id, messaggio_eliminato)
                     text = frasi["eliminato_da_bot"] + text
                 try:
                     bot.kickChatMember(chat_id, user_id, until_date=None)
-                    username_utente_nousername = nousername_assegnazione(
-                        nousername, user_id, user_name)
                     bot.sendMessage(
                         chat_id, str(
                             frasi["utente_cacciato"]).replace(
@@ -321,7 +346,7 @@ def risposte(msg):
                     stampa_su_file("Except:24 ->" + str(exception_value), True)
                 invia_messaggio_admin(
                     username_utente_nousername +
-                    ": CACCIATO -- Gruppo: <b>" +
+                    ": UTENTE RIMOSSO -- Gruppo: <b>" +
                     str(nome_gruppo) +
                     "</b>")
             elif status_user == "B" and type_msg != "BIC":
@@ -342,9 +367,12 @@ def risposte(msg):
                 if not messaggio_eliminato:
                     messaggio_eliminato = elimina_msg(chat_id, message_id, messaggio_eliminato)
                     text = frasi["eliminato_da_bot"] + text
+            if text == frasi["eliminato_da_bot"] + "/confutente":
+                messaggio_eliminato = True # 
 
+            global USER_ID_BOT
             # 732117113 -> userid del bot
-            if type_msg == "J" and not str(user_id) == "732117113":
+            if (type_msg == "J" or type_msg == "JA") and not str(user_id) == USER_ID_BOT and not status_user == "S" and not status_user == "W" and not status_user == "A" and not (type_msg == "LR" or type_msg=="L"):
                 # Nuovo utente
                 bot.sendMessage(chat_id, messaggio_benvenuto, reply_markup=new, parse_mode="HTML")
                 blacklist[str(message_id)] = int(user_id)
@@ -357,7 +385,7 @@ def risposte(msg):
                 except Exception as exception_value:
                     print("Excep:13 -> " + str(exception_value))
                     stampa_su_file("Except:13 ->" + str(exception_value), True)
-            elif type_msg != "J" and type_msg != "L" and not str(user_id) == "732117113" and status_user == "-":
+            elif (type_msg != "J" and type_msg != "L" and not str(user_id) == USER_ID_BOT and status_user == "-") or (text == frasi["eliminato_da_bot"] + "/benvenuto" and type_msg == "LK" and not (user_id in templist.values()) and not (user_id in whitelist)):
                 # Utente già presente nel gruppo ma non presente in alcuna lista
                 bot.sendMessage(chat_id, messaggio_benvenuto, reply_markup=new, parse_mode="HTML")
                 blacklist[str(message_id)] = int(user_id)
@@ -375,34 +403,42 @@ def risposte(msg):
                     stampa_su_file("Except:14 ->" + str(exception_value), True)
             else:
                 if text == "/leggiregolamento" and type_msg == "BIC":
-                    if user_id == int(blacklist[str(int(message_id) - 1)]):
-                        # print(response)
-                        templist[str(int(message_id) - 1)] = blacklist[str(int(message_id) - 1)]
-                        # print(templist[str(int(message_id)-1)]) #userid
-                        templist_name[str(templist[str(int(message_id) - 1)])
-                                      ] = blacklist_name[str(blacklist[str(int(message_id) - 1)])]
-                        del blacklist_name[str(blacklist[str(int(message_id) - 1)])]
-                        del blacklist[str(int(message_id) - 1)]
-                        status_user = "T"
-                        username_utente_nousername = nousername_assegnazione(
-                            nousername, user_id, user_name)
+                    user_id_presente = True
+                    try:
+                        user_id_to_use = int(blacklist[str(int(message_id) - 1)])
+                    except Exception as exception_value:
+                        print("Excep:31 -> " + str(exception_value))
+                        stampa_su_file("Except:31 ->" + str(exception_value), True)
+                        user_id_presente = False
+                    if user_id_presente and user_id == user_id_to_use:
                         try:
                             # cancella messaggio di benvenuto
                             elimina_msg(chat_id, message_id)
-                            # print(message_id_temp_deletemessage)
                         except Exception as exception_value:
                             print("Excep:27 -> " + str(exception_value))
                             stampa_su_file("Except:27 ->" + str(exception_value), True)
-                        bot.sendMessage(
-                            chat_id, str(
-                                frasi["regolamento_letto"]).replace(
-                                "{{**username**}}", str(username_utente_nousername)), reply_markup=regolamentoletto, parse_mode="HTML")
+                        if not user_id_to_use in whitelist:
+                            templist[str(int(message_id) - 1)] = blacklist[str(int(message_id) - 1)]
+                            print(templist)
+                            #templist_time = datetime.now() #salva quando l'utente entra nella templist
+                            # print(templist[str(int(message_id)-1)]) #userid
+                            templist_name[str(templist[str(int(message_id) - 1)])] \
+                            = [blacklist_name[str(blacklist[str(int(message_id) - 1)])], localtime]
+                            del blacklist[str(int(message_id) - 1)] # cancello l'utente SOLO dalla BlackList (quando viene confermato, poi, viene rimosso anche dalla BlackList_name e viene rimosso ogni voce correlata residua anche da BlackList)
+                            '''
+                            Spiegazione: Un utente può entrare in vari gruppi (o comunque mostrare il messaggio di benvenuto tramite /benvenuto),
+                            quindi può essere presente più di una ricorrenza nella BlackList -> le altre ricorrenze vengono automaticamente rimosse quando l'utente viene confermato
+                            '''
+                            status_user = "T"
+
+                            bot.sendMessage(
+                                chat_id, str(
+                                    frasi["regolamento_letto"]).replace(
+                                    "{{**username**}}", str(username_utente_nousername)), reply_markup=regolamentoletto, parse_mode="HTML")
 
                         try:
                             with open(blacklist_path, "wb") as file_with:
                                 file_with.write(json.dumps(blacklist).encode("utf-8"))
-                            with open(blacklist_name_path, "wb") as file_with:
-                                file_with.write(json.dumps(blacklist_name).encode("utf-8"))
                             with open(templist_path, "wb") as file_with:
                                 file_with.write(json.dumps(templist).encode("utf-8"))
                             with open(templist_name_path, "wb") as file_with:
@@ -412,130 +448,239 @@ def risposte(msg):
                             print("Excep:15 -> " + str(exception_value))
                             stampa_su_file("Except:15 ->" + str(exception_value), True)
                         text = "|| Lettura regolamento ||\n >> >> Esito: OK"
+                        risposta_a_BIC(query_id)
                     else:
                         text = "|| Lettura regolamento ||\n >> >> Esito: NO"
+                        risposta_a_BIC(query_id, "Non sei abilitato a premere questo pulsante.")
+
+                    if not user_id_presente:
+                        try:
+                            # cancella messaggio di benvenuto
+                            elimina_msg(chat_id, message_id)
+                        except Exception as exception_value:
+                            print("Excep:27 -> " + str(exception_value))
+                            stampa_su_file("Except:27 ->" + str(exception_value), True)
 
                 elif text == "/confutente" and type_msg == "BIC":
                     if user_id in whitelist or user_id in adminlist:
-                        user_name_temp = str(msg['text'].split(" ")[0]).lstrip("@")
-                        #print("Username temp: "+str(user_name_temp))
+                        user_name_temp = str(msg['text'].split(" ")[0])
+                        user_id_temp = 0
+                        # print("Username temp: "+str(user_name_temp))
                         # print("Messaggio:"+msg['text'])
-                        nousername_temp = False
-                        if "[*NessunUsername*]" + str(user_name_temp) in templist_name.values():
-                            nousername_temp = True
+                        if "@" in user_name_temp:
+                            user_name_temp = user_name_temp.lstrip("@")
+                        else:
                             user_name_temp = "[*NessunUsername*]" + str(user_name_temp)
-                        if str(user_name_temp) in templist_name.values() or nousername_temp:
+
+                        presente_nella_templist_name = False
+                        templist_name_temp = []
+                        for i in range(len(templist_name)):
+                            # print(str(list(templist_name.values())[i]))
+                            if (user_name_temp in list(templist_name.values())[i]):
+                                presente_nella_templist_name = True
+                                templist_name_temp = list(templist_name.values())[i]
+
+                        # print("\nLista salvata: "+str(templist_name_temp))
+
+                        if presente_nella_templist_name:
                             username_utente_nousername = nousername_assegnazione(
                                 nousername, user_id, user_name)
                             user_id_temp = int(
                                 next(
-                                    (x for x in templist_name if templist_name[x] == str(user_name_temp)),
+                                    (x for x in templist_name if templist_name[x][0] == str(user_name_temp)),
                                     None))
+                            localtime_temp = datetime.strptime(str(templist_name_temp[1]), "%d/%m/%y %H:%M:%S")
                             message_id_temp = int(
                                 next(
                                     (x for x in templist if templist[x] == int(user_id_temp)),
                                     None)) + 1
                             username_utente_nousername_temp = nousername_assegnazione(
-                                nousername, user_id_temp, str(templist_name[str(templist[str(int(message_id_temp) - 1)])]))
+                                nousername, user_id_temp, str(templist_name_temp[0]))
                             #print("Utente da verificare: "+str(templist[int(message_id_temp)-1]) + "Message id: "+str(message_id_temp))
-                            try:
-                                # cancella messaggio di 'regolamento letto'
-                                elimina_msg(chat_id, message_id)
-                                # print(message_id_temp_deletemessage)
-                            except Exception as exception_value:
-                                print("Excep:28 -> " + str(exception_value))
-                                stampa_su_file("Except:28 ->" + str(exception_value), True)
-                            bot.sendMessage(
-                                chat_id,
-                                str(
-                                    (frasi["utente_confermato"]).replace(
-                                        "{{**utente_che_conferma**}}",
-                                        str(username_utente_nousername))).replace(
-                                    "{{**utente_confermato**}}",
-                                    str(username_utente_nousername_temp)),
-                                parse_mode="HTML")
-                            bot.sendMessage(chat_id, str( frasi["utente_confermato2"]).replace(
-                                "{{**username**}}", str(username_utente_nousername_temp)), parse_mode="HTML")
-                            if not int(templist[str(int(message_id_temp) - 1)]) in whitelist:
-                                whitelist.append(int(templist[str(int(message_id_temp) - 1)]))
-                            del templist_name[str(templist[str(int(message_id_temp) - 1)])]
-                            del templist[str(int(message_id_temp) - 1)]
-                            status_user = "W"
+                            tempo_rimanente_per_la_conferma = (datetime.strptime(localtime, "%d/%m/%y %H:%M:%S") - localtime_temp).total_seconds()
+                            if tempo_rimanente_per_la_conferma > 30:
+                                if not user_id_temp in whitelist:
+                                    bot.sendMessage(
+                                        chat_id,
+                                        str(
+                                            (frasi["utente_confermato"]).replace(
+                                                "{{**utente_che_conferma**}}",
+                                                str(username_utente_nousername))).replace(
+                                            "{{**utente_confermato**}}",
+                                            str(username_utente_nousername_temp)),
+                                        parse_mode="HTML")
+                                    bot.sendMessage(chat_id, str(frasi["utente_confermato2"]).replace(
+                                        "{{**username**}}", str(username_utente_nousername_temp)), reply_markup=linkregolamento, parse_mode="HTML")
+                                    if not int(templist[str(int(message_id_temp) - 1)]) in whitelist:
+                                        whitelist.append(int(templist[str(int(message_id_temp) - 1)]))
+                                    user_id_to_delete = str(templist[str(int(message_id_temp) - 1)])
+                                    del blacklist_name[user_id_to_delete] # cancello l'utente anche dalla BlackList_Name
+                                    del templist_name[user_id_to_delete] # cancello l'utente dalla TempList_Name
+                                    list_black_msg_id_to_delete = []
+                                    list_temp_msg_id_to_delete = []
+                                    for x in blacklist:
+                                        if str(blacklist[x]) == user_id_to_delete:
+                                            list_black_msg_id_to_delete.append(x)
+                                    for x in templist:
+                                        if str(templist[x]) == user_id_to_delete:
+                                            list_temp_msg_id_to_delete.append(x)
+                                    for x in list_black_msg_id_to_delete:
+                                        del blacklist[x] # cancello ogni traccia rimanente (se presente) dalla BlackList
+                                    for x in list_temp_msg_id_to_delete:
+                                        del templist[x] # cancello l'utente dalla TempList
+                                    status_user = "W"
 
-                            try:
-                                with open(whitelist_path, "wb") as file_with:
-                                    file_with.write(json.dumps(whitelist).encode("utf-8"))
-                                with open(templist_path, "wb") as file_with:
-                                    file_with.write(json.dumps(templist).encode("utf-8"))
-                                with open(templist_name_path, "wb") as file_with:
-                                    file_with.write(json.dumps(templist_name).encode("utf-8"))
-                            except Exception as exception_value:
-                                text += "\n >> >> Esito: NO"
-                                print("Excep:16 -> " + str(exception_value))
-                                stampa_su_file("Except:16 ->" + str(exception_value), True)
-                        text = "|| Conferma utente ||\n >> >> Esito: OK"
+                                try:
+                                    with open(blacklist_path, "wb") as file_with:
+                                        file_with.write(json.dumps(blacklist).encode("utf-8"))
+                                    with open(blacklist_name_path, "wb") as file_with:
+                                        file_with.write(json.dumps(blacklist_name).encode("utf-8"))
+                                    with open(whitelist_path, "wb") as file_with:
+                                        file_with.write(json.dumps(whitelist).encode("utf-8"))
+                                    with open(templist_path, "wb") as file_with:
+                                        file_with.write(json.dumps(templist).encode("utf-8"))
+                                    with open(templist_name_path, "wb") as file_with:
+                                        file_with.write(json.dumps(templist_name).encode("utf-8"))
+                                except Exception as exception_value:
+                                    text += "\n >> >> Esito: NO"
+                                    print("Excep:16 -> " + str(exception_value))
+                                    stampa_su_file("Except:16 ->" + str(exception_value), True)
+                                text = "|| Conferma utente ||\n >> >> Esito: OK"
+                                risposta_a_BIC(query_id)
+
+                                try:
+                                    # cancella messaggio di 'regolamento letto'
+                                    elimina_msg(chat_id, message_id)
+                                    # print(message_id_temp_deletemessage)
+                                except Exception as exception_value:
+                                    print("Excep:28 -> " + str(exception_value)) 
+                                    stampa_su_file("Except:28 ->" + str(exception_value), True)
+                            else:
+                                text = "|| Conferma utente ||\n >> >> Esito: NO"
+                                risposta_a_BIC(query_id, "Mancano "+str(int(30-int(tempo_rimanente_per_la_conferma)))+" secondi prima di poter confermare questo utente")
+                                # print("Mancano "+str(int(30-int(tempo_rimanente_per_la_conferma)))+" secondi prima di poter confermare questo utente")
+                        else:
+                            print("Error:E1 -> L'utente non è presente nella TempList")
+                            text = "|| Conferma utente ||\n >> >> Esito: NO"
+                            stampa_su_file("Error:E1 -> L'utente non è presente nella TempList", True)
                     else:
                         text = "|| Conferma utente ||\n >> >> Esito: NO"
+                        risposta_a_BIC(query_id, "Non sei abilitato a premere questo pulsante.")
                 elif text == "/bloccautente" and type_msg == "BIC":
                     if user_id in adminlist:
-                        user_name_temp = str(msg['text'].split(" ")[0]).lstrip("@")
+                        user_name_temp = str(msg['text'].split(" ")[0])
+                        if "@" in user_name_temp:
+                            user_name_temp = user_name_temp.lstrip("@")
+                        else:
+                            user_name_temp = "[*NessunUsername*]" + str(user_name_temp)
                         user_id_temp = 0  # imposto l'user_id a "0"
-                        if user_name_temp in blacklist_name.values():
+
+                        presente_nella_templist_name = False
+                        templist_name_temp = []
+                        for i in range(len(templist_name)):
+                            # print(str(list(templist_name.values())[i]))
+                            if (user_name_temp in list(templist_name.values())[i]):
+                                presente_nella_templist_name = True
+                                templist_name_temp = list(templist_name.values())[i]
+
+                        # print("\nLista salvata: "+str(templist_name_temp))
+
+                        if presente_nella_templist_name:
+                            user_id_temp = int(
+                                next(
+                                    (x for x in templist_name if templist_name[x][0] == str(user_name_temp)),
+                                    None))
+                            msg_id_temp = int(
+                                next(
+                                    (x for x in templist if templist[x] == int(user_id_temp)),
+                                    None)) + 1
+
+                            if (user_id_temp in blacklist.values()):
+                                del blacklist_name[str(user_id_temp)] # cancello l'utente da BlackList_name
+                            del templist_name[str(user_id_temp)] # cancello l'utente da TempList_name
+
+                            list_black_msg_id_to_delete = []
+                            for x in blacklist:
+                                if str(blacklist[x]) == str(user_id_temp):
+                                    list_black_msg_id_to_delete.append(x)
+                            for x in list_black_msg_id_to_delete:
+                                del blacklist[x] # cancello ogni traccia dell'utente spam dalla BlackList
+                            list_temp_msg_id_to_delete = []
+                            for x in templist:
+                                if str(templist[x]) == str(user_id_temp):
+                                    list_temp_msg_id_to_delete.append(x)
+                            for x in list_temp_msg_id_to_delete:
+                                del templist[x] # cancello ogni traccia dell'utente spam dalla TempList
+                            # print("Utente templist eliminato\n")
+                        elif user_name_temp in blacklist_name.values():
                             user_id_temp = int(
                                 list(
                                     blacklist_name.keys())[
                                     list(
                                         blacklist_name.values()).index(
                                         str(user_name_temp))])
-                        elif user_name_temp in templist_name.values():
-                            user_id_temp = int(
+                            msg_id_temp = int(
                                 list(
-                                    templist_name.keys())[
+                                    blacklist.keys())[
                                     list(
-                                        templist_name.values()).index(
-                                        str(user_name_temp))])
-                        #print(str(user_id_temp) + " " + str(user_name_temp))
+                                        blacklist.values()).index(
+                                        int(user_id_temp))])
+                            del blacklist_name[str(user_id_temp)]
+
+                            list_black_msg_id_to_delete = []
+                            for x in blacklist:
+                                if str(blacklist[x]) == str(user_id_temp):
+                                    list_black_msg_id_to_delete.append(x)
+                            for x in list_black_msg_id_to_delete:
+                                del blacklist[x] # cancello ogni traccia dell'utente spam dalla BlackList
+                            # print("Utente blacklist eliminato\n")
+                        # print(str(user_id_temp) + " " + str(user_name_temp) + " " + str(msg_id_temp))
                         if not(user_id_temp in adminlist) and not user_id_temp == 0:
                             try:
                                 if not int(user_id_temp) in spamlist:
                                     spamlist.append(int(user_id_temp))
-                                bot.kickChatMember(chat_id, user_id_temp, until_date=None)
-                                username_utente_nousername = nousername_assegnazione(
-                                    nousername, user_id_temp, user_name_temp)
-                                try:
-                                    # cancella messaggio
-                                    message_id_temp_deletemessage = int(message_id)
-                                    bot.deleteMessage((chat_id, message_id_temp_deletemessage))
-                                    # print(message_id_temp_deletemessage)
-                                except Exception as exception_value:
-                                    print("Excep:29 -> " + str(exception_value))
-                                    stampa_su_file("Except:29 ->" + str(exception_value), True)
-                                bot.sendMessage(
-                                    chat_id, str(
-                                        frasi["utente_cacciato"]).replace(
-                                        "{{**username**}}", str(username_utente_nousername)), parse_mode="HTML")
-                                status_user = "S"  # spamlist
-                                if user_id in adminlist:
-                                    status_user = "A"
-                                invia_messaggio_admin(
-                                    username_utente_nousername +
-                                    ": BLOCCATO E CACCIATO -- Gruppo: <b>" +
-                                    str(nome_gruppo) +
-                                    "</b>")
-                                text = "|| Un utente è stato cacciato ||"
+                                    bot.kickChatMember(chat_id, user_id_temp, until_date=None)
+                                    username_utente_nousername = nousername_assegnazione(
+                                        nousername, user_id_temp, user_name_temp)
+                                    # bot.sendMessage(chat_id, str(frasi["utente_cacciato"]).replace("{{**username**}}", str(username_utente_nousername)), parse_mode="HTML")
+                                    status_user = "S"  # spamlist
+                                    if user_id in adminlist:
+                                        status_user = "A"
+                                    invia_messaggio_admin(
+                                        username_utente_nousername +
+                                        ": BLOCCATO E CACCIATO -- Gruppo: <b>" +
+                                        str(nome_gruppo) +
+                                        "</b>")
+                                text = "|| Un utente è stato bloccato e cacciato ||"
                             except Exception as exception_value:
                                 text += "\n >> >> Esito: NO"
                                 print("Excep:23 -> " + str(exception_value))
                                 stampa_su_file("Except:23 ->" + str(exception_value), True)
-                            try:
-                                with open(spamlist_path, "wb") as file_with:
-                                    file_with.write(json.dumps(spamlist).encode("utf-8"))
-                            except Exception as exception_value:
-                                print("Excep:18 -> " + str(exception_value))
-                                stampa_su_file("Except:18 ->" + str(exception_value), True)
+                        try:
+                            with open(spamlist_path, "wb") as file_with:
+                                file_with.write(json.dumps(spamlist).encode("utf-8"))
+                            with open(blacklist_path, "wb") as file_with:
+                                file_with.write(json.dumps(blacklist).encode("utf-8"))
+                            with open(blacklist_name_path, "wb") as file_with:
+                                file_with.write(json.dumps(blacklist_name).encode("utf-8"))
+                            with open(templist_path, "wb") as file_with:
+                                file_with.write(json.dumps(templist).encode("utf-8"))
+                            with open(templist_name_path, "wb") as file_with:
+                                file_with.write(json.dumps(templist_name).encode("utf-8"))
+                        except Exception as exception_value:
+                            print("Excep:18 -> " + str(exception_value))
+                            stampa_su_file("Except:18 ->" + str(exception_value), True)
                         text = "|| Blocca utente ||\n >> >> Esito: OK"
+                        try:
+                            # cancella messaggio
+                            elimina_msg(chat_id, message_id)
+                        except Exception as exception_value:
+                            print("Excep:29 -> " + str(exception_value))
+                            stampa_su_file("Except:29 ->" + str(exception_value), True)
+                        risposta_a_BIC(query_id)
                     else:
                         text = "|| Blocca utente ||\n >> >> Esito: NO"
+                        risposta_a_BIC(query_id, "Non sei abilitato a premere questo pulsante.")
         except Exception as exception_value:
             print("Excep:01 -> " + str(exception_value))
             stampa_su_file("Except:01 ->" + str(exception_value), True)
@@ -558,30 +703,77 @@ def risposte(msg):
     elif msg['chat']['type'] == "private":
         # BOT IN CHAT PRIVATA
 
-        messaggio_sviluppatore_versione_aggiornamento = "MozIta Antispam Bot è stato sviluppato, per la comunità italiana di Mozilla Italia, da Saverio Morelli (@Sav22999) con il supporto e aiuto di Damiano Gualandri (@dag7dev), Simone Massaro (@mone27) e molti altri.\n\n" + \
-            "Versione: " + versione + " - Aggiornamento: " + ultimo_aggiornamento
+        segnalazione_da_utente_bloccato = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text=frasi["messaggio_chat_privata_utente_bloccato_button"], callback_data="/segnalapossibileerrore")],
+        ])
+
+        messaggio_sviluppatore_versione_aggiornamento = "MozIta Antispam Bot è stato sviluppato, per la comunità italiana di Mozilla Italia, da Saverio Morelli (@Sav22999) con il supporto e aiuto di Damiano Gualandri (@dag7dev), Simone Massaro (@mone27) e molti altri (vedi su GitHub la lista completa).\n\n" + \
+                                                        "Versione: " + versione + " - Aggiornamento: " + ultimo_aggiornamento
         status_user = identifica_utente(user_id)
         if status_user == "A":
             err1 = False
             err2 = False
             esito = "NO"
-            print(type_msg)
-            if type_msg == "NM" or type_msg == "LK":
+            # print(type_msg)
+            if type_msg == "NM" or type_msg == "LK" or type_msg == "T":
                 type_link = False
                 if type_msg == "LK":
                     type_link = True
-                if text == "/start" and type_link:
+                if text.lower() == "/start" and type_link:
                     bot.sendMessage(
                         chat_id,
                         "Benvenuto nella chat privata del bot.\nPuoi interagire con il bot, in chat privata, perché sei un amministratore.\nDigita /help per ottenere la lista di tutte le azioni che puoi fare nel bot IN PRIVATO (i comandi NON funzionano nei gruppi abilitati).")
                     esito = "OK"
-                elif text == "/help" and type_link:
-                    bot.sendMessage(chat_id, "Elenco azioni disponibili:\n - utente aggiungi |USERID|\n - utente blocca |USERID|\n - utente sblocca |USERID|\n - parola mostra\n - parola aggiungi |PAROLA/FRASE|\n - parola elimina |PAROLA/FRASE|\n - gruppo mostra\n - gruppo aggiungi |USERID| |NOME GRUPPO|\n - gruppo elimina |USERID|\n - invia messaggio |TESTO MESSAGGIO|\n - lista white mostra\n - lista spam mostra\n - lista black mostra\n - lista black elimina\n - lista temp mostra\n - lista temp elimina")
+                elif text.lower() == "/help" and type_link:
+                    # Elenco azioni
+                    bot.sendMessage(chat_id,
+                                    "Questo è l'elenco dei comandi che puoi eseguire:\n" +
+                                    "\n\n" +
+                                    "<b>Generali</b>:\n"
+                                    "- <code>invia messaggio |Testo del messaggio|</code> \n" +
+                                    "  <i>È supportata anche la formattazione (ma NON nidificata)</i>\n" +
+                                    "\n" +
+                                    "<b>Gestione utenti</b>:\n"
+                                    "- <code>utente aggiungi |UserID|</code>\n" +
+                                    "- <code>utente blocca |UserID|</code>\n" +
+                                    "- <code>utente sblocca |UserID|</code>\n" +
+                                    "\n" +
+                                    "<b>Gestione parole vietate</b>\n" +
+                                    "- <code>parola mostra</code>\n" +
+                                    "- <code>parola aggiungi |Parola/Frase|</code>\n" +
+                                    "- <code>parola elimina |Parola/Frase|</code>\n" +
+                                    "\n" +
+                                    "<b>Gestione gruppi abilitati</b>:\n" +
+                                    "- <code>gruppo mostra</code>\n" +
+                                    "- <code>gruppo aggiungi |UserID| |Nome gruppo|</code>\n" +
+                                    "  <i>Solitamente gli user_id dei (super)gruppi sono negativi</i>\n" +
+                                    "- <code>gruppo elimina |UserID|</code>\n" +
+                                    "\n" +
+                                    "<b>Gestione liste</b>:\n" +
+                                    "- <code>lista white mostra</code>\n" +
+                                    "- <code>lista spam mostra</code>\n" +
+                                    "- <code>lista black mostra</code>\n" +
+                                    "- <code>lista black elimina</code>\n" +
+                                    "- <code>lista temp mostra</code>\n" +
+                                    "- <code>lista temp elimina</code>\n" +
+                                    "\n" +
+                                    "<b>Scaricare file log di MozItaBot</b>:\n" +
+                                    "- <code>scarica |ANNO| |MESE| |GIORNO|</code>\n" +
+                                    "\n" +
+                                    "<b>Esempi:</b>\n" +
+                                    "- <code>invia messaggio Messaggio di prova</code>\n" +
+                                    "- <code>utente aggiungi 0123456789</code>\n" +
+                                    "- <code>gruppo aggiungi -0123456789 </code>1n" +
+                                    "- <code>scarica 2019 10 09</code>",
+                                    parse_mode="HTML")
                     bot.sendMessage(chat_id, messaggio_sviluppatore_versione_aggiornamento)
                     esito = "OK"
+                else:
+                    err1 = True
 
-                if ("utente" in text or "parola" in text or "gruppo" in text or "invia messaggio" in text or "lista" in text) and not type_link:
-                    azione = list(text.split(" "))
+                if (("utente" in text.lower() or "parola" in text.lower() or "gruppo" in text.lower() or "lista" in text.lower() or "scarica" in text.lower()) and not type_link) or "invia messaggio" in text.lower():
+                    err1 = False
+                    azione = list(text.lower().split(" "))
                     if azione[0] == "lista" and len(azione) == 3 and not type_link:
                         if azione[1] == "admin":
                             if azione[2] == "mostra":
@@ -608,7 +800,7 @@ def risposte(msg):
                                     chat_id,
                                     "blacklist:\n" +
                                     str(blacklist) +
-                                    "\n\nBlackList_name:\n" +
+                                    "\n\nblacklist_name:\n" +
                                     str(blacklist_name))
                             else:
                                 err1 = True
@@ -625,7 +817,7 @@ def risposte(msg):
                                     chat_id,
                                     "templist:\n" +
                                     str(templist) +
-                                    "\n\nTempList_name:\n" +
+                                    "\n\ntemplist_name:\n" +
                                     str(templist_name))
                             else:
                                 err1 = True
@@ -649,6 +841,7 @@ def risposte(msg):
                             esito = "OK"
                         except Exception as exception_value:
                             print("Excep:26 -> " + str(exception_value))
+                            stampa_su_file("Except:26 ->" + str(exception_value), True)
                     elif azione[0] == "utente" and len(azione) == 3 and not type_link:
                         if azione[1] == "aggiungi":
                             if azione[2].isdigit():
@@ -845,18 +1038,22 @@ def risposte(msg):
                     elif azione[0] == "invia" and azione[1] == "messaggio" and len(azione) >= 3:
                         del azione[0]
                         del azione[0]
-                        messaggio = ' '.join(azione)
+                        azione_temp = list(text.split(" "))
+                        del azione_temp[0]
+                        del azione_temp[0]
+                        messaggio = ' '.join(azione_temp)
                         if len(chat_name) > 0:
                             for gruppo_x in chat_name.keys():
                                 try:
                                     bot.sendMessage(gruppo_x, messaggio, parse_mode="HTML")
-                                    bot.sendMessage(chat_id, "Messaggio inviato in \"" +
-                                                    str(chat_name[gruppo_x]) + "\"")
+                                    bot.sendMessage(chat_id, "Messaggio inviato in <a href=\"tg://user?id=" + str(gruppo_x) + "\">" + str(chat_name[gruppo_x]) + "</a>",
+                                                    parse_mode="HTML")
                                 except Exception as exception_value:
                                     print("Excep:05 -> " + str(exception_value))
                                     stampa_su_file("Except:05 ->" + str(exception_value), True)
                                     bot.sendMessage(
-                                        chat_id, "Non è stato possibile inviare il messaggio in: " + str(chat_name[gruppo_x]))
+                                        chat_id, "Non è stato possibile inviare il messaggio in: <a href=\"tg://user?id=" + str(gruppo_x) + "\">" + str(chat_name[gruppo_x]) + "</a>",
+                                        parse_mode="HTML")
                             bot.sendMessage(
                                 chat_id,
                                 "Messaggio inviato in tutti i gruppi abilitati.\n\nIl messaggio che è stato inviato è:\n" +
@@ -866,6 +1063,17 @@ def risposte(msg):
                         else:
                             bot.sendMessage(
                                 chat_id, "Non c'è alcun gruppo abilitato")
+                    elif azione[0].lower() == "scarica" and len(azione) == 4 and not type_link:
+                        # Azione per scaricare file di log -> esempio: scarica 2019 10 20
+                        nome_file = "log_" + azione[1] + "_" + azione[2] + "_" + azione[3] + ".txt"
+                        if os.path.exists("./history_mozitaantispam/" + nome_file):
+                            bot.sendMessage(chat_id, "<i>Invio del file " + nome_file + " in corso</i>",
+                                            parse_mode="HTML")
+                            bot.sendDocument(chat_id, open("./history_mozitaantispam/" + nome_file, "rb"))
+                            esito = "OK"
+                        else:
+                            bot.sendMessage(chat_id, "Il file <i>" + nome_file + "</i> non esiste.", parse_mode="HTML")
+                            esito = "NO"
                     else:
                         err1 = True
                 else:
@@ -890,6 +1098,42 @@ def risposte(msg):
                 print(stampa + "\n--------------------\n")
 
             stampa_su_file(stampa, False)
+        elif status_user == "S":
+            segnalazione_errore_path = "segnalazione_errore.json"
+            if Path(segnalazione_errore_path).exists():
+                segnalazione_errore = json.loads(open(segnalazione_errore_path).read())
+            else:
+                segnalazione_errore = {}
+            esito = "NO"
+            if (text == "/segnalapossibileerrore"):
+                if str(user_id) not in segnalazione_errore:
+                    segnalazione_errore[str(user_id)] = str(localtime)
+                    invia_messaggio_admin(
+                        frasi["messaggio_utente_blocca_per_admin"].replace("{{**utente_bloccato**}}",
+                                                                           username_utente_nousername))
+                    try:
+                        with open(segnalazione_errore_path, "wb") as file_with:
+                            file_with.write(json.dumps(segnalazione_errore).encode("utf-8"))
+                        esito = "OK"
+                    except Exception as exception_value:
+                        print("Excep:30 -> " + str(exception_value))
+                        stampa_su_file("Except:30 ->" + str(exception_value), True)
+                else:
+                    bot.sendMessage(
+                        chat_id,
+                        frasi["messaggio_utente_bloccato_segnalazione_gia_inviata"].replace("{{**data_invio_segnalazione**}}", str(segnalazione_errore[str(user_id)])),
+                        parse_mode="HTML")
+
+                stampa = "Id Msg: " + str(message_id) + "  --  " + str(localtime) + "  --  Utente: " + str(user_name) + " (" + str(user_id) + ")[" + str(status_user) + "]\n >> >> Esito: " + str(esito) + "\n >> >> Contenuto messaggio: " + str(text)
+                print(stampa + "\n--------------------\n")
+                stampa_su_file(stampa, False)
+            else:
+                bot.sendMessage(
+                    chat_id,
+                    frasi["messaggio_chat_privata_utente_bloccato"],
+                    reply_markup=segnalazione_da_utente_bloccato,
+                    parse_mode="HTML"
+                )
         else:
             bot.sendMessage(
                 chat_id,
