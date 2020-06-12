@@ -140,11 +140,11 @@ def events(msg,allowed_events,response):
     elif "new_chat_photo" in msg:
         # EVENTO IMMAGINE CHAT AGGIORNATA
         type_msg = "NCP" # New Chat Photo
-        text="|| Immagine chat aggiornata ||"
+        text = "|| Immagine chat aggiornata ||"
     elif ("poll" in msg) and (("POLL" in allowed_events) or all_events):
         # EVENTO SONDAGGIO
         type_msg = "POLL" # New Poll created
-        text="|| Nuovo sondaggio creato ||"
+        text = "|| Nuovo sondaggio creato ||"
     else:
         ni=True
     
