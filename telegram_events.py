@@ -16,6 +16,7 @@ parameters have to be the message (msg) and a list (allowed_events), and inside 
 "P" -> Position
 "S" -> Sticket
 "G" -> Gif
+"PM" -> Pinned Message
 "POLL" -> Poll
 "[[ALL]]" -> All events || If you want to use "all events" you have to put JUST "[[ALL]]" in the list
 
@@ -145,6 +146,10 @@ def events(msg,allowed_events,response):
         # EVENTO SONDAGGIO
         type_msg = "POLL" # New Poll created
         text = "|| Nuovo sondaggio creato ||"
+    elif ("pinned_message" in msg) and (("PM" in allowed_events) or all_events):
+        # EVENTO MESSAGGIO PINNATO
+        type_msg = "PM" # New Poll created
+        text = "|| Nuovo messaggio pinnato ||"
     else:
         ni=True
     
