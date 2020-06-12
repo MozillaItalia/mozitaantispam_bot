@@ -145,11 +145,11 @@ def events(msg,allowed_events,response):
     elif ("poll" in msg) and (("POLL" in allowed_events) or all_events):
         # EVENTO SONDAGGIO
         type_msg = "POLL" # New Poll created
-        text = "|| Nuovo sondaggio creato ||"
+        text = "|| Sondaggio creato ||"
     elif ("pinned_message" in msg) and (("PM" in allowed_events) or all_events):
         # EVENTO MESSAGGIO PINNATO
         type_msg = "PM" # New Poll created
-        text = "|| Nuovo messaggio pinnato ||"
+        text = "|| Messaggio pinnato ||"
     else:
         ni=True
     
