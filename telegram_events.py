@@ -16,6 +16,7 @@ parameters have to be the message (msg) and a list (allowed_events), and inside 
 "P" -> Position
 "S" -> Sticket
 "G" -> Gif
+"POLL" -> Poll
 "[[ALL]]" -> All events || If you want to use "all events" you have to put JUST "[[ALL]]" in the list
 
 These are other possible return value (in addition to elements above):
@@ -26,8 +27,8 @@ These are other possible return value (in addition to elements above):
 "LR" -> Left (Removed)
 "NI" -> Not Identified (or Not Allowed)
 '''
-versione = "1.2.1" # Cambiare manualmente
-ultimoAggiornamento = "28-03-2020" # Cambiare manualmentente
+versione = "1.2.2" # Cambiare manualmente
+ultimoAggiornamento = "12-06-2020" # Cambiare manualmentente
 
 print("(Telegram events) Versione: "+versione+" - Aggiornamento: "+ultimoAggiornamento) # Per poter sapere quale versione è in esecuzione (da terminale)
 
@@ -139,7 +140,11 @@ def events(msg,allowed_events,response):
     elif "new_chat_photo" in msg:
         # EVENTO IMMAGINE CHAT AGGIORNATA
         type_msg = "NCP" # New Chat Photo
-        text="|| Immagine chat aggiornata ||"
+        text = "|| Immagine chat aggiornata ||"
+    elif ("poll" in msg) and (("POLL" in allowed_events) or all_events):
+        # EVENTO SONDAGGIO
+        type_msg = "POLL" # New Poll created
+        text = "|| Nuovo sondaggio creato ||"
     else:
         ni=True
     
