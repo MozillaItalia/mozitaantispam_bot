@@ -31,8 +31,8 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.6.3"  # Cambiare manualmente
-ultimo_aggiornamento = "12-06-2020"  # Cambiare manualmentente
+versione = "1.6.4"  # Cambiare manualmente
+ultimo_aggiornamento = "14-06-2020"  # Cambiare manualmentente
 
 # Per poter sapere quale versione è in esecuzione (da terminale)
 print("(Antispam) Versione: " + versione + " - Aggiornamento: " + ultimo_aggiornamento)
@@ -226,56 +226,64 @@ def risposte(msg):
     modificato = EventiList["modificato"]
     risposta = EventiList["risposta"]
 
-    query_id = "-"
-    if type_msg == "BIC" and "id" in msg:
-        query_id = msg["id"]
-
-    # verifica se (1) è stato AGGIUNTO (2) è stato RIMOSSO (3) si è UNITO (4) è USCITO
-    try:
-        if type_msg == "JA":
-            user_id = msg['new_chat_participant']['id']
-            nousername = False
-            if "username" in msg['new_chat_participant']:
-                user_name = msg['new_chat_participant']['username']
-            else:
-                user_name = "[*NessunUsername*]" + str(user_id)
-                nousername = True
-        elif type_msg == "LR":
-            user_id = msg['left_chat_participant']['id']
-            nousername = False
-            if "username" in msg['left_chat_participant']:
-                user_name = msg['left_chat_participant']['username']
-            else:
-                user_name = "[*NessunUsername*]" + str(user_id)
-                nousername = True
-        else:
-            user_id = msg['from']['id']
-            nousername = False
-            if "username" in msg['from']:
-                user_name = msg['from']['username']
-            else:
-                user_name = "[*NessunUsername*]" + str(user_id)
-                nousername = True
-    except Exception as exception_value:
-        print("Excep:22 -> " + str(exception_value))
-        stampa_su_file("Except:22 ->" + str(exception_value), True)
-
-        user_id = msg['from']['id']
-        user_name = "[*NessunUsername*]" + str(user_id)
-        nousername = True
-    # print(user_id)
-    # print(user_name)
-
-    if "chat" not in msg:
+    msg_saved = msg
+    if "chat" not in msg and "channel_post" not in msg:
         msg = msg["message"]
+    elif "channel_post" in msg:
+        msg = msg["channel_post"]
     chat_id = msg['chat']['id']
     # print(chat_id)
     message_id = msg['message_id']
     # print(message_id)
+    msg_saved2 = msg
+    msg = msg_saved
 
-    username_utente_nousername = nousername_assegnazione(nousername, user_id, user_name)
+    if msg_saved2['chat']['type'] == "group" or msg_saved2['chat']['type'] == "private":
+        query_id = "-"
+        if type_msg == "BIC" and "id" in msg:
+            query_id = msg["id"]
+        # verifica se (1) è stato AGGIUNTO (2) è stato RIMOSSO (3) si è UNITO (4) è USCITO
+        try:
+            if type_msg == "JA":
+                user_id = msg['new_chat_participant']['id']
+                nousername = False
+                if "username" in msg['new_chat_participant']:
+                    user_name = msg['new_chat_participant']['username']
+                else:
+                    user_name = "[*NessunUsername*]" + str(user_id)
+                    nousername = True
+            elif type_msg == "LR":
+                user_id = msg['left_chat_participant']['id']
+                nousername = False
+                if "username" in msg['left_chat_participant']:
+                    user_name = msg['left_chat_participant']['username']
+                else:
+                    user_name = "[*NessunUsername*]" + str(user_id)
+                    nousername = True
+            else:
+                user_id = msg['from']['id']
+                nousername = False
+                if "username" in msg['from']:
+                    user_name = msg['from']['username']
+                else:
+                    user_name = "[*NessunUsername*]" + str(user_id)
+                    nousername = True
+        except Exception as exception_value:
+            print("Excep:22 -> " + str(exception_value))
+            stampa_su_file("Except:22 ->" + str(exception_value), True)
 
-    if str(chat_id) in chat_name and msg['chat']['type'] != "private":
+            user_id = msg['from']['id']
+            user_name = "[*NessunUsername*]" + str(user_id)
+            nousername = True
+        # print(user_id)
+        # print(user_name)
+        username_utente_nousername = nousername_assegnazione(nousername, user_id, user_name)
+
+
+    msg = msg_saved2
+
+
+    if str(chat_id) in chat_name and msg['chat']['type'] == "group":
         # BOT NEI GRUPPI ABILITATI
 
         messaggio_eliminato = False
@@ -1142,12 +1150,13 @@ def risposte(msg):
                 "Non sei un amministratore, perciò non puoi interagire con il bot in privato.")
             bot.sendMessage(chat_id, messaggio_sviluppatore_versione_aggiornamento)
     else:
-        # BOT IN GRUPPI NON ABILITATI
-        bot.sendMessage(
-            chat_id,
-            "Questo gruppo non è un gruppo abilitato 🚫. Se è un gruppo ufficiale di Mozilla Italia contatta un moderatore per ottenere maggiori informazione e per risolvere il problema.\n\nChat id: " +
-            str(chat_id))
-        print("\n|| -- GRUPPO NON ABILITATO: " + str(chat_id) + " -- ||\n")
+        if msg['chat']['type'] == "group":
+            # BOT IN GRUPPI NON ABILITATI
+            bot.sendMessage(
+                chat_id,
+                "Questo gruppo non è un gruppo abilitato 🚫. Se è un gruppo ufficiale di Mozilla Italia contatta un moderatore per ottenere maggiori informazione e per risolvere il problema.\n\nChat id: " +
+                str(chat_id))
+            print("\n|| -- GRUPPO NON ABILITATO: " + str(chat_id) + " -- ||\n")
 
 
 bot = telepot.Bot(TOKEN)
