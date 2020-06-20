@@ -31,8 +31,8 @@ else:
     print("File frasi non presente.")
     exit()
 
-versione = "1.6.4"  # Cambiare manualmente
-ultimo_aggiornamento = "14-06-2020"  # Cambiare manualmentente
+versione = "1.6.5"  # Cambiare manualmente
+ultimo_aggiornamento = "20-06-2020"  # Cambiare manualmentente
 
 # Per poter sapere quale versione è in esecuzione (da terminale)
 print("(Antispam) Versione: " + versione + " - Aggiornamento: " + ultimo_aggiornamento)
@@ -238,7 +238,8 @@ def risposte(msg):
     msg_saved2 = msg
     msg = msg_saved
 
-    if msg_saved2['chat']['type'] == "group" or msg_saved2['chat']['type'] == "private":
+    if msg_saved2['chat']['type'] == "group" or msg_saved2['chat']['type'] == "supergroup" or msg_saved2['chat']['type'] == "private":
+        print("Entrato")
         query_id = "-"
         if type_msg == "BIC" and "id" in msg:
             query_id = msg["id"]
@@ -282,9 +283,10 @@ def risposte(msg):
 
     msg = msg_saved2
 
-
-    if str(chat_id) in chat_name and msg['chat']['type'] == "group":
+    if str(chat_id) in chat_name and (msg['chat']['type'] == "group" or msg['chat']['type'] == "supergroup"):
         # BOT NEI GRUPPI ABILITATI
+
+        print("Entrato2")
 
         messaggio_eliminato = False
 
@@ -1150,7 +1152,7 @@ def risposte(msg):
                 "Non sei un amministratore, perciò non puoi interagire con il bot in privato.")
             bot.sendMessage(chat_id, messaggio_sviluppatore_versione_aggiornamento)
     else:
-        if msg['chat']['type'] == "group":
+        if msg['chat']['type'] == "group" or msg['chat']['type'] == "supergroup":
             # BOT IN GRUPPI NON ABILITATI
             bot.sendMessage(
                 chat_id,
